@@ -1,0 +1,1039 @@
+ bslx.txt
+
+@PURPOSE: Define externalization protocols and provide implementations.
+
+@MNEMONIC: Basic Standard Library eXternalization (bslx)
+
+@DESCRIPTION: The 'bslx' package defines (via documentation) a protocol for
+ externalization (i.e., for an "out stream") and a protocol for
+ "unexternalization" (i.e., for an "in stream"), and provides a concrete
+ byte-array-based stream implementations of each kind of stream, including
+ streams for testing.  In general, concrete streams must be used in matched
+ pairs, as described in more detail below.
+
+/Hierarchical Synopsis
+/---------------------
+ 'bslx' has 10 components having six levels of dependency.
+ The table below shows the hierarchical ordering of the components. The
+ package prefix and underscore ('bslx_') are omitted from the full component
+ names for layout efficiency:
+..
+  Level
+    6:  instreamfunctions
+
+    5:  outstaremfunctions
+
+    4:  testinstream
+
+    3:  byteinstream            testoutstream
+
+    2:  byteoutstream           testinstreamexception
+
+    1:  bytestreamimputil       fieldcode
+..
+
+/Component Synopsis
+/------------------
+ The following is a brief synopsis of the components in 'bslx':
+..
+  bslx_byteinstream            - primary production input stream
+  bslx_byteoutstream           - primary production output stream
+  bslx_bytestreamimputil       - utilities to put/get fundamental and array
+                                 values to/from a character buffer
+  bslx_fieldcode               - enumeration of fundamental streamable types
+  bslx_instreamfunctions       - templated validator/wrapper for the
+                                 'bslxStreamIn' method required of
+                                 'bslx'-compliant components.
+  bslx_outstreamfunctions      - templated validator/wrapper for the
+                                 'bslxStreamOut' method required of
+                                 'bslx'-compliant components.
+  bslx_testinstream            - instrumented input stream, primarily for
+                                 testing
+  bslx_testinstreamexception   - exception object, primarily for testing
+  bslx_testoutstream           - instrumented output stream, primarily for
+                                 testing
+..
+ Components providing concrete streams define classes whose names are the
+ appropriate mixed-case spellings of the component names.  For example,
+ 'bslx_byteinstream' provides the 'bslx::ByteInStream' object, a concrete input
+ stream.
+
+/Externalization
+/---------------
+ Externalization is the process of creating another representation for an
+ in-memory object (also referred to as an "in-core" object) that can be, but
+ need not be, stored external to processor memory.  Often this is done by
+ streaming the object as a sequence (or array) of bytes, sometimes called
+ "flattening" the object, because of the one-dimensional structure of a
+ sequence or array.  Such flattening allows easy externalization of the object,
+ since a byte sequence can be written to a disk file without further
+ modification.  It is similarly the native *format* for other externalization
+ *mechanisms*, such as OS sockets, and in conjunction with these can be used to
+ stream the object outside of processor memory.  Other externalizations include
+ storing the relevant data members among various tables and fields of a
+ relational database.
+
+ The 'bslx' streams provide better support for externalization than 'iostream'
+ objects, because 'bslx' specifies a canonical, optimized representation for
+ fundamental types and provides component authors the tools to externalize in
+ a platform-neutral way any in-core object.
+
+/Supported Types
+/---------------
+ The supported types and required content are listed in the table below.
+ All of the fundamental types in the table may be streamed as scalar values or
+ as homogeneous arrays.  'bsl::string' is streamed as a logical scalar string.
+ Note that 'Int64' and 'Uint64' denote 'bsls::Types::Int64' and
+ 'bsls::Types::Uint64', respectively, which in turn are 'typedef' names
+ for the signed and unsigned 64-bit integer types, respectively, on the host
+ platform:
+..
+  C++ TYPE          REQUIRED CONTENT OF ANY PLATFORM NEUTRAL FORMAT
+  --------------    -----------------------------------------------
+  Int64             least significant 64 bits (signed)
+  Uint64            least significant 64 bits (unsigned)
+  int               least significant 32 bits (signed)
+  unsigned int      least significant 32 bits (unsigned)
+  short             least significant 16 bits (signed)
+  unsigned short    least significant 16 bits (unsigned)
+  char              least significant  8 bits (platform dependent)
+  signed char       least significant  8 bits (signed)
+  unsigned char     least significant  8 bits (unsigned)
+  double            IEEE standard 8-byte floating-point value
+  float             IEEE standard 4-byte floating-point value
+
+  bsl::string       BDE implementation of the STL string class
+..
+ 'bslx' also supports compact streaming of integer types.  In particular,
+ 64-bit integers can be streamed as 40-, 48-, 56-, or 64-bit values, and 32-bit
+ integers can be streamed as 24- or 32-bit values, at the user's discretion.
+ In all cases, the least significant bytes of the fundamental integer type are
+ written to the stream.  Therefore, outputting a signed value may not preserve
+ the sign of the original value; it is the user's responsibility to choose
+ output methods appropriate to the data.  On input, however, the non-standard
+ bit patterns are sign-extended, so that correctly-written values will always
+ be correctly read.
+
+@The 'bslx' Protocols
+ The 'bslx' protocol is primarily a "documentation-only" protocol whereby
+ 'bslx'-compliant value-semantic types and streams each adhere to a published
+ documentation standard (this document) in order to interoperate correctly.
+ The protocol specifies what components that wish to support 'bslx' streaming
+ must provide (three specifically-named methods), and what services the
+ component can expect from all compliant streams (various "put" and "get"
+ methods).  In addition, 'bslx' also documents two interfaces, 'InStream' and
+ 'OutStream', that serve as the "documentation protocols" for input and output
+ streams, respectively.
+
+/Requirements for a 'bslx'-Compliant Class to be Streamable
+/----------------------------------------------------------
+ In this section we give a brief synopsis of the required member functions for
+ a class in order to be 'bslx'-streamable.  See the "Using 'bslx' with Your Own
+ Class" section below for implementation details.
+
+ The required signatures and typical documentation (some behavioral details may
+ be implementation-specific) of the three required methods for a
+ 'bslx'-compliant class are as follows:
+..
+    // CLASS METHODS
+    static bool isBslxVersionSupported(int version);
+        // Return 'true' if the specified 'version' is supported by
+        // this class, and 'false' otherwise. See the 'bslx' package-level
+        // documentation for more information on 'bslx' streaming of
+        // value-semantic types and containers.
+
+    // MANIPULATORS
+    template <class STREAM>
+    STREAM& bslxStreamIn(STREAM& stream, int version);
+        // Assign to this object the value read from the specified input
+        // 'stream' using the specified 'version' format and return a reference
+        // to the modifiable 'stream'.  If 'stream' is initially invalid, this
+        // operation has no effect.  If 'stream' becomes invalid during this
+        // operation or if 'version' is not supported, this object is
+        // unaltered.  Note that no version is read from 'stream'.  See the
+        // 'bslx' package-level documentation for more information on 'bslx'
+        // streaming of value-semantic types and containers.
+
+    // ACCESSORS
+    template <class STREAM>
+    STREAM& bslxStreamOut(STREAM& stream, int version) const;
+        // Write this value to the specified output 'stream' using the
+        // specified 'version' format and return a reference to the
+        // modifiable 'stream'.  If 'version' is not supported, 'stream' is
+        // unmodified.  Note that 'version' is not written to 'stream'.
+        // See the 'bslx' package-level documentation for more information
+        // on 'bslx' streaming of value-semantic types and containers.
+..
+
+/Selection of Streams
+/- - - - - - - - - -
+ The 'bslx' package provides two kinds of 'bslx'-compliant streams.
+ At present, there are two pairs of concrete streams in 'bslx':
+..
+   Out Stream               In Stream              Informal Designation
+   ---------------------    ------------------     --------------------
+   bslx_ByteOutStream       bslx_ByteInStream      "Production Streams"
+   bslx_TestOutStream       bslx_TestInStream      "Test Streams"
+..
+ The informal designations are used throughout this document.
+
+ In general, the concrete "inStreams" and "outStreams" must be used in matched
+ pairs.  For example, the user should not expect correct behavior if an object
+ is externalized to a 'bslx_TestOutStream' and then unexternalized from a
+ seemingly-appropriately-constructed 'bslx_ByteInStream'.  Each pair of streams
+ is designed with different aims in mind, and so their exact formats may vary.
+
+ The typical user will probably be content to use the production streams for
+ most purposes.  We will assume that the production stream is the "correct"
+ choice without further explicit discussion in most usage examples.  See the
+ individual stream component documentation for specific details about using
+ test streams.
+
+
+/Using 'bslx' with Your Own Class
+/--------------------------------
+ We will show a very brief example of a fictitious 'MyPoint' class
+ whose intended purpose is to hold a pair of 'int' values representing a point
+ in a two-dimensional rectilinear coordinate space.  We will first define the
+ class without 'bslx' support and then add that support.  Note that, in this
+ example, most of the required documentation and some required methods and free
+ operators are omitted for ease of viewing.
+
+ A simple implementation of 'MyPoint' might be:
+..
+ class MyPoint {
+     int d_x;
+     int d_y;
+
+   public:
+     // CREATORS
+     MyPoint() : d_x(0), d_y(0) { }
+     MyPoint(int x, int y) : d_x(y), d_y(y) { }
+     MyPoint(const m_myapp_MyPoint& original)
+       : d_x(original.d_x), d_y(original.d_y) { }
+     ~MyPoint() { }
+
+     // MANIPULATORS
+     MyPoint& operator=(const m_myapp_MyPoint& rhs)
+         { d_x = rhs.d_x;  d_y = rhs.d_y; }
+     void setX(int x) { d_x = x; }
+     void setY(int y) { d_y = y; }
+
+     // ACCESSORS
+     int x() const { return d_x; }
+     int y() const { return d_y; }
+ };
+..
+ Putting other design decisions to one side for this discussion, we may ask:
+ How would we incorporate 'bslx' streaming into such a class?  We observe that
+ the actual data footprint of such a point class is two 'int' values.  If
+ 'bslx' succeeds in externalizing these two 'int' values (and preserving their
+ order), then the task is accomplished.
+
+ As noted above 'bslx' expects a compliant class to provide three methods,
+ a class method, a manipulator, and an accessor, with the following names,
+ signatures, and contracts:
+..
+    // CLASS METHODS
+     static bool isBslxVersionSupported(int version);
+        // Return 'true' if the spacified 'version' is supported by this class,
+        // and 'false' otherwise.  See the 'bslx' package-level documentation
+        // for more information on 'bslx' streaming of value-semantic types and
+        // containers.
+
+    // MANIPULATORS
+    template <class STREAM>
+    STREAM& bslxStreamIn(STREAM& stream, int version);
+        // Assign to this object the value read from the specified input
+        // 'stream' using the specified 'version' format and return a reference
+        // to the modifiable 'stream'.  If 'stream' is initially invalid, this
+        // operation has no effect.  If 'stream' becomes invalid during this
+        // operation or if 'version' is not supported, this object is
+        // unaltered.  Note that no version is read from 'stream'.  See the
+        // 'bslx' package-level documentation for more information on 'bslx'
+        // streaming of value-semantic types and containers.
+
+    // ACCESSORS
+    template <class STREAM>
+    STREAM& bslxStreamOut(STREAM& stream, int version) const;
+        // Write this value to the specified output 'stream' using the
+        // specified 'version' format and return a reference to the
+        // modifiable 'stream'.  If 'version' is not supported, 'stream' is
+        // unmodified.  Note that 'version' is not written to 'stream'.
+        // See the 'bslx' package-level documentation for more information
+        // on 'bslx' streaming of value-semantic types and containers.
+..
+ The above function-level documentation should make the purpose of each method
+ clear, and we will show the implementations for 'MyPoint' soon, but
+ first let's just say a few words about "version".  In a nutshell, the version
+ is set to 1 in the initial release of the component, and in the best of all
+ worlds, the version stays 1 forever.  If, however, for some reason the
+ developer wishes to alter the 'bslx' streaming contract (e.g., for some
+ performance reasons), the explicit version maintains backward compatibility.
+
+ Adding the above methods to the 'MyPoint' is straightforward:
+..
+ class MyPoint {
+     int d_x;
+     int d_y;
+
+   public:
+     // CLASS METHODS
+     static bool isBslxVersionSupported(int version);
+        // Return 'true' if the spacified 'version' is supported by this class,
+        // and 'false' otherwise.
+
+     // CREATORS
+     m_myapp_MyPoint() : d_x(0), d_y(0) { }
+     m_myapp_MyPoint(int x, int y) : d_x(y), d_y(y) { }
+     m_myapp_MyPoint(const m_myapp_MyPoint& original)
+       : d_x(original.d_x), d_y(original.d_y) { }
+     ~m_myapp_MyPoint() { }
+
+     // MANIPULATORS
+     m_myapp_MyPoint& operator=(const m_myapp_MyPoint& rhs)
+         { d_x = rhs.d_x;  d_y = rhs.d_y; }
+     void setX(int x) { d_x = x; }
+     void setY(int y) { d_y = y; }
+
+     template <class STREAM>
+     STREAM& bslxStreamIn(STREAM& stream, int version);
+        // Assign to this object the value read from the specified input
+        // 'stream' using the specified 'version' format and return a reference
+        // to the modifiable 'stream'.  If 'stream' is initially invalid, this
+        // operation has no effect.  If 'stream' becomes invalid during this
+        // operation or if 'version' is not supported, this object is
+        // unaltered.  Note that no version is read from 'stream'.
+
+     // ACCESSORS
+     int x() const { return d_x; }
+     int y() const { return d_y; }
+
+     template <class STREAM>
+     STREAM& bslxStreamOut(STREAM& stream, int version) const;
+        // Write this value to the specified output 'stream' using the
+        // specified 'version' format and return a reference to the
+        // modifiable 'stream'.  If 'version' is not supported, 'stream' is
+        // unmodified.  Note that 'version' is not written to 'stream'.
+ };
+..
+ The implementations of the new 'bslx'-required methods might be as follows.
+ The 'isBslxVersionSupported' method simply returns the result of 'version'
+ comparison with value 1:
+..
+    inline
+    bool MyPoint::isBslxVersionSupported(int version)
+    {
+        return 1 == version;
+    }
+..
+ The 'bslxStreamOut' method is an accessor (i.e., a 'const' instance method),
+ and is therefore a bit simpler, so we'll show that one first.  Anyway, it's a
+ bit more logical to see the output format before implementing the input
+ format.  The method is a template method parameterized by 'STREAM', and the
+ "protocol" is that 'STREAM' must be compatible with the 'bslx' contract.  We
+ can therefore safely assume that the 'stream' object has the required methods.
+ See the "The bslx Protocols" section above for the contracts.  The heart of
+ the method is the two sequential calls to 'putInt32', which externalize the x
+ and y coordinates of the point value, in that order.  These two lines are all
+ the "new" code that the developer must understand and implement.  Except for
+ changing the class name from our 'MyPoint' example, the rest of the
+ code can be copied into the new component implementation directly.  Note that
+ this template method is declared 'inline' and implemented in the header of the
+ component defining 'MyClass':
+..
+    template <class STREAM>
+    inline
+    STREAM& MyPoint::bslxStreamOut(STREAM& stream, int version) const
+    {
+        switch (version) {
+          case 1: { // Implementation-specific code goes here
+            stream.putInt32(d_x);
+            stream.putInt32(d_y);
+          } break;
+        }
+        return stream;
+    }
+..
+ Having implemented 'bslxSreamOut', implementing 'bslxStreamIn' is extremely
+ straightforward, involving an 'inline' template member function whose body can
+ be safely copied from this example or from any appropriate component.
+ Note that the two sequential calls to 'getInt32' must match, in both method
+ selection and data member order, the 'put' methods used in the 'bslxStreamOut'
+ method:
+..
+    template <class STREAM>
+    inline
+    STREAM& MyPoint::bslxStreamIn(STREAM& stream, int version)
+    {
+        if (stream) {
+            switch (version) {// switch on the schema version (starting with 1)
+              case 1: { // Implementation-specific code goes here
+                  stream.getInt32(d_x);
+                  stream.getInt32(d_y);
+              }
+            } break;
+            default: {
+               stream.invalidate();
+            }
+        }
+    }
+    return stream;
+}
+..
+ The above implementation is sufficient for our point class, and with a very
+ few additional considerations, illustrates the general recipe for
+ incorporating 'bslx' streaming into a class that has an externalizable value.
+
+ Very briefly, we will mention two considerations that may be important when
+ implementing a type that is more complicated than our simple point class.
+
+ For our first consideration, notice that, for our simple point class, any
+ pattern of bits within the two 'int' data members represents a valid value.
+ Since our BSL contract requires the state of an object to be valid in the face
+ of a stream error (e.g., and exception being thrown during streaming in), the
+ manipulator method 'bslxStreamIn' must validate the input data, set the
+ object to some valid state in the case of an error, and invalidate the stream
+ before returning.
+
+ The second consideration is that if the new type being implemented has as a
+ data member a type that is already 'bslx' compliant, the new implementation
+ would use the data member's 'bslx' methods rather than the stream's methods
+ directly.  This is important for encapsulation.
+
+@Appendix I: The 'bslx' 'OutStream' Protocol
+ In this section we present the function documentation of 'bslx' 'OutStream',
+ which serves as the "documentation protocol" for all 'bslx'-compliant output
+ streams:
+..
+  // MANIPULATORS
+  void invalidate();
+      // Put this output stream in an invalid state.  This function has no
+      // effect if this stream is already invalid.  Note that this function
+      // should be called whenever a write operation to this stream fails.
+
+  OutStream& putLength(int length);
+      // Format the specified non-negative 'length' to this output stream and
+      // return a reference to this modifiable stream.
+
+  OutStream& putVersion(int version);
+      // Format the specified non-negative 'version' to this output stream
+      // and return a reference to this modifiable stream.
+
+                      // *** scalar integer values ***
+
+  OutStream& putInt64(bsls::Types::Int64 value);
+      // Format the least significant 64 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint64(bsls::Types::Int64 value);
+      // Format the least significant 64 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt56(bsls::Types::Int64 value);
+      // Format the least significant 56 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint56(bsls::Types::Int64 value);
+      // Format the least significant 56 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt48(bsls::Types::Int64 value);
+      // Format the least significant 48 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint48(bsls::Types::Int64 value);
+      // Format the least significant 48 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt40(bsls::Types::Int64 value);
+      // Format the least significant 40 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint40(bsls::Types::Int64 value);
+      // Format the least significant 40 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt32(int value);
+      // Format the least significant 32 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint32(unsigned int value);
+      // Format the least significant 32 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt24(int value);
+      // Format the least significant 24 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint24(int value);
+      // Format the least significant 24 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt16(int value);
+      // Format the least significant 16 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint16(int value);
+      // Format the least significant 16 bits of the specified 'value' to
+      // this output stream and return a reference to this modifiable stream.
+
+  OutStream& putInt8(int value);
+      // Format the least significant 8 bits of the specified 'value' to this
+      // output stream and return a reference to this modifiable stream.
+
+  OutStream& putUint8(int value);
+      // Format the least significant 8 bits of the specified 'value' to this
+      // output stream and return a reference to this modifiable stream.
+
+                      // *** scalar floating-point values ***
+
+  OutStream& putFloat64(double value);
+      // Format the most significant 64 bits in the specified 'value' to this
+      // output stream and return a reference to this modifiable stream.
+      // Note that, for non-IEEE-conforming platforms, the "most significant
+      // 64 bits" of 'value' might not be contiguous, and that this operation
+      // may be lossy.
+
+  OutStream& putFloat32(float value);
+      // Format the most significant 32 bits in the specified 'value' to this
+      // output stream and return a reference to this modifiable stream.
+      // Note that, for non-IEEE-conforming platforms, the "most significant
+      // 32 bits" of 'value' might not be contiguous, and that this operation
+      // may be lossy.
+
+                      // *** string values ***
+
+  OutStream& putString(const bsl::string& value);
+      // Format the specified 'value' to this output stream and return a
+      // reference to this modifiable stream.
+
+                      // *** arrays of integer values ***
+
+  OutStream& putArrayInt64(const bsls::Types::Int64 *values, int numValues);
+      // Format as an atomic sequence the least significant 64 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint64(const bsls::Types::Uint64 *values, int numValues);
+      // Format as an atomic sequence the least significant 64 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt56(const bsls::Types::Int64 *values, int numValues);
+      // Format as an atomic sequence the least significant 56 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint56(const bsls::Types::Uint64 *values, int numValues);
+      // Format as an atomic sequence the least significant 56 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt48(const bsls::Types::Int64 *values, int numValues);
+      // Format as an atomic sequence the least significant 48 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint48(const bsls::Types::Uint64 *values, int numValues);
+      // Format as an atomic sequence the least significant 48 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt40(const bsls::Types::Int64 *values, int numValues);
+      // Format as an atomic sequence the least significant 40 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint40(const bsls::Types::Uint64 *values, int numValues);
+      // Format as an atomic sequence the least significant 40 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt32(const int *values, int numValues);
+      // Format as an atomic sequence the least significant 32 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint32(const unsigned int *values, int numValues);
+      // Format as an atomic sequence the least significant 32 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt24(const int *values, int numValues);
+      // Format as an atomic sequence the least significant 24 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint24(const unsigned int *values, int numValues);
+      // Format as an atomic sequence the least significant 24 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt16(const short *values, int numValues);
+      // Format as an atomic sequence the least significant 16 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint16(const unsigned short *values, int numValues);
+      // Format as an atomic sequence the least significant 16 bits of each
+      // of the specified 'numValues' leading entries in the specified
+      // 'values' to this output stream and return a reference to this
+      // modifiable stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayInt8(const char *values,        int numValues);
+  OutStream& putArrayInt8(const signed char *values, int numValues);
+      // Format as an atomic sequence the least significant 8 bits of each of
+      // the specified 'numValues' leading entries in the specified 'values'
+      // to this output stream and return a reference to this modifiable
+      // stream. The behavior is undefined unless '0 <= numValues'.
+
+  OutStream& putArrayUint8(const char *values,          int numValues);
+  OutStream& putArrayUint8(const unsigned char *values, int numValues);
+      // Format as an atomic sequence the least significant 8 bits of each of
+      // the specified 'numValues' leading entries in the specified 'values'
+      // to this output stream and return a reference to this modifiable
+      // stream. The behavior is undefined unless '0 <= numValues'.
+
+                      // *** arrayed floating-point values ***
+
+  OutStream& putArrayFloat64(const double *values,int numValues);
+      // Format as an atomic sequence the most significant 64 bits in each of
+      // the specified 'numValues' leading entries in the specified 'values'
+      // to this output stream and return a reference to this modifiable
+      // stream. The behavior is undefined unless '0 <= numValues'. Note that,
+      // for non-IEEE-conforming platforms, the "most significant 64 bits"
+      // might not be contiguous, and that this operation may be lossy.
+
+  OutStream& putArrayFloat32(const float *values, int numValues);
+      // Format as an atomic sequence the most significant 32 bits in each of
+      // the specified 'numValues' leading entries in the specified 'values'
+      // to this output stream and return a reference to this modifiable
+      // stream. The behavior is undefined unless '0 <= numValues'. Note that,
+      // for non-IEEE-conforming platforms, the "most significant 4 bytes"
+      // might not be contiguous, and that this operation may be lossy.
+
+  void removeAll();
+      // Remove all content in this stream.
+
+  void reserveCapacity(int newCapacity);
+      // Set the internal buffer size of this stream to be at least the
+      // specified 'newCapacity'.
+
+  // ACCESSORS
+  operator const void *() const;
+      // Return a non-zero value if this stream is valid, and 0 otherwise.
+      // An invalid stream denotes a stream in which insufficient or invalid
+      // data was detected during an extraction operation.  Note that an
+      // empty stream will be valid unless an extraction attempt or explicit
+      // invalidation causes it to be otherwise.
+
+  bool isValid() const;
+      // Return 'true' if this stream is valid, and 'false' otherwise.
+      // An invalid stream is a stream for which an output operation was
+      // detected to have failed.
+
+  const char *data() const;
+      // Return the address of the contiguous, non-modifiable internal memory
+      // buffer of this stream.  The address will remain valid as long as
+      // this stream is not destroyed or modified.  The behavior of accessing
+      // elements outside the range [ data() .. data() + (length() - 1) ] is
+      // undefined.
+
+  int length() const;
+      // Return the number of bytes in this stream.
+..
+
+@Appendix II: The 'bslx' 'InStream' Protocol
+ In this section we present the function documentation of 'bslx' 'InStream',
+ which serves as the "documentation protocol" for all 'bslx'-compliant input
+ streams:
+..
+  // MANIPULATORS
+  InStream& getLength(int& length);
+      // Consume a length value from this input stream, place that value in
+      // the specified 'length', and return a reference to this modifiable
+      // stream.  If this stream is initially invalid, this operation has no
+      // effect.  If this function otherwise fails to extract a valid value,
+      // this stream is marked invalid and the value of 'length' is
+      // undefined.
+
+  InStream& getVersion(int& version);
+      // Consume a version value from this input stream, place that value in
+      // the specified 'version', and return a reference to this modifiable
+      // stream.  If this stream is initially invalid, this operation has no
+      // effect.  If this function otherwise fails to extract a valid value,
+      // this stream is marked invalid and the value of 'version' is
+      // undefined.
+
+                      // *** scalar integer values ***
+
+  InStream& getInt64(bsls::Types::Int64& variable);
+      // Consume a 64-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint64(bsls::Types::Uint64& variable);
+      // Consume a 64-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt56(bsls::Types::Int64& variable);
+      // Consume a 56-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint56(bsls::Types::Uint64& variable);
+      // Consume a 56-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt48(bsls::Types::Int64& variable);
+      // Consume a 48-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint48(bsls::Types::Uint64& variable);
+      // Consume a 48-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt40(bsls::Types::Int64& variable);
+      // Consume a 40-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint40(bsls::Types::Uint64& variable);
+      // Consume a 40-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt32(int& variable);
+      // Consume a 32-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint32(unsigned int& variable);
+      // Consume a 32-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt24(int& variable);
+      // Consume a 24-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint24(unsigned int& variable);
+      // Consume a 24-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt16(short& variable);
+      // Consume a 16-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint16(unsigned short& variable);
+      // Consume a 16-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getInt8(char&        variable);
+  InStream& getInt8(signed char& variable);
+      // Consume an 8-bit signed integer value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+  InStream& getUint8(char&          variable);
+  InStream& getUint8(unsigned char& variable);
+      // Consume an 8-bit unsigned integer value from this input stream,
+      // place that value in the specified 'variable', and return a reference
+      // to this modifiable stream.  If this stream is initially invalid,
+      // this operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.
+
+                      // *** scalar floating-point values ***
+
+  InStream& getFloat64(double& variable);
+      // Consume a 64-bit floating-point value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.  Note that, for non-conforming
+      // platforms, this operation may be lossy.
+
+  InStream& getFloat32(float& variable);
+      // Consume a 32-bit floating-point value from this input stream, place
+      // that value in the specified 'variable', and return a reference to
+      // this modifiable stream.  If this stream is initially invalid, this
+      // operation has no effect.  If this function otherwise fails to
+      // extract a valid value, this stream is marked invalid and the value
+      // of 'variable' is undefined.  Note that, for non-conforming
+      // platforms, this operation may be lossy.
+
+                       // *** string values ***
+
+  InStream& getString(std::string& value);
+      // Consume a string from this input stream, place that value in the
+      // specified 'value', and return a reference to this modifiable stream.
+      // If this stream is initially invalid, this operation has no effect.
+      // If this function otherwise fails to extract a valid value, this
+      // stream is marked invalid and the value of 'variable' is undefined.
+
+                       // *** arrays of integer values ***
+
+  InStream& getArrayInt64(bsls::Types::Int64 *values, int numValues);
+      // Consume a 64-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint64(bsls::Types::Uint64 *values, int numValues);
+      // Consume a 64-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt56(bsls::Types::Int64 *values, int numValues);
+      // Consume a 56-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint56(bsls::Types::Uint64 *values, int numValues);
+      // Consume a 56-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt48(bsls::Types::Int64 *values, int numValues);
+      // Consume a 48-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint48(bsls::Types::Uint64 *values, int numValues);
+      // Consume a 48-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt40(bsls::Types::Int64 *values, int numValues);
+      // Consume a 40-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint40(bsls::Types::Uint64 *values, int numValues);
+      // Consume a 40-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt32(int *values, int numValues);
+      // Consume a 32-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint32(unsigned int *values, int numValues);
+      // Consume a 32-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt24(int *values, int numValues);
+      // Consume a 24-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint24(unsigned int *values, int numValues);
+      // Consume a 24-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt16(short *values, int numValues);
+      // Consume a 16-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint16(unsigned short *values, int numValues);
+      // Consume a 16-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayInt8(char *values,        int numValues);
+  InStream& getArrayInt8(signed char *values, int numValues);
+      // Consume an 8-bit signed integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+  InStream& getArrayUint8(char *values,          int numValues);
+  InStream& getArrayUint8(unsigned char *values, int numValues);
+      // Consume an 8-bit unsigned integer array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.
+
+                      // *** arrays of floating-point values ***
+
+  InStream& getArrayFloat64(double *values, int numValues);
+      // Consume a 64-bit floating-point array of the specified 'numValues'
+      // from  this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.  Note that for
+      // non-conforming platforms, this operation may be lossy.
+
+  InStream& getArrayFloat32(float *values, int numValues);
+      // Consume a 32-bit floating-point array of the specified 'numValues'
+      // from this input stream, place that value in the specified 'values',
+      // and return a reference to this modifiable stream.  If this stream is
+      // initially invalid, this operation has no effect.  If this function
+      // otherwise fails to extract a valid array of the required 'numValues',
+      // this stream is marked invalid and the value of 'values' is undefined.
+      // The behavior is undefined unless '0 <= numValues'.  Note that for
+      // non-conforming platforms, this operation may be lossy.
+
+  void invalidate();
+      // Put this input stream in an invalid state.  This function has no
+      // effect if this stream is already invalid.  Note that this function
+      // should be called whenever a value extracted from this stream is
+      // determined to be invalid, inconsistent, or otherwise incorrect.
+
+  // ACCESSORS
+  bool isValid() const;
+      // Return 'true' if this stream is valid, and 'false' otherwise.
+      // An invalid stream denotes a stream in which insufficient or invalid
+      // data was detected during an extraction operation.  Note that an
+      // empty stream will be valid unless an extraction attempt or explicit
+      // invalidation causes it to be otherwise.
+
+  int isEmpty() const;
+      // Return 1 if this stream is empty, and 0 otherwise.  The behavior is
+      // undefined unless this stream is valid. Note that this function
+      // enables higher-level components to verify that, after successfully
+      // reading all expected data, no data remains.
+
+  int length() const;
+      // Return the total number of bytes stored in this stream.
+
+  int cursor() const;
+      // Return the index of the next byte to be extracted from this stream.
+      // The behavior is undefined unless this stream is valid.
+..
