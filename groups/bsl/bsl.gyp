@@ -12,6 +12,7 @@
         'bslscm',
         'bslstl',
         'bsltf',
+        'bslx',
       ],
       'bsl_headers': [
         'bsl+bslhdrs/bsl_algorithm.h',
@@ -317,6 +318,15 @@
         'bsltf/bsltf_templatetestfacility.h',
         'bsltf/bsltf_testvaluesarray.h',
         'bsltf/bsltf_uniontesttype.h',
+        'bslx/bslx_byteinstream.h',
+        'bslx/bslx_byteoutstream.h',
+        'bslx/bslx_bytestreamimputil.h',
+        'bslx/bslx_fieldcode.h',
+        'bslx/bslx_instreamfunctions.h',
+        'bslx/bslx_outstreamfunctions.h',
+        'bslx/bslx_testinstream.h',
+        'bslx/bslx_testinstreamexception.h',
+        'bslx/bslx_testoutstream.h',
       ],
     },
 
@@ -348,6 +358,7 @@
               'bslscm/bslscm.gyp:bslscm_sources',
               'bslstl/bslstl.gyp:bslstl_sources',
               'bsltf/bsltf.gyp:bsltf_sources',
+              'bslx/bslx.gyp:bslx_sources',
             ],
 
             'copies': [
@@ -384,6 +395,7 @@
                 'bslscm/bslscm.gyp:bslscm_tests_build',
                 'bslstl/bslstl.gyp:bslstl_tests_build',
                 'bsltf/bsltf.gyp:bsltf_tests_build',
+                'bslx/bslx.gyp:bslx_tests_build',
             ],
         },
         {
@@ -401,6 +413,7 @@
                 'bslscm/bslscm.gyp:bslscm_tests_run',
                 'bslstl/bslstl.gyp:bslstl_tests_run',
                 'bsltf/bsltf.gyp:bsltf_tests_run',
+                'bslx/bslx.gyp:bslx_tests_run',
             ],
         },
     ],
