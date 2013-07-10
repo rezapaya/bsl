@@ -10,6 +10,7 @@ bslma_deleterhelper
 bslma_destructorguard
 bslma_destructorproctor
 bslma_exceptionguard
+bslma_instrumentedallocator
 bslma_mallocfreeallocator
 bslma_newdeleteallocator
 bslma_rawdeleterguard
