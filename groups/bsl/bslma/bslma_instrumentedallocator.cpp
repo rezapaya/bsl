@@ -12,32 +12,41 @@ namespace bslma {
 namespace {
 
 const Allocator::size_type offset =  bsls::AlignmentUtil::BSLS_MAX_ALIGNMENT;
-const Allocator::size_type MATCHING_NUMBER = 0xFEEDF00D; // magic number
+const Allocator::size_type matchingNumber = 0xFEEDF00D; // magic number
 
 }  // close unnamed namespace
 
 // MANIPULATORS
 void *InstrumentedAllocator::allocate(size_type size)
 {
+    if (0 == size) {
+        return 0;                                                     // RETURN
+    }
+
     // Rounding of size for best alignment.
-    size_type paddedSize = bsls::AlignmentUtil::roundUpToMaximalAlignment(size);
+    
+    size_type paddedSize = 
+                          bsls::AlignmentUtil::roundUpToMaximalAlignment(size);
 
     // Adding some memory for metadata (size and matching number).
+
     size_type totalSize = paddedSize + 2*offset;
 
     void *address = d_allocator_p->allocate(totalSize);  // can throw
 
     size_type *matchingNum    = static_cast<size_type *>(address);
     size_type *allocatedSize  = reinterpret_cast<size_type *>
-                                (static_cast<char *>(address) + offset);
+                                       (static_cast<char *>(address) + offset);
     void *returnBlock         = static_cast<char *>(address) + 2*offset;
 
     // Update the number of bytes allocated.
+
     d_numBytesInUse += size;
     d_numBytesAllocated += size;
 
     // Set the metadata.
-    *matchingNum   = MATCHING_NUMBER;
+
+    *matchingNum   = matchingNumber;
     *allocatedSize = size;
 
     return returnBlock;
@@ -50,17 +59,21 @@ void InstrumentedAllocator::deallocate(void *address)
         size_type matchingNum =  *static_cast<size_type *>(address);
 
         // Making sure that address was returned by 'allocate'.
-        if (matchingNum != MATCHING_NUMBER) {
+
+        if (matchingNum != matchingNumber) {
             BSLS_ASSERT(0 && "'deallocate' called with invalid 'address'");
         }
+
         else {
             address = static_cast<char *>(address) + offset;
             size_type size  = *static_cast<size_type *>(address);
 
             // Double checking that you previously allocated this memory.
+
             BSLS_ASSERT(d_numBytesInUse >= size);
 
             // Update number of bytes in use
+
             d_numBytesInUse -= size;
 
             address = static_cast<char *>(address) - offset;

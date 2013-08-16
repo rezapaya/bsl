@@ -130,12 +130,13 @@ size_t alignmentFromSize(size_t size)
 
     // Loop postcondition: size >= maxAlignment or all but the highest bit of
     // size are cleared.
+
     ASSERT(size >= maxAlignment || (size & (size - 1)) == 0);
 
     return size >= maxAlignment ? maxAlignment : size;
 }
 
-}
+}  // close unnamed namespace
 
 // ============================================================================
 //                                USAGE EXAMPLE
@@ -358,7 +359,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         //
         // Concerns:
         //: 1 'deallocate' asserts on undefined behavior when the address
-        //:   passed to 'deallocate' wasn't originally returned by 'allocate'.
+        //:   passed to 'deallocate' was not originally returned by 'allocate'.
         //
         // Plan:
         //: 1 Pass an address to the local stack object to 'deallocate' and
@@ -372,7 +373,7 @@ ASSERT(inst.numBytesAllocated() == 56);
                           << endl;
 
         bsls::AssertFailureHandlerGuard guard(
-                                             &bsls::AssertTest::failTestDriver);
+                                            &bsls::AssertTest::failTestDriver);
 
         InstrumentedAllocator obj;
         void *correctAddress = obj.allocate(8);
@@ -515,7 +516,7 @@ ASSERT(inst.numBytesAllocated() == 56);
 
         InstrumentedAllocator obj;
         const InstrumentedAllocator& cobj = obj;
-        size_t allocationLimit = 0x1000;
+        const size_t allocationLimit = 0x1000;
         char * memoryBlocks[allocationLimit];
         size_t inUse = 0;
 
@@ -559,7 +560,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         //
         // Plan:
         //: 1 Use 'allocate()' to allocate memory blocks of different sizes
-        //:   and initilize that memory with some data.
+        //:   and initialize that memory with some data.
         //: 2 Use 'deallocate()' to deallocate memory allocated with
         //:   'allocate()'.
         //
@@ -573,8 +574,8 @@ ASSERT(inst.numBytesAllocated() == 56);
                           << endl;
 
         InstrumentedAllocator obj;
-        size_t allocationLimit = 0x1000;
-        char * memoryBlocks[allocationLimit];
+        const size_t allocationLimit = 0x1000;
+        char *memoryBlocks[allocationLimit];
 
         for (size_t n = 0; n != allocationLimit; ++n) {
             // allocate a memory block

@@ -14,7 +14,6 @@
 // the number of bytes that have been allocated and the number that were
 // allocated and are currently in use.  This allocator is thread-safe.  It
 // also provides a basic check for allocate/deallocate mismatches.
-//
 //..
 //  ,-----------------------------.
 // (  bslma::InstrumentedAllocator )
@@ -31,7 +30,7 @@
 //      `---------------------'
 //                               allocate
 //                               deallocate
-//
+//..
 ///Bytes Count
 ///-----------
 // The byte counts maintained by bslma::InstrumentedAllocator are set to 0 when
@@ -45,9 +44,8 @@
 ///-----
 // This section illustrates intended use of this component.
 //
-/// Example 1: Tracking the amount of dynamically allocated memory.
-/// ---------------------------------------------------------------
-//
+///Example 1: Tracking the amount of dynamically allocated memory.
+///---------------------------------------------------------------
 // In the following example, we demonstrate how the instrumented allocator is
 // used to know the amount of dynamic memory allocated by a container we will
 // create called my_DoubleStack.
@@ -239,7 +237,7 @@ class InstrumentedAllocator : public Allocator {
                           bslma::Allocator *basicAllocator = 0);
         // Create an instrumented allocator that keeps track of the number of
         // bytes that have been and are currently allocated.  This allocator
-        // will then be referred to as 'name' in print().  Optionally,
+        // will then be referred to as 'name' in 'print()'.  Optionally,
         // specify a 'basicAllocator' used to supply memory.  If
         // 'basicAllocator' is 0, the currently installed default allocator is
         // used.
@@ -251,10 +249,10 @@ class InstrumentedAllocator : public Allocator {
     // MANIPULATORS
     virtual void *allocate(size_type size);
         // Return a newly-allocated block of memory of the specified positive
-        // 'size' (in bytes).  If 'size' == 0, a pointer to a memory block of
-        // size = 1 is returned.  Otherwise, invoke the 'allocate' method of
-        // the allocator supplied at construction, increment the number of
-        // currently (and cumulatively) allocated bytes by 'size'.
+        // 'size' (in bytes).  If 'size' == 0, this function returns 0.  
+        // Otherwise, invoke the 'allocate' method of the allocator supplied at
+        // construction, increment the number of currently (and cumulatively) 
+        // allocated bytes by 'size'.
 
     virtual void deallocate(void *address);
         // Return the memory block at the specified 'address' back to this
@@ -262,8 +260,8 @@ class InstrumentedAllocator : public Allocator {
         // allocation/deallocation statistics).  Otherwise, if the memory at
         // 'address' is consistent with being allocated from this instrumented
         // allocator, decrement the number of currently allocated bytes by the
-        // size (in bytes) originally requested for this block.  The behavior is
-        // undefined unless 'address' was returned by 'allocate(size)'.
+        // size (in bytes) originally requested for this block.  The behavior 
+        // is undefined unless 'address' was returned by 'allocate(size)'.
 
     // ACCESSORS
     bsls::Types::Int64 numBytesInUse() const;
@@ -272,7 +270,7 @@ class InstrumentedAllocator : public Allocator {
 
     bsls::Types::Int64 numBytesAllocated() const;
         // Return the total number of bytes that were allocated by this
-        // allocator.  Note that numBytesInUse() <= numBytesAllocated().
+        // allocator.  Note that 'numBytesInUse()' <= 'numBytesAllocated()'.
 
     const char *name() const;
         // Return the name of the allocator given to it at construction.  If
@@ -349,9 +347,9 @@ OutputStream& InstrumentedAllocator::print(OutputStream& stream,
     stream << "--------------------------------------------------------\n"
            << "            InstrumentedAllocator Statistics            \n"
            << "--------------------------------------------------------\n"
-           <<  "Name: "                  << name()                 << "\n"
-           <<  "Bytes in use: "          << numBytesInUse()        << "\n"
-           <<  "Total bytes allocated: " << numBytesAllocated()    << "\n";
+           << "Name: "                  << name()                  << "\n"
+           << "Bytes in use: "          << numBytesInUse()         << "\n"
+           << "Total bytes allocated: " << numBytesAllocated()     << "\n";
 
     return stream;
 }
