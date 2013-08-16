@@ -42,9 +42,10 @@ using namespace bslma;
 //
 // [ 5] alignment of allocated memory
 // [ 6] negative testing for 'deallocate'
+// [ 8] deallocate/allocate null test
 // ----------------------------------------------------------------------------
 // [ 1] BREATHING TEST
-// [ 8] USAGE EXAMPLE
+// [ 9] USAGE EXAMPLE
 // ----------------------------------------------------------------------------
 
 // ============================================================================
@@ -266,7 +267,7 @@ int main(int argc, char *argv[])
     bool veryVerbose = argc > 3;
 
     switch (test) { case 0:
-      case 8: {
+      case 9: {
         // --------------------------------------------------------------------
         // USAGE EXAMPLE
         //   Extracted from component header file.
@@ -306,6 +307,45 @@ stack.push(3);
 ASSERT(inst.numBytesInUse() == 32);
 ASSERT(inst.numBytesAllocated() == 56);
 
+      } break;
+	  case 8: {
+		// --------------------------------------------------------------------
+		// ALLOCATE / DEALLOCATE NULL TEST
+		//	 Testing the deallocation/deallocation of 0.
+		//
+		// Concerns:
+		//: 1 That invoking 'allocate()' with 0 size and 'deallocate()' on 0
+		//:	  address succeeds.
+		//
+		// Plan:
+		//: 1 Create a 'InstrumentedAllocator' on the stack.  Then invoke
+		//:	  'allocate()' with 0 size and 'deallocate()' on 0 address.
+		//
+		// Testing:
+		//	 void *allocate(size_type size)	  // allocate 0
+		//	 void deallocate(void *address)	  // deallocate 0
+		// --------------------------------------------------------------------
+
+		if (verbose) cout << endl << "ALLOCATE / DEALLCOATE NULL TEST"
+						  << endl << "==============================="
+						  << endl;
+
+		// With page after return block being protected
+
+		{
+			if (verbose) cout << endl << "Creating allocator" << endl;
+
+			InstrumentedAllocator obj;
+
+			if (verbose) cout << endl << "Testing allocate 0" << endl;
+
+			void *address = obj.allocate(0);
+			ASSERT(0 == address);
+
+			if (verbose) cout << endl << "Testing deallocate 0" << endl;
+
+			obj.deallocate(address);
+		}
       } break;
       case 7: {
         // -----------------------------------------------------------------
@@ -520,7 +560,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         char * memoryBlocks[allocationLimit];
         size_t inUse = 0;
 
-        for (size_t n = 0; n != allocationLimit; ++n) {
+        for (size_t n = 1; n != allocationLimit; ++n) {
             // allocate a memory block
             memoryBlocks[n] = static_cast<char *>(obj.allocate(n));
             ASSERT(memoryBlocks[n] != NULL);
@@ -534,7 +574,7 @@ ASSERT(inst.numBytesAllocated() == 56);
 
         // deallocate memory blocks
         size_t total = inUse;
-        for (size_t n = 0; n != allocationLimit; ++n) {
+        for (size_t n = 1; n != allocationLimit; ++n) {
             obj.deallocate(memoryBlocks[n]);
 
             inUse -= n;
@@ -577,7 +617,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         const size_t allocationLimit = 0x1000;
         char *memoryBlocks[allocationLimit];
 
-        for (size_t n = 0; n != allocationLimit; ++n) {
+        for (size_t n = 1; n != allocationLimit; ++n) {
             // allocate a memory block
             memoryBlocks[n] = static_cast<char *>(obj.allocate(n));
             ASSERT(memoryBlocks[n] != NULL);
