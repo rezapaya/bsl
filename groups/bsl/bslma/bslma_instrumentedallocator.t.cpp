@@ -1,7 +1,9 @@
 // bslma_instrumentedallocator.t.cpp                                  -*-C++-*-
 #include <bslma_instrumentedallocator.h>
+
 #include <bsls_alignmentutil.h>
 #include <bsls_asserttest.h>
+
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -308,44 +310,44 @@ ASSERT(inst.numBytesInUse() == 32);
 ASSERT(inst.numBytesAllocated() == 56);
 
       } break;
-	  case 8: {
-		// --------------------------------------------------------------------
-		// ALLOCATE / DEALLOCATE NULL TEST
-		//	 Testing the deallocation/deallocation of 0.
-		//
-		// Concerns:
-		//: 1 That invoking 'allocate()' with 0 size and 'deallocate()' on 0
-		//:	  address succeeds.
-		//
-		// Plan:
-		//: 1 Create a 'InstrumentedAllocator' on the stack.  Then invoke
-		//:	  'allocate()' with 0 size and 'deallocate()' on 0 address.
-		//
-		// Testing:
-		//	 void *allocate(size_type size)	  // allocate 0
-		//	 void deallocate(void *address)	  // deallocate 0
-		// --------------------------------------------------------------------
+      case 8: {
+        // --------------------------------------------------------------------
+        // ALLOCATE / DEALLOCATE NULL TEST
+        //   Testing the deallocation/deallocation of 0.
+        //
+        // Concerns:
+        //: 1 That invoking 'allocate()' with 0 size and 'deallocate()' on 0
+        //:   address succeeds.
+        //
+        // Plan:
+        //: 1 Create a 'InstrumentedAllocator' on the stack.  Then invoke
+        //:   'allocate()' with 0 size and 'deallocate()' on 0 address.
+        //
+        // Testing:
+        //   void *allocate(size_type size)   // allocate 0
+        //   void deallocate(void *address)   // deallocate 0
+        // --------------------------------------------------------------------
 
-		if (verbose) cout << endl << "ALLOCATE / DEALLCOATE NULL TEST"
-						  << endl << "==============================="
-						  << endl;
+        if (verbose) cout << endl << "ALLOCATE / DEALLCOATE NULL TEST"
+                          << endl << "==============================="
+                          << endl;
 
-		// With page after return block being protected
+        // With page after return block being protected
 
-		{
-			if (verbose) cout << endl << "Creating allocator" << endl;
+        {
+            if (verbose) cout << endl << "Creating allocator" << endl;
 
-			InstrumentedAllocator obj;
+            InstrumentedAllocator obj;
 
-			if (verbose) cout << endl << "Testing allocate 0" << endl;
+            if (verbose) cout << endl << "Testing allocate 0" << endl;
 
-			void *address = obj.allocate(0);
-			ASSERT(0 == address);
+            void *address = obj.allocate(0);
+            ASSERT(0 == address);
 
-			if (verbose) cout << endl << "Testing deallocate 0" << endl;
+            if (verbose) cout << endl << "Testing deallocate 0" << endl;
 
-			obj.deallocate(address);
-		}
+            obj.deallocate(address);
+        }
       } break;
       case 7: {
         // -----------------------------------------------------------------

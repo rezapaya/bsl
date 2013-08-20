@@ -23,7 +23,6 @@
 //                 |             print
 //                 |             name
 //                 |             ctor/dtor
-//                 |
 //                 V
 //      ,---------------------.
 //     (   bslma::Allocator    )
@@ -220,9 +219,6 @@ class InstrumentedAllocator : public Allocator {
     bslma::Allocator *d_allocator_p;       // memory allocator (held,not owned)
 
   public:
-    // TYPES
-    typedef Allocator::size_type size_type;
-
     // CREATORS
     explicit
     InstrumentedAllocator(bslma::Allocator *basicAllocator = 0);
