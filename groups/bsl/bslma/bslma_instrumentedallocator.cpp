@@ -4,7 +4,6 @@
 #include <bsls_alignmentutil.h>
 
 namespace BloombergLP {
-
 namespace bslma {
 
                         // ---------------------------
@@ -24,12 +23,12 @@ void *InstrumentedAllocator::allocate(size_type size)
         return 0;                                                     // RETURN
     }
 
-    // Rounding of size for best alignment.
+    // Rounding of size for best alignment
     
     size_type paddedSize = 
                           bsls::AlignmentUtil::roundUpToMaximalAlignment(size);
 
-    // Adding some memory for metadata (size and matching number).
+    // Adding some memory for metadata (size and matching number)
 
     size_type totalSize = paddedSize + 2*offset;
 
@@ -40,12 +39,12 @@ void *InstrumentedAllocator::allocate(size_type size)
                                        (static_cast<char *>(address) + offset);
     void *returnBlock         = static_cast<char *>(address) + 2*offset;
 
-    // Update the number of bytes allocated.
+    // Update the number of bytes allocated
 
-    d_numBytesInUse += size;
     d_numBytesAllocated += size;
+    d_numBytesInUse += size;
 
-    // Set the metadata.
+    // Set the metadata
 
     *matchingNum   = matchingNumber;
     *allocatedSize = size;
@@ -59,7 +58,7 @@ void InstrumentedAllocator::deallocate(void *address)
         address = static_cast<char *>(address) - 2*offset;
         size_type matchingNum =  *static_cast<size_type *>(address);
 
-        // Making sure that address was returned by 'allocate'.
+        // Making sure that address was returned by 'allocate'
 
         if (matchingNum != matchingNumber) {
             BSLS_ASSERT(0 && "'deallocate' called with invalid 'address'");
@@ -69,7 +68,7 @@ void InstrumentedAllocator::deallocate(void *address)
             address = static_cast<char *>(address) + offset;
             size_type size  = *static_cast<size_type *>(address);
 
-            // Double checking that you previously allocated this memory.
+            // Double checking that you previously allocated this memory
 
             BSLS_ASSERT(d_numBytesInUse >= size);
 

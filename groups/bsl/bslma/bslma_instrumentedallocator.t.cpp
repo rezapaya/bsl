@@ -3,12 +3,12 @@
 
 #include <bsls_alignmentutil.h>
 #include <bsls_asserttest.h>
+#include <bsls_bsltestutil.h>
 
 #include <iostream>
 #include <sstream>
 
 using namespace BloombergLP;
-using namespace std;
 using namespace bslma;
 
 // ============================================================================
@@ -48,67 +48,52 @@ using namespace bslma;
 // [ 9] USAGE EXAMPLE
 // ----------------------------------------------------------------------------
 
-// ============================================================================
-//                      STANDARD BDE ASSERT TEST MACROS
-// ----------------------------------------------------------------------------
-
+//=============================================================================
+//                  STANDARD BDE ASSERT TEST MACRO
+//-----------------------------------------------------------------------------
+// NOTE: THIS IS A LOW-LEVEL COMPONENT AND MAY NOT USE ANY C++ LIBRARY
+// FUNCTIONS, INCLUDING IOSTREAMS.
 static int testStatus = 0;
 
-static void aSsErT(int c, const char *s, int i)
+static void aSsErT(bool b, const char *s, int i) 
 {
-    if (c) {
-        cout << "Error " << __FILE__ << "(" << i << "): " << s
-                  << "    (failed)" << endl;
+    if (b) {
+        printf("Error " __FILE__ "(%d): %s    (failed)\n", i, s);
         if (testStatus >= 0 && testStatus <= 100) ++testStatus;
     }
 }
 
-#define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
+//=============================================================================
+//                       STANDARD BDE TEST DRIVER MACROS
+//-----------------------------------------------------------------------------
+
+#define ASSERT       BSLS_BSLTESTUTIL_ASSERT
+#define LOOP_ASSERT  BSLS_BSLTESTUTIL_LOOP_ASSERT
+#define LOOP0_ASSERT BSLS_BSLTESTUTIL_LOOP0_ASSERT
+#define LOOP1_ASSERT BSLS_BSLTESTUTIL_LOOP1_ASSERT
+#define LOOP2_ASSERT BSLS_BSLTESTUTIL_LOOP2_ASSERT
+#define LOOP3_ASSERT BSLS_BSLTESTUTIL_LOOP3_ASSERT
+#define LOOP4_ASSERT BSLS_BSLTESTUTIL_LOOP4_ASSERT
+#define LOOP5_ASSERT BSLS_BSLTESTUTIL_LOOP5_ASSERT
+#define LOOP6_ASSERT BSLS_BSLTESTUTIL_LOOP6_ASSERT
+#define ASSERTV      BSLS_BSLTESTUTIL_ASSERTV
+
+#define Q   BSLS_BSLTESTUTIL_Q   // Quote identifier literally.
+#define P   BSLS_BSLTESTUTIL_P   // Print identifier and value.
+#define P_  BSLS_BSLTESTUTIL_P_  // P(X) without '\n'.
+#define T_  BSLS_BSLTESTUTIL_T_  // Print a tab (w/o newline).
+#define L_  BSLS_BSLTESTUTIL_L_  // current Line number
 
 // ============================================================================
-//                   STANDARD BDE LOOP-ASSERT TEST MACROS
+//                  NEGATIVE-TEST MACRO ABBREVIATIONS
 // ----------------------------------------------------------------------------
 
-#define LOOP_ASSERT(I,X) {                                                    \
-    if (!(X)) { cout << #I << ": " << I << "\n"; aSsErT(1, #X, __LINE__);}}
-
-#define LOOP2_ASSERT(I,J,X) {                                                 \
-    if (!(X)) { cout << #I << ": " << I << "\t" << #J << ": "                 \
-              << J << "\n"; aSsErT(1, #X, __LINE__); } }
-
-#define LOOP3_ASSERT(I,J,K,X) {                                               \
-   if (!(X)) { cout << #I << ": " << I << "\t" << #J << ": " << J << "\t"     \
-              << #K << ": " << K << "\n"; aSsErT(1, #X, __LINE__); } }
-
-#define LOOP4_ASSERT(I,J,K,L,X) {                                             \
-   if (!(X)) { cout << #I << ": " << I << "\t" << #J << ": " << J << "\t" <<  \
-       #K << ": " << K << "\t" << #L << ": " << L << "\n";                    \
-       aSsErT(1, #X, __LINE__); } }
-
-#define LOOP5_ASSERT(I,J,K,L,M,X) {                                           \
-   if (!(X)) { cout << #I << ": " << I << "\t" << #J << ": " << J << "\t" <<  \
-       #K << ": " << K << "\t" << #L << ": " << L << "\t" <<                  \
-       #M << ": " << M << "\n";                                               \
-       aSsErT(1, #X, __LINE__); } }
-
-// ============================================================================
-//                     SEMI-STANDARD TEST OUTPUT MACROS
-// ----------------------------------------------------------------------------
-
-#define P(X) cout << #X " = " << (X) << endl; // Print identifier and value.
-#define Q(X) cout << "<| " #X " |>" << endl;  // Quote identifier literally.
-#define P_(X) cout << #X " = " << (X) << ", " << flush; // 'P(X)' without '\n'
-#define T_ cout << "\t" << flush;             // Print tab w/o newline.
-#define L_ __LINE__                           // current Line number
-
-// ============================================================================
-//                     NEGATIVE-TEST MACRO ABBREVIATIONS
-// ----------------------------------------------------------------------------
-
-#define ASSERT_FAIL(expr) BSLS_ASSERTTEST_ASSERT_FAIL(expr)
-#define ASSERT_PASS(expr) BSLS_ASSERTTEST_ASSERT_PASS(expr)
-#define ASSERT_SAFE_FAIL(expr) BSLS_ASSERTTEST_ASSERT_SAFE_FAIL(expr)
-#define ASSERT_SAFE_PASS(expr) BSLS_ASSERTTEST_ASSERT_SAFE_PASS(expr)
+#define ASSERT_SAFE_PASS(EXPR) BSLS_ASSERTTEST_ASSERT_SAFE_PASS(EXPR)
+#define ASSERT_SAFE_FAIL(EXPR) BSLS_ASSERTTEST_ASSERT_SAFE_FAIL(EXPR)
+#define ASSERT_PASS(EXPR)      BSLS_ASSERTTEST_ASSERT_PASS(EXPR)
+#define ASSERT_FAIL(EXPR)      BSLS_ASSERTTEST_ASSERT_FAIL(EXPR)
+#define ASSERT_OPT_PASS(EXPR)  BSLS_ASSERTTEST_ASSERT_OPT_PASS(EXPR)
+#define ASSERT_OPT_FAIL(EXPR)  BSLS_ASSERTTEST_ASSERT_OPT_FAIL(EXPR)
 
 // ============================================================================
 //                           TEST HELPER FUNCTIONS
@@ -152,24 +137,27 @@ size_t alignmentFromSize(size_t size)
 //
 // In the following example, we demonstrate how the instrumented allocator is
 // used to know the amount of dynamic memory allocated by a container we will
-// create called my_DoubleStack.
+// create called DoubleStack.
 
-class my_DoubleStack {
+class DoubleStack {
   private:
+    // NOT IMPLEMENTED
+    DoubleStack(const DoubleStack&, bslma::Allocator);
+
     // DATA
     enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
 
-    double                       *d_stack_p;     // dynamically allocated array
-                                                 // (d_size elements)
+    double           *d_stack_p;     // dynamically allocated array
+                                     // (d_capacity elements)
 
-    int                           d_size;        // physical capacity of this
-                                                 // stack (in elements)
+    int               d_capacity;    // physical capacity of this stack
+                                     // (in elements)
 
-    int                           d_length;      // logical index of next
-                                                 // available stack element
+    int               d_length;      // logical index of next
+                                     // available stack element
 
-    bslma::Allocator             *d_allocator_p; // holds (but doesn't own)
-                                                 // object
+    bslma::Allocator *d_allocator_p; // holds (but doesn't own)
+                                     // object
 
     // PRIVATE MANIPULATORS
     void increaseSize();
@@ -178,43 +166,48 @@ class my_DoubleStack {
   public:
     // CREATORS
     explicit
-    my_DoubleStack(bslma::Allocator *basicAllocator = 0);
+    DoubleStack(bslma::Allocator *basicAllocator = 0);
+        // Create a stack for doubles.   Optionally, specify a
+        // 'basicAllocator' used to supply memory.  If 'basicAllocator' is
+        // 0, the currently installed default allocator is used.
 
-    my_DoubleStack(const my_DoubleStack& original,
-                   bslma::Allocator     *basicAllocator = 0);
-
-    ~my_DoubleStack();
+    ~DoubleStack();
+        // Delete this object.
 
     // MANIPULATORS
     void push(double value);
+        // Add 'value' to the top of the stack.
+
     void pop();
+        // Remove the element at the top of the stack.
 };
 
-my_DoubleStack::my_DoubleStack(bslma::Allocator *basicAllocator)
-: d_size(INITIAL_SIZE)
+DoubleStack::DoubleStack(bslma::Allocator *basicAllocator)
+: d_capacity(INITIAL_SIZE)
 , d_length(0)
 , d_allocator_p(bslma::Default::allocator(basicAllocator))
 {
     ASSERT(d_allocator_p);
-    d_stack_p = (double *) d_allocator_p->allocate(d_size * sizeof *d_stack_p);
+    d_stack_p = (double *) 
+                       d_allocator_p->allocate(d_capacity * sizeof *d_stack_p);
 }
 
 inline
-my_DoubleStack::~my_DoubleStack()
+DoubleStack::~DoubleStack()
 {
     // CLASS INVARIANTS
     ASSERT(d_allocator_p);
     ASSERT(d_stack_p);
     ASSERT(0 <= d_length);
-    ASSERT(0 <= d_size);
-    ASSERT(d_length <= d_size);
+    ASSERT(0 <= d_capacity);
+    ASSERT(d_length <= d_capacity);
 
     d_allocator_p->deallocate(d_stack_p);
 }
 
-void my_DoubleStack::push(double value)
+void DoubleStack::push(double value)
 {
-    if (d_length >= d_size) {
+    if (d_length >= d_capacity) {
         increaseSize();
     }
     d_stack_p[d_length++] = value;
@@ -247,13 +240,13 @@ void reallocate(double          **array,
     basicAllocator->deallocate(tmp);
 }
 
-void my_DoubleStack::increaseSize()
+void DoubleStack::increaseSize()
 {
-    int proposedNewSize = d_size * GROW_FACTOR; // reallocate can throw
+    int proposedNewSize = d_capacity * GROW_FACTOR; // reallocate can throw
 
     ASSERT(proposedNewSize > d_length);
     reallocate(&d_stack_p, proposedNewSize, d_length, d_allocator_p);
-    d_size = proposedNewSize;                   // we're committed
+    d_capacity = proposedNewSize;                   // we're committed
 }
 
 // ============================================================================
@@ -284,14 +277,14 @@ int main(int argc, char *argv[])
         //   USAGE EXAMPLE
         // --------------------------------------------------------------------
 
-        if (verbose) cout << endl << "USAGE TEST" << endl
-                                  << "==========" << endl;
+        if (verbose) printf("\nUSAGE EXAMPLE"
+                            "\n=============\n");
 
 // InstrumentedAllocator can be passed into the object and we can then see
 // how the object is allocating memory.
 
 InstrumentedAllocator inst("DoubleStack Allocator");
-my_DoubleStack stack(&inst);
+DoubleStack stack(&inst);
 stack.push(1);
 
 ASSERT(inst.numBytesInUse() == 8);
@@ -314,35 +307,34 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   Testing the deallocation/deallocation of 0.
         //
         // Concerns:
-        //: 1 That invoking 'allocate()' with 0 size and 'deallocate()' on 0
+        //: 1 That invoking 'allocate' with 0 size and 'deallocate' on 0
         //:   address succeeds.
         //
         // Plan:
         //: 1 Create a 'InstrumentedAllocator' on the stack.  Then invoke
-        //:   'allocate()' with 0 size and 'deallocate()' on 0 address.
+        //:   'allocate' with 0 size and 'deallocate' on 0 address.
         //
         // Testing:
         //   void *allocate(size_type size)   // allocate 0
         //   void deallocate(void *address)   // deallocate 0
         // --------------------------------------------------------------------
-
-        if (verbose) cout << endl << "ALLOCATE / DEALLCOATE NULL TEST"
-                          << endl << "==============================="
-                          << endl;
+                     
+        if (verbose) printf("\nALLOCATE / DEALLCOATE NULL TEST"
+                            "\n===============================\n");
 
         // With page after return block being protected
 
         {
-            if (verbose) cout << endl << "Creating allocator" << endl;
+            if (verbose) printf("\nCreating allocator\n");
 
             InstrumentedAllocator obj;
 
-            if (verbose) cout << endl << "Testing allocate 0" << endl;
+            if (verbose) printf("\nTesting allocate 0\n");
 
             void *address = obj.allocate(0);
             ASSERT(0 == address);
 
-            if (verbose) cout << endl << "Testing deallocate 0" << endl;
+            if (verbose) printf("\nTesting deallocate 0\n");
 
             obj.deallocate(address);
         }
@@ -356,7 +348,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         //:   stream.
         //
         // Plan:
-        //: 1 Use 'allocate' to allocate some memory.  Then use 'print()' to
+        //: 1 Use 'allocate' to allocate some memory.  Then use 'print' to
         //:   print the allocator properties into the output 'stringstream' and
         //:   verify that the output matches what's expected.
         //
@@ -364,9 +356,8 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   print() const;
         // -----------------------------------------------------------------
 
-        if (verbose) cout << endl << "TESTING PRINT FUNCTION"
-                          << endl << "======================"
-                          << endl;
+        if (verbose) printf("\nTESTING PRINT FUNCTION"
+                            "\n======================\n");
 
         InstrumentedAllocator obj;
         const InstrumentedAllocator& cobj = obj;
@@ -375,10 +366,10 @@ ASSERT(inst.numBytesAllocated() == 56);
         void *address2 = obj.allocate(202);
         obj.deallocate(address2);
 
-        ostringstream out;
-        ostringstream& outRef = cobj.print(out);
+        std::ostringstream out;
+        std::ostringstream& outRef = cobj.print(out);
 
-        if (veryVerbose) cout << outRef.str() << endl;
+        if (veryVerbose) printf("%d", outRef.str());
 
         const char * expected =
             "--------------------------------------------------------\n"
@@ -408,9 +399,8 @@ ASSERT(inst.numBytesAllocated() == 56);
         //:   found.
         // -------------------------------------------------------------------
 
-        if (verbose) cout << endl << "NEGATIVE TESTING DEALLOCATE"
-                          << endl << "==========================="
-                          << endl;
+        if (verbose) printf("\nNEGATIVE TESTING DEALLOCATE"
+                            "\n===========================\n");
 
         bsls::AssertFailureHandlerGuard guard(
                                             &bsls::AssertTest::failTestDriver);
@@ -425,12 +415,12 @@ ASSERT(inst.numBytesAllocated() == 56);
 
         ASSERT(obj.numBytesInUse() == 8);
 
-        if (verbose) obj.print(cout);
+        if (verbose) obj.print(std::cout);
         ASSERT_PASS(obj.deallocate(correctAddress));
 
         ASSERT(obj.numBytesInUse() == 0);
 
-        if (verbose) obj.print(cout);
+        if (verbose) obj.print(std::cout);
 
       } break;
       case 5: {
@@ -451,9 +441,8 @@ ASSERT(inst.numBytesAllocated() == 56);
         //:   by comparing the alignment with the strict alignment algorithm.
         // -----------------------------------------------------------------
 
-        if (verbose) cout << endl << "TESTING MEMORY ALIGNMENT"
-                          << endl << "========================"
-                          << endl;
+        if (verbose) printf("\nTESTING MEMORY ALIGNMENT"
+                            "\n========================\n");
 
         InstrumentedAllocator obj("alignment");
 
@@ -478,14 +467,14 @@ ASSERT(inst.numBytesAllocated() == 56);
         //: 1 Allocator is constructed correctly when given a name on
         //:   construction.
         //:
-        //: 2 'name()' returns the name of the allocator passed to it's
+        //: 2 'name' returns the name of the allocator passed to it's
         //:   constructor.
         //
         // Plan:
         //: 1 Construct an instrumented allocator with a constructor taking a
         //:   name parameter.
         //:
-        //: 2 Use 'name()' and verify that its output is what we expect.
+        //: 2 Use 'name' and verify that its output is what we expect.
         //
         // Testing:
         //   bslma::InstrumentedAllocator(const char*       name,
@@ -493,11 +482,10 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   const char *name() const;
         // --------------------------------------------------------------------
 
-        if (verbose) cout << endl << "TEST NAMED CONSTRUCTOR AND NAME ACCESS"
-                          << endl << "======================================"
-                          << endl;
+        if (verbose) printf("\nTEST NAMED CONSTRUCTOR AND NAME ACCESS"
+                            "\n======================================\n");
 
-        if (veryVerbose) cout << "\tWith an empty name" << endl;
+        if (veryVerbose) printf("\tWith an empty name\n");
 
         {
             const char *NAME   = "";
@@ -510,7 +498,7 @@ ASSERT(inst.numBytesAllocated() == 56);
             ASSERT(0 == std::strcmp(NAME, obj.name()));
         }
 
-        if (veryVerbose) cout << "\tWith a non-empty name" << endl;
+        if (veryVerbose) printf("\tWith a non-empty name\n");
 
         {
             const char *NAME   = "Test Name";
@@ -531,7 +519,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         //
         // Concerns:
         //: 1 'numBytesInUse' returns the amount of currently alive memory
-        //:   allocated with 'allocate()' function.
+        //:   allocated with 'allocate' function.
         //: 2 'numBytesAllocated' returns the maximum amount of memory
         //:   allocated with 'allocate' function.
         //
@@ -550,9 +538,8 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   numBytesAllocated() const;
         // ------------------------------------------------------------------
 
-        if (verbose) cout << endl << "TESTING ACCESSORS"
-                          << endl << "================="
-                          << endl;
+        if (verbose) printf("\nTESTING ACCESSORS"
+                            "\n=================\n");
 
         InstrumentedAllocator obj;
         const InstrumentedAllocator& cobj = obj;
@@ -570,7 +557,7 @@ ASSERT(inst.numBytesAllocated() == 56);
             ASSERT(cobj.numBytesAllocated() == inUse);
         }
 
-        if (veryVerbose) obj.print(cout);
+        if (veryVerbose) obj.print(std::cout);
 
         // deallocate memory blocks
         size_t total = inUse;
@@ -593,25 +580,24 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   'InstrumentedAllocator'.
         //
         // Concerns:
-        //: 1 Allocating memory with 'allocate()' returns valid memory blocks
+        //: 1 Allocating memory with 'allocate' returns valid memory blocks
         //:   that can be read and written to.
         //: 2 Memory blocks allocated with 'allocate() can be deallocated
-        //:   with 'deallocate()'
+        //:   with 'deallocate'
         //
         // Plan:
-        //: 1 Use 'allocate()' to allocate memory blocks of different sizes
+        //: 1 Use 'allocate' to allocate memory blocks of different sizes
         //:   and initialize that memory with some data.
-        //: 2 Use 'deallocate()' to deallocate memory allocated with
-        //:   'allocate()'.
+        //: 2 Use 'deallocate' to deallocate memory allocated with
+        //:   'allocate'.
         //
         // Testing:
         //   void *allocate(size_type size);
         //   void deallocate(void *address);
         // ------------------------------------------------------------------
 
-        if (verbose) cout << endl << "TESTING ALLOCATE AND DEALLOCATE"
-                          << endl << "==============================="
-                          << endl;
+        if (verbose) printf("\nTESTING ALLOCATE AND DEALLOCATE"
+                            "\n===============================\n");
 
         InstrumentedAllocator obj;
         const size_t allocationLimit = 0x1000;
@@ -629,7 +615,7 @@ ASSERT(inst.numBytesAllocated() == 56);
             }
         }
 
-        if (veryVerbose) obj.print(cout);
+        if (veryVerbose) obj.print(std::cout);
 
         // deallocate memory blocks
         for (size_t n = 0; n != allocationLimit; ++n) {
@@ -649,8 +635,9 @@ ASSERT(inst.numBytesAllocated() == 56);
         // Testing:
         //   BREATHING TEST
         // --------------------------------------------------------------------
-        if (verbose) cout << endl << "BASIC TEST" << endl
-                                  << "==========" << endl;
+
+        if (verbose) printf("\nBASIC TEST"
+                            "\n==========\n");
 
         {
             // empty object
@@ -658,11 +645,11 @@ ASSERT(inst.numBytesAllocated() == 56);
             ASSERT(obj.numBytesInUse() == 0);
             ASSERT(obj.numBytesAllocated() == 0);
 
-            if (verbose) obj.print(cout);
+            if (verbose) obj.print(std::cout);
 
             void *address = obj.allocate(16);
 
-            if (verbose) obj.print(cout);
+            if (verbose) obj.print(std::cout);
 
             obj.deallocate(address);
         }
@@ -684,7 +671,7 @@ ASSERT(inst.numBytesAllocated() == 56);
             obj.deallocate(add1);
             obj.deallocate(add2);
 
-            if (verbose) obj.print(cout);
+            if (verbose) obj.print(std::cout);
 
             ASSERT(obj.numBytesInUse() == 32);
             ASSERT(obj.numBytesAllocated() == 56);
@@ -695,7 +682,7 @@ ASSERT(inst.numBytesAllocated() == 56);
             ASSERT(obj.numBytesInUse() == 88);
             ASSERT(obj.numBytesAllocated() == 112);
 
-            if (verbose) obj.print(cout);
+            if (verbose) obj.print(std::cout);
 
             obj.deallocate(add5);
             obj.deallocate(add6);
@@ -704,7 +691,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         }
       } break;
       default: {
-          cerr << "WARNING: CASE " << test << " NOT FOUND.\n";
+          printf("WARNING: CASE %d NOT FOUND.\n", test);
         testStatus = -1;
       }
     }

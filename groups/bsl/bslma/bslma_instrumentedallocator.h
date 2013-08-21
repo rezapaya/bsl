@@ -12,7 +12,7 @@
 //@DESCRIPTION: This component provides a special-purpose instrumented
 // allocator that implements the bslma::Allocator protocol.  It keeps track of
 // the number of bytes that have been allocated and the number that were
-// allocated and are currently in use.  This allocator is thread-safe.  It
+// allocated and are currently in use.  This allocator is thread-aware.  It
 // also provides a basic check for allocate/deallocate mismatches.
 //..
 //  ,-----------------------------.
@@ -30,14 +30,14 @@
 //                               allocate
 //                               deallocate
 //..
-///Bytes Count
+///Counting Bytes
 ///-----------
 // The byte counts maintained by bslma::InstrumentedAllocator are set to 0 when
-// constructed and increase with each call to 'allocate(size)' by 'size'.
+// constructed and increase with each call to 'allocate' by 'size'.
 // Each call to deallocate decreases the numByteInUse by the same amount by
 // which the byte count was increased on the matching allocate call.  The
-// number of currently used bytes is returned by numBytesInUse() and the total
-// number of bytes that were allocated is returned by numBytesAllocated().
+// number of currently used bytes is returned by 'numBytesInUse' and the total
+// number of bytes that were allocated is returned by 'numBytesAllocated'.
 //
 ///Usage
 ///-----
@@ -47,17 +47,20 @@
 ///---------------------------------------------------------------
 // In the following example, we demonstrate how the instrumented allocator is
 // used to know the amount of dynamic memory allocated by a container we will
-// create called my_DoubleStack.
+// create called 'DoubleStack'.
 //..
-//  class my_DoubleStack {
+//  class DoubleStack {
 //    private:
+//      // NOT IMPLEMENTED
+//      DoubleStack(const DoubleStack&, bslma::Allocator);
+//
 //      // DATA
 //      enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
 //
 //      double           *d_stack_p;     // dynamically allocated array
-//                                       // (d_size elements)
+//                                       // (d_capacity elements)
 //
-//      int               d_size;        // physical capacity of this stack
+//      int               d_capacity;    // physical capacity of this stack
 //                                       // (in elements)
 //
 //      int               d_length;      // logical index of next
@@ -73,44 +76,48 @@
 //    public:
 //      // CREATORS
 //      explicit
-//      my_DoubleStack(bslma::Allocator *basicAllocator = 0);
+//      DoubleStack(bslma::Allocator *basicAllocator = 0);
+//          // Create a stack for doubles.   Optionally, specify a 
+//          // 'basicAllocator' used to supply memory.  If 'basicAllocator' is
+//          // 0, the currently installed default allocator is used.
 //
-//      my_DoubleStack(const my_DoubleStack& original,
-//                     bslma::Allocator     *basicAllocator = 0);
-//
-//      ~my_DoubleStack();
+//      ~DoubleStack();
+//          // Delete this object.
 //
 //      // MANIPULATORS
 //      void push(double value);
+//          // Add 'value' to the top of the stack.
+//
 //      void pop();
+//          // Remove the element at the top of the stack.
 //  };
 //
-//  my_DoubleStack::my_DoubleStack(bslma::Allocator *basicAllocator)
-//  : d_size(INITIAL_SIZE)
+//  DoubleStack::DoubleStack(bslma::Allocator *basicAllocator)
+//  : d_capacity(INITIAL_SIZE)
 //  , d_length(0)
 //  , d_allocator_p(bslma::Default::allocator(basicAllocator))
 //  {
 //      assert(d_allocator_p);
 //      d_stack_p = (double *)
-//                      d_allocator_p->allocate(d_size * sizeof *d_stack_p);
+//                     d_allocator_p->allocate(d_capacity * sizeof *d_stack_p);
 //  }
 //
-//  my_DoubleStack::~my_DoubleStack()
+//  DoubleStack::~DoubleStack()
 //  {
 //      // CLASS INVARIANTS
 //      assert(d_allocator_p);
 //      assert(d_stack_p);
 //      assert(0 <= d_length);
-//      assert(0 <= d_size);
-//      assert(d_length <= d_size);
+//      assert(0 <= d_capacity);
+//      assert(d_length <= d_capacity);
 //
 //      d_allocator_p->deallocate(d_stack_p);
 //  }
 //
 //  inline
-//  void my_DoubleStack::push(double value)
+//  void DoubleStack::push(double value)
 //  {
-//      if (d_length >= d_size) {
+//      if (d_length >= d_capacity) {
 //          increaseSize();
 //      }
 //      d_stack_p[d_length++] = value;
@@ -126,7 +133,7 @@
 //      // 'length' number of leading elements are preserved.  Since the
 //      //  class invariant requires that the physical capacity of the
 //      // container may grow but never shrink; the behavior is undefined
-//      // unless length <= newSize.
+//      // unless 'length' <= 'newSize'.
 //  {
 //      assert(array);
 //      assert(1 <= newSize);
@@ -143,20 +150,20 @@
 //      basicAllocator->deallocate(tmp);
 //  }
 //
-//  void my_DoubleStack::increaseSize()
+//  void DoubleStack::increaseSize()
 //  {
-//      int proposedNewSize = d_size * GROW_FACTOR; // reallocate can throw
+//      int proposedNewSize = d_capacity * GROW_FACTOR; // reallocate can throw
 //
 //      assert(proposedNewSize > d_length);
 //      reallocate(&d_stack_p, proposedNewSize, d_length, d_allocator_p);
-//      d_size = proposedNewSize;                   // we're committed
+//      d_capacity = proposedNewSize;                   // we're committed
 //  }
 //..
 // Now, InstrumentedAllocator can be passed into the object and we can then see
 // how the object is allocating memory.
 //..
 //  InstrumentedAllocator inst("DoubleStack Allocator");
-//  my_DoubleStack stack(&inst);
+//  DoubleStack stack(&inst);
 //  stack.push(1);
 //
 //  assert(inst.numBytesInUse() == 8);
@@ -233,7 +240,7 @@ class InstrumentedAllocator : public Allocator {
                           bslma::Allocator *basicAllocator = 0);
         // Create an instrumented allocator that keeps track of the number of
         // bytes that have been and are currently allocated.  This allocator
-        // will then be referred to as 'name' in 'print()'.  Optionally,
+        // will then be referred to as 'name' in 'print'.  Optionally,
         // specify a 'basicAllocator' used to supply memory.  If
         // 'basicAllocator' is 0, the currently installed default allocator is
         // used.
@@ -245,28 +252,26 @@ class InstrumentedAllocator : public Allocator {
     // MANIPULATORS
     virtual void *allocate(size_type size);
         // Return a newly-allocated block of memory of the specified positive
-        // 'size' (in bytes).  If 'size' == 0, this function returns 0.  
-        // Otherwise, invoke the 'allocate' method of the allocator supplied at
-        // construction, increment the number of currently (and cumulatively) 
-        // allocated bytes by 'size'.
+        // 'size' (in bytes).  Invokes the 'allocate' method of the allocator 
+        // supplied at construction, increment the number of currently 
+        // (and cumulatively) allocated bytes by 'size'.
 
     virtual void deallocate(void *address);
         // Return the memory block at the specified 'address' back to this
         // allocator.  If 'address' is 0, this function has no effect (e.g., on
-        // allocation/deallocation statistics).  Otherwise, if the memory at
-        // 'address' is consistent with being allocated from this instrumented
-        // allocator, decrement the number of currently allocated bytes by the
-        // size (in bytes) originally requested for this block.  The behavior 
-        // is undefined unless 'address' was returned by 'allocate(size)'.
+        // allocation/deallocation statistics).  Decrement the number of 
+        // currently allocated bytes by the size (in bytes) originally 
+        // requested for this block.  The behavior is undefined unless 
+        // 'address' was returned by 'allocate'.
 
     // ACCESSORS
     bsls::Types::Int64 numBytesInUse() const;
         // Return the number of bytes currently in use that were allocated by
-        // this allocator.  Note that numBytesInUse() <= numBytesAllocated().
+        // this allocator.  Note that 'numBytesInUse' <= 'numBytesAllocated'.
 
     bsls::Types::Int64 numBytesAllocated() const;
         // Return the total number of bytes that were allocated by this
-        // allocator.  Note that 'numBytesInUse()' <= 'numBytesAllocated()'.
+        // allocator.  Note that 'numBytesInUse' <= 'numBytesAllocated'.
 
     const char *name() const;
         // Return the name of the allocator given to it at construction.  If
