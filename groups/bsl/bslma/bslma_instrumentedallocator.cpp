@@ -20,7 +20,7 @@ const Allocator::size_type matchingNumber = 0xFEEDF00D; // magic number
 void *InstrumentedAllocator::allocate(size_type size)
 {
     if (0 == size) {
-        return 0;                                                     // RETURN
+        return d_allocator_p->allocate(0);                            // RETURN
     }
 
     // Rounding of size for best alignment
@@ -79,6 +79,10 @@ void InstrumentedAllocator::deallocate(void *address)
             address = static_cast<char *>(address) - offset;
             d_allocator_p->deallocate(address);
         }
+    }
+
+    else {
+        d_allocator_p->deallocate(address);
     }
 }
 

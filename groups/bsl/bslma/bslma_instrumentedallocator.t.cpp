@@ -142,7 +142,7 @@ size_t alignmentFromSize(size_t size)
 class DoubleStack {
   private:
     // NOT IMPLEMENTED
-    DoubleStack(const DoubleStack&, bslma::Allocator);
+    DoubleStack(const DoubleStack&);
 
     // DATA
     enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
@@ -259,6 +259,8 @@ int main(int argc, char *argv[])
     bool verbose = argc > 2;
     bool veryVerbose = argc > 3;
 
+    if (verbose) printf("TEST " __FILE__ " CASE %d\n", test);
+
     switch (test) { case 0:
       case 9: {
         // --------------------------------------------------------------------
@@ -322,22 +324,18 @@ ASSERT(inst.numBytesAllocated() == 56);
         if (verbose) printf("\nALLOCATE / DEALLCOATE NULL TEST"
                             "\n===============================\n");
 
-        // With page after return block being protected
+        if (verbose) printf("\nCreating allocator\n");
 
-        {
-            if (verbose) printf("\nCreating allocator\n");
+        InstrumentedAllocator obj;
 
-            InstrumentedAllocator obj;
+        if (verbose) printf("\nTesting allocate 0\n");
 
-            if (verbose) printf("\nTesting allocate 0\n");
+        void *address = obj.allocate(0);
+        ASSERT(0 == address);
 
-            void *address = obj.allocate(0);
-            ASSERT(0 == address);
+        if (verbose) printf("\nTesting deallocate 0\n");
 
-            if (verbose) printf("\nTesting deallocate 0\n");
-
-            obj.deallocate(address);
-        }
+        obj.deallocate(address);
       } break;
       case 7: {
         // -----------------------------------------------------------------

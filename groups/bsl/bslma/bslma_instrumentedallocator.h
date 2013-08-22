@@ -52,7 +52,7 @@
 //  class DoubleStack {
 //    private:
 //      // NOT IMPLEMENTED
-//      DoubleStack(const DoubleStack&, bslma::Allocator);
+//      DoubleStack(const DoubleStack&);
 //
 //      // DATA
 //      enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
