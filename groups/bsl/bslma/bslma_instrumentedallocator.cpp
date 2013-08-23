@@ -24,8 +24,8 @@ void *InstrumentedAllocator::allocate(size_type size)
     }
 
     // Rounding of size for best alignment
-    
-    size_type paddedSize = 
+
+    size_type paddedSize =
                           bsls::AlignmentUtil::roundUpToMaximalAlignment(size);
 
     // Adding some memory for metadata (size and matching number)

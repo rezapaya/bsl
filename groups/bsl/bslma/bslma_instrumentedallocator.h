@@ -33,11 +33,11 @@
 ///Counting Bytes
 ///-----------
 // The byte counts maintained by bslma::InstrumentedAllocator are set to 0 when
-// constructed and increase with each call to 'allocate' by 'size'.
-// Each call to deallocate decreases the numByteInUse by the same amount by
-// which the byte count was increased on the matching allocate call.  The
-// number of currently used bytes is returned by 'numBytesInUse' and the total
-// number of bytes that were allocated is returned by 'numBytesAllocated'.
+// constructed and increase with each call to 'allocate' by 'size'.  Each call
+// to deallocate decreases the numByteInUse by the same amount by which the
+// byte count was increased on the matching allocate call.  The number of
+// currently used bytes is returned by 'numBytesInUse' and the total number of
+// bytes that were allocated is returned by 'numBytesAllocated'.
 //
 ///Usage
 ///-----
@@ -54,9 +54,14 @@
 //      // NOT IMPLEMENTED
 //      DoubleStack(const DoubleStack&);
 //
-//      // DATA
-//      enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
+//      // TYPES
+//      enum InitialVariables
+//      {
+//          e_INITIAL_SIZE = 1,
+//          e_GROW_FACTOR = 2
+//      };
 //
+//      // DATA
 //      double           *d_stack_p;     // dynamically allocated array
 //                                       // (d_capacity elements)
 //
@@ -77,7 +82,7 @@
 //      // CREATORS
 //      explicit
 //      DoubleStack(bslma::Allocator *basicAllocator = 0);
-//          // Create a stack for doubles.   Optionally, specify a 
+//          // Create a stack for doubles.   Optionally, specify a
 //          // 'basicAllocator' used to supply memory.  If 'basicAllocator' is
 //          // 0, the currently installed default allocator is used.
 //
@@ -93,7 +98,7 @@
 //  };
 //
 //  DoubleStack::DoubleStack(bslma::Allocator *basicAllocator)
-//  : d_capacity(INITIAL_SIZE)
+//  : d_capacity(e_INITIAL_SIZE)
 //  , d_length(0)
 //  , d_allocator_p(bslma::Default::allocator(basicAllocator))
 //  {
@@ -152,7 +157,7 @@
 //
 //  void DoubleStack::increaseSize()
 //  {
-//      int proposedNewSize = d_capacity * GROW_FACTOR; // reallocate can throw
+//      int proposedNewSize = d_capacity*e_GROW_FACTOR; // reallocate can throw
 //
 //      assert(proposedNewSize > d_length);
 //      reallocate(&d_stack_p, proposedNewSize, d_length, d_allocator_p);
@@ -240,10 +245,9 @@ class InstrumentedAllocator : public Allocator {
                           bslma::Allocator *basicAllocator = 0);
         // Create an instrumented allocator that keeps track of the number of
         // bytes that have been and are currently allocated.  This allocator
-        // will then be referred to as 'name' in 'print'.  Optionally,
-        // specify a 'basicAllocator' used to supply memory.  If
-        // 'basicAllocator' is 0, the currently installed default allocator is
-        // used.
+        // will then be referred to as 'name' in 'print'.  Optionally, specify
+        // a 'basicAllocator' used to supply memory.  If 'basicAllocator' is 0,
+        // the currently installed default allocator is used.
 
     // ~InstrumentedAllocator();
         // Destroy this context object.  Note that this trivial destructor is
@@ -252,16 +256,16 @@ class InstrumentedAllocator : public Allocator {
     // MANIPULATORS
     virtual void *allocate(size_type size);
         // Return a newly-allocated block of memory of the specified positive
-        // 'size' (in bytes).  Invokes the 'allocate' method of the allocator 
-        // supplied at construction, increment the number of currently 
-        // (and cumulatively) allocated bytes by 'size'.
+        // 'size' (in bytes).  Invokes the 'allocate' method of the allocator
+        // supplied at construction, increment the number of currently (and
+        // cumulatively) allocated bytes by 'size'.
 
     virtual void deallocate(void *address);
         // Return the memory block at the specified 'address' back to this
         // allocator.  If 'address' is 0, this function has no effect (e.g., on
-        // allocation/deallocation statistics).  Decrement the number of 
-        // currently allocated bytes by the size (in bytes) originally 
-        // requested for this block.  The behavior is undefined unless 
+        // allocation/deallocation statistics).  Decrement the number of
+        // currently allocated bytes by the size (in bytes) originally
+        // requested for this block.  The behavior is undefined unless
         // 'address' was returned by 'allocate'.
 
     // ACCESSORS
@@ -274,8 +278,8 @@ class InstrumentedAllocator : public Allocator {
         // allocator.  Note that 'numBytesInUse' <= 'numBytesAllocated'.
 
     const char *name() const;
-        // Return the name of the allocator given to it at construction.  If
-        // a name was not given the name of "0" will be given as a default.
+        // Return the name of the allocator given to it at construction.  If a
+        // name was not given the name of "0" will be given as a default.
 
                                   // Aspects
 

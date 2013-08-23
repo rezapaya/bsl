@@ -49,13 +49,13 @@ using namespace bslma;
 // ----------------------------------------------------------------------------
 
 //=============================================================================
-//                  STANDARD BDE ASSERT TEST MACRO
+// STANDARD BDE ASSERT TEST MACRO
 //-----------------------------------------------------------------------------
 // NOTE: THIS IS A LOW-LEVEL COMPONENT AND MAY NOT USE ANY C++ LIBRARY
 // FUNCTIONS, INCLUDING IOSTREAMS.
 static int testStatus = 0;
 
-static void aSsErT(bool b, const char *s, int i) 
+static void aSsErT(bool b, const char *s, int i)
 {
     if (b) {
         printf("Error " __FILE__ "(%d): %s    (failed)\n", i, s);
@@ -85,7 +85,7 @@ static void aSsErT(bool b, const char *s, int i)
 #define L_  BSLS_BSLTESTUTIL_L_  // current Line number
 
 // ============================================================================
-//                  NEGATIVE-TEST MACRO ABBREVIATIONS
+// NEGATIVE-TEST MACRO ABBREVIATIONS
 // ----------------------------------------------------------------------------
 
 #define ASSERT_SAFE_PASS(EXPR) BSLS_ASSERTTEST_ASSERT_SAFE_PASS(EXPR)
@@ -125,7 +125,7 @@ size_t alignmentFromSize(size_t size)
 }  // close unnamed namespace
 
 // ============================================================================
-//                                USAGE EXAMPLE
+// USAGE EXAMPLE
 // ----------------------------------------------------------------------------
 
 ///Usage
@@ -144,9 +144,14 @@ class DoubleStack {
     // NOT IMPLEMENTED
     DoubleStack(const DoubleStack&);
 
-    // DATA
-    enum { INITIAL_SIZE = 1, GROW_FACTOR = 2 };
+    // TYPES
+    enum InitialVariables
+    {
+        e_INITIAL_SIZE = 1,
+        e_GROW_FACTOR = 2
+    };
 
+    // DATA
     double           *d_stack_p;     // dynamically allocated array
                                      // (d_capacity elements)
 
@@ -167,9 +172,9 @@ class DoubleStack {
     // CREATORS
     explicit
     DoubleStack(bslma::Allocator *basicAllocator = 0);
-        // Create a stack for doubles.   Optionally, specify a
-        // 'basicAllocator' used to supply memory.  If 'basicAllocator' is
-        // 0, the currently installed default allocator is used.
+        // Create a stack for doubles.  Optionally, specify a 'basicAllocator'
+        // used to supply memory.  If 'basicAllocator' is 0, the currently
+        // installed default allocator is used.
 
     ~DoubleStack();
         // Delete this object.
@@ -183,12 +188,12 @@ class DoubleStack {
 };
 
 DoubleStack::DoubleStack(bslma::Allocator *basicAllocator)
-: d_capacity(INITIAL_SIZE)
+: d_capacity(e_INITIAL_SIZE)
 , d_length(0)
 , d_allocator_p(bslma::Default::allocator(basicAllocator))
 {
     ASSERT(d_allocator_p);
-    d_stack_p = (double *) 
+    d_stack_p = (double *)
                        d_allocator_p->allocate(d_capacity * sizeof *d_stack_p);
 }
 
@@ -218,12 +223,11 @@ void reallocate(double          **array,
                 int               newSize,
                 int               length,
                 bslma::Allocator *basicAllocator)
-    // Reallocate memory in the specified 'array' to the specified
-    // 'newSize' using the specified 'basicAllocator'.  The specified
-    // 'length' number of leading elements are preserved.  Since the
-    //  class invariant requires that the physical capacity of the
-    // container may grow but never shrink; the behavior is undefined
-    // unless length <= newSize.
+    // Reallocate memory in the specified 'array' to the specified 'newSize'
+    // using the specified 'basicAllocator'.  The specified 'length' number of
+    // leading elements are preserved.  Since the class invariant requires that
+    // the physical capacity of the container may grow but never shrink; the
+    // behavior is undefined unless length <= newSize.
 {
     ASSERT(array);
     ASSERT(1 <= newSize);
@@ -242,7 +246,7 @@ void reallocate(double          **array,
 
 void DoubleStack::increaseSize()
 {
-    int proposedNewSize = d_capacity * GROW_FACTOR; // reallocate can throw
+    int proposedNewSize = d_capacity*e_GROW_FACTOR; // reallocate can throw
 
     ASSERT(proposedNewSize > d_length);
     reallocate(&d_stack_p, proposedNewSize, d_length, d_allocator_p);
@@ -320,7 +324,7 @@ ASSERT(inst.numBytesAllocated() == 56);
         //   void *allocate(size_type size)   // allocate 0
         //   void deallocate(void *address)   // deallocate 0
         // --------------------------------------------------------------------
-                     
+
         if (verbose) printf("\nALLOCATE / DEALLCOATE NULL TEST"
                             "\n===============================\n");
 
