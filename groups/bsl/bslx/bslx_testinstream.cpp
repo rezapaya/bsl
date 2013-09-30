@@ -5,17 +5,17 @@
 BSLS_IDENT_RCSID(bslx_testinstream_cpp,"$Id$ $CSID$")
 
 #include <bslx_bytestreamimputil.h>
-#include <bslx_testinstreamexception.h>
+
+#ifdef FOR_TESTING_ONLY
+#include <bslx_testoutstream.h>             // for testing only
+#include <bslx_testinstreamexception.h>     // for testing only
+#endif
 
 #include <bslma_default.h>
 #include <bsls_assert.h>
 
 #include <bsl_iomanip.h>
 #include <bsl_cstdio.h>
-
-#ifdef FOR_TESTING_ONLY
-#include <bslx_testoutstream.h>
-#endif
 
 
 namespace BloombergLP {

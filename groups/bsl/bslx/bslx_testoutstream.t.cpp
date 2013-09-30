@@ -10,7 +10,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 //=============================================================================
 //                    STANDARD BDE ASSERT TEST MACRO
@@ -21,7 +20,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -141,7 +140,7 @@ static void aSsErT(int c, const char *s, int i)
 #define LEN_2      "\x00\x00\x00\x02"
 #define LEN_3      "\x00\x00\x00\x03"
 
-typedef TestOutStream Obj;
+typedef bslx::TestOutStream Obj;
 
 // size in bytes of each fundamental type
 const int SIZEOF_INT64   = 8;
@@ -3105,7 +3104,9 @@ int main(int argc, char *argv[])
         const int NUM_TEST = sizeof DATA / sizeof *DATA;
         for (int iLen = 0; iLen < NUM_TEST; iLen++) {
             Obj x;
-            for (int j = 0; j < iLen; j++) x.putInt8(j);
+            for (int j = 0; j < iLen; j++) {
+                x.putInt8(j);
+            }
 
             if (veryVerbose) { P_(iLen); P(x); }
             const int bytes = iLen * (SIZEOF_CODE + SIZEOF_INT8);
@@ -3276,7 +3277,9 @@ int main(int argc, char *argv[])
             const int NUM_TEST = 5;
             for (int iLen = 1; iLen < NUM_TEST; iLen++) {
                 Obj x;
-                for (int j = 0; j < iLen; j++) x.putInt8(j);
+                for (int j = 0; j < iLen; j++) {
+                    x.putInt8(j);
+                }
 
                 x.removeAll();
                 if (veryVerbose) { P_(iLen); P(x); }

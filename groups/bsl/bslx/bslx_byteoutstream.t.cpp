@@ -2,7 +2,7 @@
 
 #include <bslx_byteoutstream.h>
 
-#include <bslma_testallocator.h>           // for testing only
+#include <bslma_testallocator.h>
 
 #include <bsl_cstdlib.h>     // atoi()
 #include <bsl_cstring.h>     // memcpy(), memcmp(), strlen()
@@ -11,7 +11,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 
 //=============================================================================
@@ -23,7 +22,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -116,7 +115,7 @@ static void aSsErT(int c, const char *s, int i)
 //                  GLOBAL TYPEDEFS/CONSTANTS FOR TESTING
 //-----------------------------------------------------------------------------
 
-typedef ByteOutStream Obj;
+typedef bslx::ByteOutStream Obj;
 
 const int SIZEOF_INT64   = 8;
 const int SIZEOF_INT56   = 7;
@@ -196,7 +195,7 @@ int main(int argc, char *argv[])
    {
 //
        // Create a stream and write out some values.
-       ByteOutStream outStream;
+       bslx::ByteOutStream outStream;
        outStream.putInt32(1);
        outStream.putInt32(2);
        outStream.putInt8('c');
@@ -206,11 +205,12 @@ int main(int argc, char *argv[])
        const char *theChars = outStream.data();
        int length = outStream.length();
        if (verbose) {
-           for(int i = 0; i < length; ++i) {
-               if(isalnum(theChars[i]))
+           for (int i = 0; i < length; ++i) {
+               if (isalnum(theChars[i])) {
                    cout << "nextByte (char): " << theChars[i] << endl;
-               else
+               } else {
                    cout << "nextByte (int): " << (int)theChars[i] << endl;
+               }
            }
        }
 //     return 0;
@@ -2141,7 +2141,7 @@ int main(int argc, char *argv[])
         const int NUM_TEST = sizeof DATA / sizeof *DATA;
         for (int iLen = 0; iLen < NUM_TEST; iLen++) {
             Obj x;
-            for (int j = 0; j < iLen; j++) x.putInt8(j);
+            for (int j = 0; j < iLen; j++) { x.putInt8(j); }
 
             if (veryVerbose) { P_(iLen); P(x); }
             const int bytes = iLen * SIZEOF_INT8;
@@ -2267,7 +2267,7 @@ int main(int argc, char *argv[])
             const int NUM_TEST = 5;
             for (int iLen = 1; iLen < NUM_TEST; iLen++) {
                 Obj x;
-                for (int j = 0; j < iLen; j++) x.putInt8(j);
+                for (int j = 0; j < iLen; j++) { x.putInt8(j); }
 
                 x.removeAll();
                 if (veryVerbose) { P_(iLen); P(x); }

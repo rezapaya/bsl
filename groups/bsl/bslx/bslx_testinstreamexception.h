@@ -119,12 +119,14 @@ BSLS_IDENT("$Id: $")
 //  {                                                                        \$
 //      {                                                                    \$
 //          static int firstTime = 1;                                        \$
-//          if (veryVerbose && firstTime) bsl::cout <<                       \$
+//          if (veryVerbose && firstTime)  { bsl::cout <<                    \$
 //              "### BSLX EXCEPTION TEST -- (ENABLED) --" << bsl::endl;      \$
+//          }                                                                \$
 //          firstTime = 0;                                                   \$
 //      }                                                                    \$
-//      if (veryVeryVerbose) bsl::cout <<                                    \$
+//      if (veryVeryVerbose)  { bsl::cout <<                                 \$
 //          "### Begin bslx exception test." << bsl::endl;                   \$
+//      }                                                                    \$
 //      int bslxExceptionCounter = 0;                                        \$
 //      static int bslxExceptionLimit = 100;                                 \$
 //      testInStream.setInputLimit(bslxExceptionCounter);                    \$
@@ -176,7 +178,7 @@ BSLS_IDENT("$Id: $")
 //      // 'array1' and 'array2' have the same values, and 'false' otherwise.
 //  {
 //      for (int i = 0; i < numElement; ++i) {
-//          if (array1[i] != array2[i]) return 0;
+//          if (array1[i] != array2[i]) { return 0; }
 //      }
 //      return 1;
 //  }
@@ -192,14 +194,14 @@ BSLS_IDENT("$Id: $")
 //        // ...
 //
 //      case 2: {
-//        // --------------------------------------------------------------------
+//        // ------------------------------------------------------------------
 //        // USAGE TEST
 //        //   Verify that the usage example is free of syntax errors and works
 //        //   as advertised.
 //        //
 //        // Testing:
 //        //   Make sure main usage example compiles and works.
-//        // --------------------------------------------------------------------
+//        // ------------------------------------------------------------------
 //
 //        if (verbose) cout << endl << "USAGE TEST" << endl
 //                                  << "==========" << endl;
@@ -312,12 +314,14 @@ class TestInStreamException {
 {                                                                             \
     {                                                                         \
         static int firstTime = 1;                                             \
-        if (veryVerbose && firstTime) bsl::cout <<                            \
+        if (veryVerbose && firstTime) { bsl::cout <<                          \
             "### BSLX EXCEPTION TEST -- (ENABLED) --" << '\n';                \
+        }                                                                     \
         firstTime = 0;                                                        \
     }                                                                         \
-    if (veryVeryVerbose) bsl::cout <<                                         \
+    if (veryVeryVerbose) { bsl::cout <<                                       \
         "### Begin bslx exception test." << '\n';                             \
+    }                                                                         \
     int bslxExceptionCounter = 0;                                             \
     static int bslxExceptionLimit = 100;                                      \
     testInStream.setInputLimit(bslxExceptionCounter);                         \
@@ -339,8 +343,7 @@ class TestInStreamException {
                               << ", "                                         \
                               << "last data type = "                          \
                               << e.dataType();                                \
-                }                                                             \
-                else if (0 == bslxExceptionLimit) {                           \
+                } else if (0 == bslxExceptionLimit) {                         \
                     bsl::cout << " [ Note: 'bslxExceptionLimit' reached. ]";  \
                 }                                                             \
                 bsl::cout << '\n';                                            \

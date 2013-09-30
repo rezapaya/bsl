@@ -1,7 +1,7 @@
 // bslx_testinstreamexception.t.cpp                                   -*-C++-*-
 
 #include <bslx_testinstreamexception.h>
-#include <bslx_bytestreamimputil.h>     // for testing only
+#include <bslx_bytestreamimputil.h>
 
 #include <bsl_cstdlib.h>     // atoi()
 #include <bsl_cstring.h>     // memcpy()
@@ -9,7 +9,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 //=============================================================================
 //                                  TEST PLAN
@@ -35,7 +34,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -215,51 +214,65 @@ class MyTestInStream {
     MyTestInStream& getLength(int& variable);
     MyTestInStream& getVersion(int& variable);
 
-    MyTestInStream& getInt64(Int64& variable)                { return *this; }
-    MyTestInStream& getUint64(Uint64& variable)              { return *this; }
-    MyTestInStream& getInt56(Int64& variable)                { return *this; }
-    MyTestInStream& getUint56(Uint64& variable)              { return *this; }
-    MyTestInStream& getInt48(Int64& variable)                { return *this; }
-    MyTestInStream& getUint48(Uint64& variable)              { return *this; }
-    MyTestInStream& getInt40(Int64& variable)                { return *this; }
-    MyTestInStream& getUint40(Uint64& variable)              { return *this; }
-    MyTestInStream& getInt32(int& variable);
-    MyTestInStream& getUint32(unsigned int& variable)        { return *this; }
-    MyTestInStream& getInt24(int& variable)                  { return *this; }
-    MyTestInStream& getUint24(unsigned int& variable)        { return *this; }
-    MyTestInStream& getInt16(short& variable)                { return *this; }
-    MyTestInStream& getUint16(unsigned short& variable)      { return *this; }
-    MyTestInStream& getInt8(char& variable);
-    MyTestInStream& getInt8(signed char& variable)           { return *this; }
-    MyTestInStream& getUint8(char& variable)                 { return *this; }
-    MyTestInStream& getUint8(unsigned char& variable)        { return *this; }
-    MyTestInStream& getFloat64(double& variable)             { return *this; }
-    MyTestInStream& getFloat32(float& variable)              { return *this; }
-    MyTestInStream& getArrayInt64(Int64 *array, int length)  { return *this; }
-    MyTestInStream& getArrayUint64(Uint64 *array, int length){ return *this; }
-    MyTestInStream& getArrayInt56(Int64 *array, int length)  { return *this; }
-    MyTestInStream& getArrayUint56(Uint64 *array, int length){ return *this; }
-    MyTestInStream& getArrayInt48(Int64 *array, int length)  { return *this; }
-    MyTestInStream& getArrayUint48(Uint64 *array, int length){ return *this; }
-    MyTestInStream& getArrayInt40(Int64 *array, int length)  { return *this; }
-    MyTestInStream& getArrayUint40(Uint64 *array, int length){ return *this; }
-    MyTestInStream& getArrayInt32(int *array, int length)    { return *this; }
-    MyTestInStream& getArrayUint32(unsigned int *array, int length)
-                                                             { return *this; }
-    MyTestInStream& getArrayInt24(int *array, int length)    { return *this; }
-    MyTestInStream& getArrayUint24(unsigned int *array, int length)
-                                                             { return *this; }
-    MyTestInStream& getArrayInt16(short *array, int length);
-    MyTestInStream& getArrayUint16(unsigned short *array, int length)
-                                                             { return *this; }
-    MyTestInStream& getArrayInt8(char *array, int length)    { return *this; }
-    MyTestInStream& getArrayInt8(signed char *array, int length)
-                                                             { return *this; }
-    MyTestInStream& getArrayUint8(char *array, int length)   { return *this; }
-    MyTestInStream& getArrayUint8(unsigned char *array, int length)
-                                                             { return *this; }
-    MyTestInStream& getArrayFloat64(double *array, int count){ return *this; }
-    MyTestInStream& getArrayFloat32(float *array, int length){ return *this; }
+    MyTestInStream& getInt64(Int64& /*variable*/)             { return *this; }
+    MyTestInStream& getUint64(Uint64& /*variable*/)           { return *this; }
+    MyTestInStream& getInt56(Int64& /*variable*/)             { return *this; }
+    MyTestInStream& getUint56(Uint64& /*variable*/)           { return *this; }
+    MyTestInStream& getInt48(Int64& /*variable*/)             { return *this; }
+    MyTestInStream& getUint48(Uint64& /*variable*/)           { return *this; }
+    MyTestInStream& getInt40(Int64& /*variable*/)             { return *this; }
+    MyTestInStream& getUint40(Uint64& /*variable*/)           { return *this; }
+    MyTestInStream& getInt32(int& /*variable*/);
+    MyTestInStream& getUint32(unsigned int& /*variable*/)     { return *this; }
+    MyTestInStream& getInt24(int& /*variable*/)               { return *this; }
+    MyTestInStream& getUint24(unsigned int& /*variable*/)     { return *this; }
+    MyTestInStream& getInt16(short& /*variable*/)             { return *this; }
+    MyTestInStream& getUint16(unsigned short& /*variable*/)   { return *this; }
+    MyTestInStream& getInt8(char& /*variable*/);
+    MyTestInStream& getInt8(signed char& /*variable*/)        { return *this; }
+    MyTestInStream& getUint8(char& /*variable*/)              { return *this; }
+    MyTestInStream& getUint8(unsigned char& /*variable*/)     { return *this; }
+    MyTestInStream& getFloat64(double& /*variable*/)          { return *this; }
+    MyTestInStream& getFloat32(float& /*variable*/)           { return *this; }
+    MyTestInStream& getArrayInt64(Int64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint64(Uint64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt56(Int64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint56(Uint64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt48(Int64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint48(Uint64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt40(Int64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint40(Uint64* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt32(int* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint32(unsigned int* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt24(int* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint24(unsigned int* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt16(short* /*array*/, int /*length*/);
+    MyTestInStream& getArrayUint16(unsigned short* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt8(char* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayInt8(signed char* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint8(char* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayUint8(unsigned char* /*array*/, int /*length*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayFloat64(double* /*array*/, int /*count*/)
+                                                              { return *this; }
+    MyTestInStream& getArrayFloat32(float* /*array*/, int /*length*/)
+                                                              { return *this; }
 
     // ACCESSORS
     operator const void *() const { return d_validFlag ? this : 0; }
@@ -323,13 +336,13 @@ MyTestInStream& MyTestInStream::getInt32(int& variable)
     if (0 <= d_inputLimit) {
         --d_inputLimit;
         if (0 > d_inputLimit) {
-            throw TestInStreamException(FieldCode::BSLX_INT32);
+            throw bslx::TestInStreamException(bslx::FieldCode::BSLX_INT32);
         }
     }
 #endif
     if (d_validFlag &&
         (d_validFlag = d_cursor + SIZEOF_INT32 <= d_length)) {
-        ByteStreamImpUtil::getInt32(&variable, &d_buffer[d_cursor]);
+        bslx::ByteStreamImpUtil::getInt32(&variable, &d_buffer[d_cursor]);
         d_cursor += SIZEOF_INT32;
     }
     return *this;
@@ -341,13 +354,13 @@ MyTestInStream& MyTestInStream::getInt8(char& variable)
     if (0 <= d_inputLimit) {
         --d_inputLimit;
         if (0 > d_inputLimit) {
-            throw TestInStreamException(FieldCode::BSLX_INT8);
+            throw bslx::TestInStreamException(bslx::FieldCode::BSLX_INT8);
         }
     }
 #endif
     if (d_validFlag &&
         (d_validFlag = d_cursor + SIZEOF_INT8 <= d_length)) {
-        ByteStreamImpUtil::getInt8(&variable, &d_buffer[d_cursor]);
+        bslx::ByteStreamImpUtil::getInt8(&variable, &d_buffer[d_cursor]);
         d_cursor += SIZEOF_INT8;
     }
     return *this;
@@ -361,13 +374,13 @@ MyTestInStream& MyTestInStream::getArrayInt16(short *array, int length)
     if (0 <= d_inputLimit) {
         --d_inputLimit;
         if (0 > d_inputLimit) {
-            throw TestInStreamException(FieldCode::BSLX_INT16);
+            throw bslx::TestInStreamException(bslx::FieldCode::BSLX_INT16);
         }
     }
 #endif
     if (d_validFlag &&
         (d_validFlag = d_cursor + SIZEOF_INT16 * length <= d_length)) {
-        ByteStreamImpUtil::getArrayInt16(array, &d_buffer[d_cursor],
+        bslx::ByteStreamImpUtil::getArrayInt16(array, &d_buffer[d_cursor],
                                               length);
         d_cursor += SIZEOF_INT16 * length;
     }
@@ -392,7 +405,7 @@ static bool areEqual(const short *array1, const short *array2, int numElement)
     // 'array1' and 'array2' have the same values, and 'false' otherwise.
 {
     for (int i = 0; i < numElement; ++i) {
-        if (array1[i] != array2[i]) return 0;
+        if (array1[i] != array2[i]) { return 0; }
     }
     return 1;
 }
@@ -486,7 +499,7 @@ int main(int argc, char *argv[])
 
         if (verbose) cout << "Testing ctor and accessor." << endl;
         {
-            typedef FieldCode FC;
+            typedef bslx::FieldCode FC;
             const FC::Type DATA[] = {
                 FC::BSLX_INT8,     FC::BSLX_UINT8,
                 FC::BSLX_INT16,    FC::BSLX_UINT16,
@@ -501,7 +514,7 @@ int main(int argc, char *argv[])
             };
             const int NUM_DATA = sizeof DATA / sizeof *DATA;
             for (int i = 0; i < NUM_DATA; ++i) {
-                const TestInStreamException X(DATA[i]);
+                const bslx::TestInStreamException X(DATA[i]);
                 LOOP_ASSERT(i, DATA[i] == X.dataType());
             }
         }

@@ -17,7 +17,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 //==========================================================================
 //                    STANDARD BDE ASSERT TEST MACRO
@@ -28,7 +27,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -239,8 +238,7 @@ static void setBits(char *byte, int mask, int booleanValue)
 {
     if (booleanValue) {
         *byte |= mask;
-    }
-    else {
+    } else {
         *byte &= ~mask;
     }
 }
@@ -294,8 +292,7 @@ static void setTrailing(char *buffer, int numBits,
     ASSERT(0 <= byteIndex);
 }
 
-static void setLeading(char *buffer, int numBits,
-                       const char *startOfSpec, int charCount)
+static void setLeading(char *buffer, const char *startOfSpec, int charCount)
     // Set the leading bits in the specified 'buffer' containing the specified
     // '0' and '1' characters in the specified 'charCount' characters starting
     // at the specified 'startOfSpec'.  All other characters are ignored.
@@ -406,12 +403,11 @@ static int g(char *buffer, const char *spec, int numBits)
 
     if (rangeStartIndex != -1) {
         resetBits(buffer, numBits, '1' == spec[rangeStartIndex]);
-        setLeading(buffer, numBits, spec, rangeStartIndex);
+        setLeading(buffer, spec, rangeStartIndex);
         setTrailing(buffer, numBits, spec + i, i - 1 - rangeEndIndex);
-    }
-    else {
+    } else {
         resetBits(buffer, numBits, 0);
-        setLeading(buffer, numBits, spec, i);
+        setLeading(buffer, spec, i);
     }
 
     return G_SUCCESS;
@@ -426,7 +422,8 @@ static inline int isLittleEndian()
     // and zero otherwise; the LSB is at low end of the word.
 {
     const int dummy = 1;
-    return ((char *)&dummy)[0]; // Least significant byte has lowest address.
+    // Least significant byte has lowest address.
+    return (reinterpret_cast<const char *>(&dummy))[0];
 }
 
 template<typename T>
@@ -635,8 +632,8 @@ int savePoint(char *buffer, int bufferLength, const MyPoint& point)
     if (bufferLength < 4 + 4) {
         return INSUFFICIENT_SPACE;
     }
-    ByteStreamImpUtil::putInt32(buffer + 0, point.x());
-    ByteStreamImpUtil::putInt32(buffer + 4, point.y());
+    bslx::ByteStreamImpUtil::putInt32(buffer + 0, point.x());
+    bslx::ByteStreamImpUtil::putInt32(buffer + 4, point.y());
     return SUCCESS;
 }
 
@@ -648,9 +645,9 @@ int restorePoint(MyPoint *point, const char *buffer, int bufferLength)
     }
 
     int result;
-    ByteStreamImpUtil::getInt32(&result, buffer + 0 );
+    bslx::ByteStreamImpUtil::getInt32(&result, buffer + 0 );
     point->setX(result);
-    ByteStreamImpUtil::getInt32(&result, buffer + 4 );
+    bslx::ByteStreamImpUtil::getInt32(&result, buffer + 4 );
     point->setY(result);
     return SUCCESS;
 }
@@ -728,8 +725,7 @@ int main(int argc, char *argv[]) {
         if (testIndividualDoubles) {
             if (verbose) cout << "put/getFloat64" << endl;
             mSize *= COUNT;
-        }
-        else {
+        } else {
             if (verbose) cout << "put/getArrayFloat64" << endl;
         }
         const int SIZE = mSize;
@@ -762,22 +758,21 @@ int main(int argc, char *argv[]) {
 
         if (testIndividualDoubles) {
             for (i = SIZE - 1; i >= 0; --i)  {
-                if (verbose && 0 == i % feedback) cerr << '.';
+                if (verbose && 0 == i % feedback) { cerr << '.'; }
 
-                ByteStreamImpUtil::putFloat64(b, x);
-                ByteStreamImpUtil::getFloat64(&y, b);
+                bslx::ByteStreamImpUtil::putFloat64(b, x);
+                bslx::ByteStreamImpUtil::getFloat64(&y, b);
             }
             ASSERT (x == y);
             for (i = 0; i < COUNT; ++i) {
                 LOOP_ASSERT(i, xa[i] != ya[i]);
             }
-        }
-        else {
+        } else {
             for (i = SIZE - 1; i >= 0; --i)  {
-                if (verbose && 0 == i % feedback) cerr << '.';
+                if (verbose && 0 == i % feedback) { cerr << '.'; }
 
-                ByteStreamImpUtil::putArrayFloat64(buffer, xa, COUNT);
-                ByteStreamImpUtil::getArrayFloat64(ya, buffer, COUNT);
+                bslx::ByteStreamImpUtil::putArrayFloat64(buffer, xa, COUNT);
+                bslx::ByteStreamImpUtil::getArrayFloat64(ya, buffer, COUNT);
             }
 
             ASSERT (x != y);
@@ -863,7 +858,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putFloat32(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putFloat32(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -871,9 +866,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -901,9 +896,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayFloat32(
+                bslx::ByteStreamImpUtil::putArrayFloat32(
                                         buffer1 + align, input, length);
-                ByteStreamImpUtil::putArrayFloat32(
+                bslx::ByteStreamImpUtil::putArrayFloat32(
                                         buffer2 + align, input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -961,9 +956,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayFloat32(result1,
+                bslx::ByteStreamImpUtil::getArrayFloat32(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayFloat32(result2,
+                bslx::ByteStreamImpUtil::getArrayFloat32(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -1082,7 +1077,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putFloat64(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putFloat64(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -1090,9 +1085,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -1120,9 +1115,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayFloat64(
+                bslx::ByteStreamImpUtil::putArrayFloat64(
                                         buffer1 + align, input, length);
-                ByteStreamImpUtil::putArrayFloat64(
+                bslx::ByteStreamImpUtil::putArrayFloat64(
                                         buffer2 + align, input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -1180,9 +1175,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayFloat64(result1,
+                bslx::ByteStreamImpUtil::getArrayFloat64(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayFloat64(result2,
+                bslx::ByteStreamImpUtil::getArrayFloat64(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -1260,7 +1255,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt8(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt8(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i] & 0xFF)
@@ -1268,9 +1263,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -1301,11 +1296,11 @@ int main(int argc, char *argv[]) {
                 memset(buffer2, YY, sizeof buffer2);
                 memset(buffer3, ZZ, sizeof buffer3);
 
-                ByteStreamImpUtil::putArrayInt8(
+                bslx::ByteStreamImpUtil::putArrayInt8(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt8(
+                bslx::ByteStreamImpUtil::putArrayInt8(
                                         buffer2 + align, (U*) input, length);
-                ByteStreamImpUtil::putArrayInt8(
+                bslx::ByteStreamImpUtil::putArrayInt8(
                                         buffer3 + align, (S*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -1369,11 +1364,11 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt8(result1,
+                bslx::ByteStreamImpUtil::getArrayInt8(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayInt8(result2,
+                bslx::ByteStreamImpUtil::getArrayInt8(result2,
                                         buffer2 + align, length);
-                ByteStreamImpUtil::getArrayInt8(result3,
+                bslx::ByteStreamImpUtil::getArrayInt8(result3,
                                         buffer3 + align, length);
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -1417,19 +1412,19 @@ int main(int argc, char *argv[]) {
         typedef short T;
         typedef unsigned short U;
 
-        const T A = (     (T)  0x01 << 8) + 0x02;  // POSITIVE NUMBER
+        const T A = (     (T)  0x01 << 8) | 0x02;  // POSITIVE NUMBER
         const char *A_SPEC = "00000001 00000010";
 
-        const T B = (T) ( (T)  0x80 << 8) + 0x70;  // NEGATIVE NUMBER
+        const T B = (T) ( (T)  0x80 << 8) | 0x70;  // NEGATIVE NUMBER
         const char *B_SPEC = "10000000 01110000";
 
-        const T C =     ( (T)  0x10 << 8) + 0x20;  // POSITIVE NUMBER
+        const T C =     ( (T)  0x10 << 8) | 0x20;  // POSITIVE NUMBER
         const char *C_SPEC = "00010000 00100000";
 
-        const T D =     ( (T)  0x08 << 8) + 0x07;  // POSITIVE NUMBER
+        const T D =     ( (T)  0x08 << 8) | 0x07;  // POSITIVE NUMBER
         const char *D_SPEC = "00001000 00000111";
 
-        const T E = (T) ( (T)  0xFF << 8) + 0xFE;  // NEGATIVE NUMBER
+        const T E = (T) ( (T)  0xFF << 8) | 0xFE;  // NEGATIVE NUMBER
         const char *E_SPEC = "11111111 11111110";
 
         T VALUES[] = { A, B, C, D, E };
@@ -1451,7 +1446,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt16(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt16(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -1459,9 +1454,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -1489,9 +1484,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt16(
+                bslx::ByteStreamImpUtil::putArrayInt16(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt16(
+                bslx::ByteStreamImpUtil::putArrayInt16(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -1541,9 +1536,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt16(result1,
+                bslx::ByteStreamImpUtil::getArrayInt16(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint16(result2,
+                bslx::ByteStreamImpUtil::getArrayUint16(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -1584,28 +1579,28 @@ int main(int argc, char *argv[]) {
         typedef int T;
         typedef unsigned int U;
 
-        const T A = (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04;
+        const T A = ((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04;
 
         const char *A_SPEC = "00000000 00000010 00000011 00000100";
 
-        const T B = (( ( (T)  // NEGATIVE NUMBER
-                        0xFF << 8) + 0x80 << 8) + 0x70 << 8) + 0x60;
+        const T B = ((((((T)  // NEGATIVE NUMBER
+                        0xFF << 8) | 0x80) << 8) | 0x70) << 8) | 0x60;
 
         const char *B_SPEC = "11111111 10000000 01110000 01100000";
 
-        const T C = (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x20 << 8) + 0x30 << 8) + 0x40;
+        const T C = ((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x20) << 8) | 0x30) << 8) | 0x40;
 
         const char *C_SPEC = "00000000 00100000 00110000 01000000";
 
-        const T D = (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x07 << 8) + 0x06 << 8) + 0x05;
+        const T D = ((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x07) << 8) | 0x06) << 8) | 0x05;
 
         const char *D_SPEC = "00000000 00000111 00000110 00000101";
 
-        const T E = (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xfe << 8) + 0xfd << 8) + 0xfc;
+        const T E = ((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xfe) << 8) | 0xfd) << 8) | 0xfc;
 
         const char *E_SPEC = "11111111 11111110 11111101 11111100";
 
@@ -1630,7 +1625,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE + OFFSET];
                 g(exp, SPECS[i], NUM_BITS_IN_VALUE);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt24(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt24(buffer, VALUES[i]);
                 bool isEq = eq(exp + OFFSET, buffer, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -1638,9 +1633,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -1668,9 +1663,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt24(
+                bslx::ByteStreamImpUtil::putArrayInt24(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt24(
+                bslx::ByteStreamImpUtil::putArrayInt24(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -1721,9 +1716,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt24(result1,
+                bslx::ByteStreamImpUtil::getArrayInt24(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint24(result2,
+                bslx::ByteStreamImpUtil::getArrayUint24(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -1734,9 +1729,10 @@ int main(int argc, char *argv[]) {
                         P(i); P(input[i]); P(result1[i]); P(result2[i]);
                     }
                     LOOP3_ASSERT(length, align, i, input[i] == result1[i]);
-                    if (input[i] > 0)
+                    if (input[i] > 0) {
                         LOOP3_ASSERT(length, align, i,
                                      input[i] == (T) result2[i]);
+                    }
                 }
                 for (; i < NUM_TRIALS; ++i) {   // check values beyond range
                     LOOP3_ASSERT(length, align, i, POS == result1[i]);
@@ -1767,28 +1763,28 @@ int main(int argc, char *argv[]) {
         typedef int T;
         typedef unsigned int U;
 
-        const T A = (( ( (T)  // POSITIVE NUMBER
-                        0x01 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04;
+        const T A = ((((((T)  // POSITIVE NUMBER
+                        0x01 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04;
 
         const char *A_SPEC = "00000001 00000010 00000011 00000100";
 
-        const T B = (( ( (T)  // NEGATIVE NUMBER
-                        0x80 << 8) + 0x70 << 8) + 0x60 << 8) + 0x50;
+        const T B = ((((((T)  // NEGATIVE NUMBER
+                        0x80 << 8) | 0x70) << 8) | 0x60) << 8) | 0x50;
 
         const char *B_SPEC = "10000000 01110000 01100000 01010000";
 
-        const T C = (( ( (T)  // POSITIVE NUMBER
-                        0x10 << 8) + 0x20 << 8) + 0x30 << 8) + 0x40;
+        const T C = ((((((T)  // POSITIVE NUMBER
+                        0x10 << 8) | 0x20) << 8) | 0x30) << 8) | 0x40;
 
         const char *C_SPEC = "00010000 00100000 00110000 01000000";
 
-        const T D = (( ( (T)  // POSITIVE NUMBER
-                        0x08 << 8) + 0x07 << 8) + 0x06 << 8) + 0x05;
+        const T D = ((((((T)  // POSITIVE NUMBER
+                        0x08 << 8) | 0x07) << 8) | 0x06) << 8) | 0x05;
 
         const char *D_SPEC = "00001000 00000111 00000110 00000101";
 
-        const T E = (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xfe << 8) + 0xfd << 8) + 0xfc;
+        const T E = ((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xfe) << 8) | 0xfd) << 8) | 0xfc;
 
         const char *E_SPEC = "11111111 11111110 11111101 11111100";
 
@@ -1811,7 +1807,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt32(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt32(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -1819,9 +1815,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }       // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -1849,9 +1845,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt32(
+                bslx::ByteStreamImpUtil::putArrayInt32(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt32(
+                bslx::ByteStreamImpUtil::putArrayInt32(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -1901,9 +1897,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt32(result1,
+                bslx::ByteStreamImpUtil::getArrayInt32(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint32(result2,
+                bslx::ByteStreamImpUtil::getArrayUint32(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -1944,37 +1940,37 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x00 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x00) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000000 00000000 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0xff << 8) + 0x80 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0xff) << 8) | 0x80) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 11111111 11111111 10000000"
                              "01000000 00110000 00100000 00010000";
 
-        const T C = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x00 << 8) + 0x40 << 8)
-                      + 0x50 << 8) + 0x60 << 8) + 0x70 << 8) + 0x80;
+        const T C = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x00) << 8) | 0x40) << 8)
+                      | 0x50) << 8) | 0x60) << 8) | 0x70) << 8) | 0x80;
 
         const char *C_SPEC = "00000000 00000000 00000000 01000000"
                              "01010000 01100000 01110000 10000000";
 
-        const T D = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x00 << 8) + 0x05 << 8)
-                      + 0x04 << 8) + 0x03 << 8) + 0x02 << 8) + 0x01;
+        const T D = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x00) << 8) | 0x05) << 8)
+                      | 0x04) << 8) | 0x03) << 8) | 0x02) << 8) | 0x01;
 
         const char *D_SPEC = "00000000 00000000 00000000 00000101"
                              "00000100 00000011 00000010 00000001";
 
-        const T E = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0xff << 8) + 0xfc << 8)
-                      + 0xfb << 8) + 0xfa << 8) + 0xf9 << 8) + 0xf8;
+        const T E = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0xff) << 8) | 0xfc) << 8)
+                      | 0xfb) << 8) | 0xfa) << 8) | 0xf9) << 8) | 0xf8;
 
         const char *E_SPEC = "11111111 11111111 11111111 11111100"
                              "11111011 11111010 11111001 11111000";
@@ -2000,7 +1996,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE + OFFSET];
                 g(exp, SPECS[i], NUM_BITS_IN_VALUE);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt40(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt40(buffer, VALUES[i]);
                 bool isEq = eq(exp + OFFSET, buffer, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -2008,9 +2004,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }       // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -2038,9 +2034,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt40(
+                bslx::ByteStreamImpUtil::putArrayInt40(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt40(
+                bslx::ByteStreamImpUtil::putArrayInt40(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -2092,9 +2088,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt40(result1,
+                bslx::ByteStreamImpUtil::getArrayInt40(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint40(result2,
+                bslx::ByteStreamImpUtil::getArrayUint40(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -2105,9 +2101,10 @@ int main(int argc, char *argv[]) {
                         P(i); P(input[i]); P(result1[i]); P(result2[i]);
                     }
                     LOOP3_ASSERT(length, align, i, input[i] == result1[i]);
-                    if (input[i] > 0)
+                    if (input[i] > 0) {
                         LOOP3_ASSERT(length, align, i,
                             input[i] == (T) result2[i]);
+                    }
                 }
                 for (; i < NUM_TRIALS; ++i) {   // check values beyond range
                     LOOP3_ASSERT(length, align, i, POS == result1[i]);
@@ -2138,37 +2135,37 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x03 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x03) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000000 00000011 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0x80 << 8) + 0x50 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0x80) << 8) | 0x50) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 11111111 10000000 01010000"
                              "01000000 00110000 00100000 00010000";
 
-        const T C = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x30 << 8) + 0x40 << 8)
-                      + 0x50 << 8) + 0x60 << 8) + 0x70 << 8) + 0x80;
+        const T C = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x30) << 8) | 0x40) << 8)
+                      | 0x50) << 8) | 0x60) << 8) | 0x70) << 8) | 0x80;
 
         const char *C_SPEC = "00000000 00000000 00110000 01000000"
                              "01010000 01100000 01110000 10000000";
 
-        const T D = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x06 << 8) + 0x05 << 8)
-                      + 0x04 << 8) + 0x03 << 8) + 0x02 << 8) + 0x01;
+        const T D = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x06) << 8) | 0x05) << 8)
+                      | 0x04) << 8) | 0x03) << 8) | 0x02) << 8) | 0x01;
 
         const char *D_SPEC = "00000000 00000000 00000110 00000101"
                              "00000100 00000011 00000010 00000001";
 
-        const T E = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0xfd << 8) + 0xfc << 8)
-                      + 0xfb << 8) + 0xfa << 8) + 0xf9 << 8) + 0xf8;
+        const T E = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0xfd) << 8) | 0xfc) << 8)
+                      | 0xfb) << 8) | 0xfa) << 8) | 0xf9) << 8) | 0xf8;
 
         const char *E_SPEC = "11111111 11111111 11111101 11111100"
                              "11111011 11111010 11111001 11111000";
@@ -2194,7 +2191,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE + OFFSET];
                 g(exp, SPECS[i], NUM_BITS_IN_VALUE);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt48(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt48(buffer, VALUES[i]);
                 bool isEq = eq(exp + OFFSET, buffer, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -2202,9 +2199,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq)  { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -2232,9 +2229,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt48(
+                bslx::ByteStreamImpUtil::putArrayInt48(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt48(
+                bslx::ByteStreamImpUtil::putArrayInt48(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -2286,9 +2283,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt48(result1,
+                bslx::ByteStreamImpUtil::getArrayInt48(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint48(result2,
+                bslx::ByteStreamImpUtil::getArrayUint48(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -2299,9 +2296,10 @@ int main(int argc, char *argv[]) {
                         P(i); P(input[i]); P(result1[i]); P(result2[i]);
                     }
                     LOOP3_ASSERT(length, align, i, input[i] == result1[i]);
-                    if (input[i] > 0)
+                    if (input[i] > 0) {
                         LOOP3_ASSERT(length, align, i,
                                      input[i] == (T) result2[i]);
+                    }
                 }
                 for (; i < NUM_TRIALS; ++i) {   // check values beyond range
                     LOOP3_ASSERT(length, align, i, POS == result1[i]);
@@ -2332,37 +2330,37 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000010 00000011 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0x80 << 8) + 0x60 << 8) + 0x50 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0x80) << 8) | 0x60) << 8) | 0x50) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 10000000 01100000 01010000"
                              "01000000 00110000 00100000 00010000";
 
-        const T C = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x20 << 8) + 0x30 << 8) + 0x40 << 8)
-                      + 0x50 << 8) + 0x60 << 8) + 0x70 << 8) + 0x80;
+        const T C = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x20) << 8) | 0x30) << 8) | 0x40) << 8)
+                      | 0x50) << 8) | 0x60) << 8) | 0x70) << 8) | 0x80;
 
         const char *C_SPEC = "00000000 00100000 00110000 01000000"
                              "01010000 01100000 01110000 10000000";
 
-        const T D = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x07 << 8) + 0x06 << 8) + 0x05 << 8)
-                      + 0x04 << 8) + 0x03 << 8) + 0x02 << 8) + 0x01;
+        const T D = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x07) << 8) | 0x06) << 8) | 0x05) << 8)
+                      | 0x04) << 8) | 0x03) << 8) | 0x02) << 8) | 0x01;
 
         const char *D_SPEC = "00000000 00000111 00000110 00000101"
                              "00000100 00000011 00000010 00000001";
 
-        const T E = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xfe << 8) + 0xfd << 8) + 0xfc << 8)
-                      + 0xfb << 8) + 0xfa << 8) + 0xf9 << 8) + 0xf8;
+        const T E = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xfe) << 8) | 0xfd) << 8) | 0xfc) << 8)
+                      | 0xfb) << 8) | 0xfa) << 8) | 0xf9) << 8) | 0xf8;
 
         const char *E_SPEC = "11111111 11111110 11111101 11111100"
                              "11111011 11111010 11111001 11111000";
@@ -2388,7 +2386,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE + OFFSET];
                 g(exp, SPECS[i], NUM_BITS_IN_VALUE);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt56(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt56(buffer, VALUES[i]);
                 bool isEq = eq(exp + OFFSET, buffer, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -2396,9 +2394,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }       // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -2426,9 +2424,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt56(
+                bslx::ByteStreamImpUtil::putArrayInt56(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt56(
+                bslx::ByteStreamImpUtil::putArrayInt56(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -2480,9 +2478,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt56(result1,
+                bslx::ByteStreamImpUtil::getArrayInt56(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint56(result2,
+                bslx::ByteStreamImpUtil::getArrayUint56(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -2493,9 +2491,10 @@ int main(int argc, char *argv[]) {
                         P(i); P(input[i]); P(result1[i]); P(result2[i]);
                     }
                     LOOP3_ASSERT(length, align, i, input[i] == result1[i]);
-                    if (input[i] > 0)
+                    if (input[i] > 0) {
                         LOOP3_ASSERT(length, align, i,
                                      input[i] == (T) result2[i]);
+                    }
                 }
                 for (; i < NUM_TRIALS; ++i) {   // check values beyond range
                     LOOP3_ASSERT(length, align, i, POS == result1[i]);
@@ -2526,37 +2525,37 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x01 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x01 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000001 00000010 00000011 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0x80 << 8) + 0x70 << 8) + 0x60 << 8) + 0x50 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0x80 << 8) | 0x70) << 8) | 0x60) << 8) | 0x50) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "10000000 01110000 01100000 01010000"
                              "01000000 00110000 00100000 00010000";
 
-        const T C = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x10 << 8) + 0x20 << 8) + 0x30 << 8) + 0x40 << 8)
-                      + 0x50 << 8) + 0x60 << 8) + 0x70 << 8) + 0x80;
+        const T C = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x10 << 8) | 0x20) << 8) | 0x30) << 8) | 0x40) << 8)
+                      | 0x50) << 8) | 0x60) << 8) | 0x70) << 8) | 0x80;
 
         const char *C_SPEC = "00010000 00100000 00110000 01000000"
                              "01010000 01100000 01110000 10000000";
 
-        const T D = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x08 << 8) + 0x07 << 8) + 0x06 << 8) + 0x05 << 8)
-                      + 0x04 << 8) + 0x03 << 8) + 0x02 << 8) + 0x01;
+        const T D = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x08 << 8) | 0x07) << 8) | 0x06) << 8) | 0x05) << 8)
+                      | 0x04) << 8) | 0x03) << 8) | 0x02) << 8) | 0x01;
 
         const char *D_SPEC = "00001000 00000111 00000110 00000101"
                              "00000100 00000011 00000010 00000001";
 
-        const T E = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xfe << 8) + 0xfd << 8) + 0xfc << 8)
-                      + 0xfb << 8) + 0xfa << 8) + 0xf9 << 8) + 0xf8;
+        const T E = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xfe) << 8) | 0xfd) << 8) | 0xfc) << 8)
+                      | 0xfb) << 8) | 0xfa) << 8) | 0xf9) << 8) | 0xf8;
 
         const char *E_SPEC = "11111111 11111110 11111101 11111100"
                              "11111011 11111010 11111001 11111000";
@@ -2580,7 +2579,7 @@ int main(int argc, char *argv[]) {
                 char exp[SIZE];
                 g(exp, SPECS[i], NUM_BITS);
                 char buffer[SIZE];
-                ByteStreamImpUtil::putInt64(buffer, VALUES[i]);
+                bslx::ByteStreamImpUtil::putInt64(buffer, VALUES[i]);
                 bool isEq = eq(exp, buffer, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     P(VALUES[i])
@@ -2588,9 +2587,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) wasError = 1;
+                if (!isEq) { wasError = 1; }
             }
-            if (wasError) break;        // no need to continue.
+            if (wasError) { break; }        // no need to continue.
         }
 
         const int NUM_TRIALS = 10;
@@ -2618,9 +2617,9 @@ int main(int argc, char *argv[]) {
                 memset(buffer1, XX, sizeof buffer1);
                 memset(buffer2, YY, sizeof buffer2);
 
-                ByteStreamImpUtil::putArrayInt64(
+                bslx::ByteStreamImpUtil::putArrayInt64(
                                         buffer1 + align, (T*) input, length);
-                ByteStreamImpUtil::putArrayInt64(
+                bslx::ByteStreamImpUtil::putArrayInt64(
                                         buffer2 + align, (U*) input, length);
                 // check buffer data
                 for (i = 0; i < length; ++i) {
@@ -2671,9 +2670,9 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                ByteStreamImpUtil::getArrayInt64(result1,
+                bslx::ByteStreamImpUtil::getArrayInt64(result1,
                                         buffer1 + align, length);
-                ByteStreamImpUtil::getArrayUint64(result2,
+                bslx::ByteStreamImpUtil::getArrayUint64(result2,
                                         buffer2 + align, length);
 
                 int i = 0;
@@ -2837,7 +2836,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat32(buffer + i, number);
+                bslx::ByteStreamImpUtil::putFloat32(buffer + i, number);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -2847,13 +2846,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 // check negative
                 memset(buffer, '\x32', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat32(buffer + i, -number);
+                bslx::ByteStreamImpUtil::putFloat32(buffer + i, -number);
                 buffer[i] ^=0x80;
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
@@ -2861,7 +2860,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat32(buffer + i, number);
+                bslx::ByteStreamImpUtil::putFloat32(buffer + i, number);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static T INITIAL_VALUES[6];
@@ -2879,7 +2878,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, number != x);
-                        ByteStreamImpUtil::getFloat32(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getFloat32(&x, buffer + i);
                         if (number != x) {
                             P_(number) P(x)
                         }
@@ -2889,7 +2888,7 @@ int main(int argc, char *argv[]) {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, number != x);
                         buffer[i] ^=0x80;
-                        ByteStreamImpUtil::getFloat32(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getFloat32(&x, buffer + i);
                         buffer[i] ^=0x80;
                         if (-number != x) {
                             P_(-number) P(x)
@@ -3054,7 +3053,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat64(buffer + i, number);
+                bslx::ByteStreamImpUtil::putFloat64(buffer + i, number);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3064,13 +3063,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 // check negative
                 memset(buffer, '\x64', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat64(buffer + i, -number);
+                bslx::ByteStreamImpUtil::putFloat64(buffer + i, -number);
                 buffer[i] ^=0x80;
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
@@ -3078,7 +3077,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putFloat64(buffer + i, number);
+                bslx::ByteStreamImpUtil::putFloat64(buffer + i, number);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static T INITIAL_VALUES[6];
@@ -3096,7 +3095,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, number != x);
-                        ByteStreamImpUtil::getFloat64(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getFloat64(&x, buffer + i);
                         if (number != x) {
                             P_(number) P(x)
                         }
@@ -3106,7 +3105,7 @@ int main(int argc, char *argv[]) {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, number != x);
                         buffer[i] ^=0x80;
-                        ByteStreamImpUtil::getFloat64(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getFloat64(&x, buffer + i);
                         buffer[i] ^=0x80;
                         if (-number != x) {
                             P_(-number) P(x)
@@ -3179,7 +3178,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt8(buffer + i, xsignedNumber);
+                bslx::ByteStreamImpUtil::putInt8(buffer + i, xsignedNumber);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3189,12 +3188,12 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xa5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt8(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt8(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static const T INITIAL_VALUES[] = { -99, +99 };
@@ -3205,7 +3204,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, xsignedNumber != x);
-                        ByteStreamImpUtil::getInt8(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt8(&x, buffer + i);
                         if (xsignedNumber != x) {
                             P_(xsignedNumber & 0xff) P(x & 0xff)
                         }
@@ -3214,7 +3213,7 @@ int main(int argc, char *argv[]) {
                     {
                         U y = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                        ByteStreamImpUtil::getInt8(&y, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt8(&y, buffer + i);
                         if (unsignedNumber != y) {
                             P_(unsignedNumber & 0xff) P(y & 0xff)
                         }
@@ -3223,7 +3222,7 @@ int main(int argc, char *argv[]) {
                     {
                         S z = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != z);
-                        ByteStreamImpUtil::getInt8(&z, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt8(&z, buffer + i);
                         if (signedNumber != z) {
                             P_(signedNumber & 0xff) P(z & 0xff)
                         }
@@ -3256,11 +3255,11 @@ int main(int argc, char *argv[]) {
         typedef short T;
         typedef unsigned short U;
 
-        const T A = (0x01 << 8) + 0x02;      // POSITIVE NUMBER
+        const T A = (0x01 << 8) | 0x02;      // POSITIVE NUMBER
 
         const char *A_SPEC = "00000001 00000010";
 
-        const T B = (T) (0x80 << 8) + 0x70; // NEGATIVE NUMBER
+        const T B = (T) (0x80 << 8) | 0x70; // NEGATIVE NUMBER
 
         const char *B_SPEC = "10000000 01110000";
 
@@ -3300,7 +3299,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt16(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt16(buffer + i, signedNumber);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3310,12 +3309,12 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt16(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt16(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static const T INITIAL_VALUES[] = { -99, +99 };
@@ -3326,7 +3325,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt16(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt16(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3335,7 +3334,7 @@ int main(int argc, char *argv[]) {
                     {
                         U y = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                        ByteStreamImpUtil::getUint16(&y, buffer + i);
+                        bslx::ByteStreamImpUtil::getUint16(&y, buffer + i);
                         if (unsignedNumber != y) {
                             P_(unsignedNumber) P(y)
                         }
@@ -3366,13 +3365,13 @@ int main(int argc, char *argv[]) {
 
         typedef int T;
         typedef unsigned int U;
-        const T A = (( ( // POSITIVE NUMBER
-                        0x00 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04;
+        const T A = ((((( // POSITIVE NUMBER
+                        0x00 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04;
 
         const char *A_SPEC = "00000000 00000010 00000011 00000100";
 
-        const T B = (( ( // NEGATIVE NUMBER
-                        0xff << 8) + 0x80 << 8) + 0x60 << 8) + 0x50;
+        const T B = ((((( // NEGATIVE NUMBER
+                        0xff << 8) | 0x80) << 8) | 0x60) << 8) | 0x50;
 
         const char *B_SPEC = "11111111 10000000 01100000 01010000";
 
@@ -3416,7 +3415,7 @@ int main(int argc, char *argv[]) {
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt24(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt24(buffer + i, signedNumber);
                 bool isEq = eq(exp + OFFSET, buffer + i, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3426,13 +3425,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt24(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt24(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp + OFFSET,
                                          buffer + i,   NUM_BITS_IN_BUFFER));
 
@@ -3444,7 +3443,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt24(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt24(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3454,7 +3453,7 @@ int main(int argc, char *argv[]) {
                         U y = INITIAL_VALUES[k];
                         if (signedNumber > 0) {
                             LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                            ByteStreamImpUtil::getUint24(&y, buffer + i);
+                            bslx::ByteStreamImpUtil::getUint24(&y, buffer + i);
                             if (unsignedNumber != y) {
                                 P_(unsignedNumber) P(y)
                             }
@@ -3487,13 +3486,13 @@ int main(int argc, char *argv[]) {
         typedef int T;
         typedef unsigned int U;
 
-        const T A = (( ( // POSITIVE NUMBER
-                        0x01 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04;
+        const T A = ((((( // POSITIVE NUMBER
+                        0x01 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04;
 
         const char *A_SPEC = "00000001 00000010 00000011 00000100";
 
-        const T B = (( ( // NEGATIVE NUMBER
-                        0x80 << 8) + 0x70 << 8) + 0x60 << 8) + 0x50;
+        const T B = ((((( // NEGATIVE NUMBER
+                        0x80 << 8) | 0x70) << 8) | 0x60) << 8) | 0x50;
 
         const char *B_SPEC = "10000000 01110000 01100000 01010000";
 
@@ -3533,7 +3532,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt32(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt32(buffer + i, signedNumber);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3543,12 +3542,12 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt32(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt32(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static const T INITIAL_VALUES[] = { -99, +99 };
@@ -3559,7 +3558,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt32(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt32(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3568,7 +3567,7 @@ int main(int argc, char *argv[]) {
                     {
                         U y = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                        ByteStreamImpUtil::getUint32(&y, buffer + i);
+                        bslx::ByteStreamImpUtil::getUint32(&y, buffer + i);
                         if (unsignedNumber != y) {
                             P_(unsignedNumber) P(y)
                         }
@@ -3600,16 +3599,16 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x00 << 8) + 0x01 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x00) << 8) | 0x01) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000000 00000000 00000001"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0xff << 8) + 0x80 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0xff) << 8) | 0x80) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 11111111 11111111 10000000"
                              "01000000 00110000 00100000 00010000";
@@ -3654,7 +3653,7 @@ int main(int argc, char *argv[]) {
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt40(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt40(buffer + i, signedNumber);
                 bool isEq = eq(exp + OFFSET, buffer + i, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3664,13 +3663,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt40(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt40(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp + OFFSET,
                                          buffer + i,   NUM_BITS_IN_BUFFER));
 
@@ -3682,7 +3681,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt40(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt40(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3692,7 +3691,7 @@ int main(int argc, char *argv[]) {
                         U y = INITIAL_VALUES[k];
                         if (signedNumber > 0) {
                             LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                            ByteStreamImpUtil::getUint40(&y, buffer + i);
+                            bslx::ByteStreamImpUtil::getUint40(&y, buffer + i);
                             if (unsignedNumber != y) {
                                 P_(unsignedNumber) P(y)
                             }
@@ -3725,16 +3724,16 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x00 << 8) + 0x01 << 8) + 0x02 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x00) << 8) | 0x01) << 8) | 0x02) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000000 00000001 00000010"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0xff << 8) + 0x80 << 8) + 0x70 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0xff) << 8) | 0x80) << 8) | 0x70) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 11111111 10000000 01110000"
                              "01000000 00110000 00100000 00010000";
@@ -3778,7 +3777,7 @@ int main(int argc, char *argv[]) {
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt48(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt48(buffer + i, signedNumber);
                 bool isEq = eq(exp + OFFSET, buffer + i, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3788,13 +3787,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt48(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt48(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp + OFFSET,
                                          buffer + i,   NUM_BITS_IN_BUFFER));
 
@@ -3806,7 +3805,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt48(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt48(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3816,7 +3815,7 @@ int main(int argc, char *argv[]) {
                         U y = INITIAL_VALUES[k];
                         if (signedNumber > 0) {
                             LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                            ByteStreamImpUtil::getUint48(&y, buffer + i);
+                            bslx::ByteStreamImpUtil::getUint48(&y, buffer + i);
                             if (unsignedNumber != y) {
                                 P_(unsignedNumber) P(y)
                             }
@@ -3849,16 +3848,16 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x00 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x00 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000000 00000010 00000011 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0xff << 8) + 0x80 << 8) + 0x60 << 8) + 0x50 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0xff << 8) | 0x80) << 8) | 0x60) << 8) | 0x50) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "11111111 10000000 01100000 01010000"
                              "01000000 00110000 00100000 00010000";
@@ -3903,7 +3902,7 @@ int main(int argc, char *argv[]) {
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
                                           buffer + i,   NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt56(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt56(buffer + i, signedNumber);
                 bool isEq = eq(exp + OFFSET, buffer + i, NUM_BITS_IN_BUFFER);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -3913,13 +3912,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }              // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,      buffer + i,
                                           NUM_BITS_IN_BUFFER));
 
-                ByteStreamImpUtil::putInt56(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt56(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp + OFFSET,
                                          buffer + i,   NUM_BITS_IN_BUFFER));
 
@@ -3931,7 +3930,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt56(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt56(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -3941,7 +3940,7 @@ int main(int argc, char *argv[]) {
                         U y = INITIAL_VALUES[k];
                         if (signedNumber > 0) {
                             LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                            ByteStreamImpUtil::getUint56(&y, buffer + i);
+                            bslx::ByteStreamImpUtil::getUint56(&y, buffer + i);
                             if (unsignedNumber != y) {
                                 P_(unsignedNumber) P(y)
                             }
@@ -3974,16 +3973,16 @@ int main(int argc, char *argv[]) {
         typedef bsls::Types::Int64 T;
         typedef bsls::Types::Uint64 U;
 
-        const T A = (( (( (( ( (T)  // POSITIVE NUMBER
-                        0x01 << 8) + 0x02 << 8) + 0x03 << 8) + 0x04 << 8)
-                      + 0x05 << 8) + 0x06 << 8) + 0x07 << 8) + 0x08;
+        const T A = ((((((((((((((T)  // POSITIVE NUMBER
+                        0x01 << 8) | 0x02) << 8) | 0x03) << 8) | 0x04) << 8)
+                      | 0x05) << 8) | 0x06) << 8) | 0x07) << 8) | 0x08;
 
         const char *A_SPEC = "00000001 00000010 00000011 00000100"
                              "00000101 00000110 00000111 00001000";
 
-        const T B = (( (( (( ( (T)  // NEGATIVE NUMBER
-                        0x80 << 8) + 0x70 << 8) + 0x60 << 8) + 0x50 << 8)
-                      + 0x40 << 8) + 0x30 << 8) + 0x20 << 8) + 0x10;
+        const T B = ((((((((((((((T)  // NEGATIVE NUMBER
+                        0x80 << 8) | 0x70) << 8) | 0x60) << 8) | 0x50) << 8)
+                      | 0x40) << 8) | 0x30) << 8) | 0x20) << 8) | 0x10;
 
         const char *B_SPEC = "10000000 01110000 01100000 01010000"
                              "01000000 00110000 00100000 00010000";
@@ -4024,7 +4023,7 @@ int main(int argc, char *argv[]) {
                 memset(buffer, '\x69', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt64(buffer + i, signedNumber);
+                bslx::ByteStreamImpUtil::putInt64(buffer + i, signedNumber);
                 bool isEq = eq(exp, buffer + i, NUM_BITS);
                 if (veryVerbose || !isEq) {
                     const char *e = isLittleEndian()
@@ -4034,12 +4033,12 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) break;               // no need to continue.
+                if (!isEq) { break; }               // no need to continue.
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
 
-                ByteStreamImpUtil::putInt64(buffer + i, unsignedNumber);
+                bslx::ByteStreamImpUtil::putInt64(buffer + i, unsignedNumber);
                 LOOP2_ASSERT(LINE, i, eq(exp, buffer + i, NUM_BITS));
 
                 static const T INITIAL_VALUES[] = { -99, +99 };
@@ -4050,7 +4049,7 @@ int main(int argc, char *argv[]) {
                     {
                         T x = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, signedNumber != x);
-                        ByteStreamImpUtil::getInt64(&x, buffer + i);
+                        bslx::ByteStreamImpUtil::getInt64(&x, buffer + i);
                         if (signedNumber != x) {
                             P_(signedNumber) P(x)
                         }
@@ -4059,7 +4058,7 @@ int main(int argc, char *argv[]) {
                     {
                         U y = INITIAL_VALUES[k];
                         LOOP3_ASSERT(LINE, i, k, unsignedNumber != y);
-                        ByteStreamImpUtil::getUint64(&y, buffer + i);
+                        bslx::ByteStreamImpUtil::getUint64(&y, buffer + i);
                         if (unsignedNumber != y) {
                             P_(unsignedNumber) P(y)
                         }
@@ -4559,7 +4558,8 @@ int main(int argc, char *argv[]) {
                 const int LINE = DATA[di].d_lineNum;
                 const int numBits = DATA[di].d_numBits;
                 const char *origSpec = DATA[di].d_spec;
-                const char *exp = (char *) DATA[di].d_exp;
+                const char *exp =
+                        reinterpret_cast<const char *>(DATA[di].d_exp);
 
                 char spec[1000];    // big buffer to hold "perturbed specs
                 const int N = 3;    // perturb specs N different ways
@@ -4593,7 +4593,8 @@ int main(int argc, char *argv[]) {
                         static int count = 1;
                         char *q = spec;
                         for (const char *p = origSpec; *p; ++p) {
-                            count = 1 + ++count % 3;
+                            ++count;
+                            count = 1 + (count % 3);
                             for (int i = 0; i < count; ++i) {
                                 *q++ = ' ';
                             }
@@ -4654,7 +4655,7 @@ int main(int argc, char *argv[]) {
                         LOOP_ASSERT(LINE, 0 == diff);
                         ++lastByte;
                         for (; lastByte < 10; ++lastByte) {
-                            int d = 0xff ^ buf[lastByte] & 0xff;
+                            int d = (0xff ^ buf[lastByte]) & 0xff;
                             LOOP3_ASSERT(LINE, k, lastByte, 0 == d);
                         }
                     }
@@ -4794,13 +4795,13 @@ int main(int argc, char *argv[]) {
                 if (res) { // If failure, result is not affected.
                     LOOP_ASSERT(LINE, 0 == memcmp(result_0, control_0, SIZE));
                     LOOP_ASSERT(LINE, 0 == memcmp(result_1, control_1, SIZE));
-                }
-                else { // on success, the two results are the same.
+                } else { // on success, the two results are the same.
                     LOOP_ASSERT(LINE, 1 == eq(result_0, result_1, numBits));
                 }
 
                 if (veryVerbose) {
-                    P_(LINE); P_(numBits) P_(spec); P_(res); P(exp); }
+                    P_(LINE); P_(numBits) P_(spec); P_(res); P(exp);
+                }
 
                 // The following test is primary: make sure that the code is
                 // failing for the right reason (i.e., why we think it should).
@@ -5017,8 +5018,10 @@ int main(int argc, char *argv[]) {
 
             for (int di = 0; di < NUM_DATA ; ++di) {
                 const int LINE = DATA[di].d_lineNum;
-                const char *lhs = (char *) DATA[di].d_lhs;
-                const char *rhs = (char *) DATA[di].d_rhs;
+                const char *lhs =
+                        reinterpret_cast<const char *>(DATA[di].d_lhs);
+                const char *rhs =
+                        reinterpret_cast<const char *>(DATA[di].d_rhs);
                 const int nBits = DATA[di].d_nBits;
 
                 if (veryVerbose) {

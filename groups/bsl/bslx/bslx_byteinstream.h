@@ -283,7 +283,7 @@ BSLS_IDENT("$Id: $")
 //  }
 //..
 
-#ifndef INCLUDED_BSLX_BYTESTREAMIMPUTILD
+#ifndef INCLUDED_BSLX_BYTESTREAMIMPUTIL
 #include <bslx_bytestreamimputil.h>
 #endif
 

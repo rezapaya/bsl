@@ -4,8 +4,6 @@
 #include <bsls_ident.h>
 BSLS_IDENT_RCSID(bslx_testinstreamexception_cpp,"$Id$ $CSID$")
 
-#include <bslx_testinstreamexception.h>     // for testing only
-
 // ----------------------------------------------------------------------------
 // Copyright (C) 2013 Bloomberg L.P.
 //

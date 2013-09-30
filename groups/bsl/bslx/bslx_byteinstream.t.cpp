@@ -1,7 +1,7 @@
 // bslx_byteinstream.t.cpp                                            -*-C++-*-
 
 #include <bslx_byteinstream.h>
-#include <bslx_byteoutstream.h>                 // for testing only
+#include <bslx_byteoutstream.h>
 
 #include <bsl_cstdlib.h>     // atoi()
 #include <bsl_cstring.h>     // memcpy(), memcmp(), strlen()
@@ -11,7 +11,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 
 //=============================================================================
@@ -23,7 +22,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -121,8 +120,8 @@ static void aSsErT(int c, const char *s, int i)
 //                  GLOBAL TYPEDEFS/CONSTANTS FOR TESTING
 //-----------------------------------------------------------------------------
 
-typedef ByteInStream Obj;
-typedef ByteOutStream Out;
+typedef bslx::ByteInStream Obj;
+typedef bslx::ByteOutStream Out;
 
 const int SIZEOF_INT64   = 8;
 const int SIZEOF_INT32   = 4;
@@ -381,14 +380,14 @@ int main(int argc, char *argv[])
    {
        MyPerson JaneSmith("Jane", "Smith", 42);
        const int VERSION = 1;
-       ByteOutStream outStream;
+       bslx::ByteOutStream outStream;
        outStream.putVersion(VERSION);
        JaneSmith.bslxStreamOut(outStream, VERSION);
 
        MyPerson janeCopy;
        ASSERT(janeCopy != JaneSmith);
 
-       ByteInStream inStream(outStream.data(), outStream.length());
+       bslx::ByteInStream inStream(outStream.data(), outStream.length());
        int version;
        inStream.getVersion(version);
        ASSERT(version == VERSION);
@@ -404,8 +403,7 @@ int main(int argc, char *argv[])
                     << "\n\tFirstName: " << janeCopy.firstName()
                     << "\n\tLastName : " << janeCopy.lastName()
                     << "\n\tAge      : " << janeCopy.age() << endl;
-           }
-           else {
+           } else {
                cout << "Serialization unsuccessful.  'janeCopy' holds:"
                     << "\n\tFirstName: " << janeCopy.firstName()
                     << "\n\tLastName : " << janeCopy.lastName()
@@ -3217,7 +3215,7 @@ int main(int argc, char *argv[])
             LOOP_ASSERT(i, 0 == x.data());
 
             Out o;
-            for (j = 0; j < i;  j++) o.putInt8(j);
+            for (j = 0; j < i;  j++) { o.putInt8(j); }
 
             Obj x2(o.data(), o.length());
             if (veryVerbose) { P(x2) }
@@ -3232,7 +3230,7 @@ int main(int argc, char *argv[])
 
             // invalidate stream x2 by making excessive 'get' calls
             char c;
-            for (j = 0; j < i + 1; j++) x2.getInt8(c);
+            for (j = 0; j < i + 1; j++) { x2.getInt8(c); }
             LOOP_ASSERT(i, !x && !x2);
             LOOP_ASSERT(i, !x.isValid() && !x2.isValid());
         }
@@ -3363,7 +3361,7 @@ int main(int argc, char *argv[])
 
             // test objects of variable lengths
             Out o;
-            for (int j = 0; j < i;  j++) o.putInt8(j);
+            for (int j = 0; j < i;  j++) { o.putInt8(j); }
 
             Obj x2(o.data(), o.length());
             if (veryVerbose) { P(x2) }
@@ -3403,8 +3401,6 @@ int main(int argc, char *argv[])
         Obj x2("\x00\x01\x02\x03\x04", 5);
         if (veryVerbose) { P(x2); }
         ASSERT(5 == x2.length());
-
-        const char *data = x2.data();
 
         if (verbose) {
             cout << "\nTry getInt8() with x2." << endl;

@@ -2,14 +2,13 @@
 
 #include <bslx_instreamfunctions.h>
 
-#include <bsls_platform.h>           // for testing only
+#include <bsls_platform.h>
 
 #include <bsl_cstdlib.h>     // atoi()
 #include <bsl_iostream.h>
 
 using namespace BloombergLP;
 using namespace bsl;
-using namespace bslx;
 
 //=============================================================================
 //                              TEST PLAN
@@ -88,7 +87,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -516,84 +515,84 @@ class MyTestInStream {
         return *this;
     }
 
-    MyTestInStream& getVersion(int version) { d_versionFlag = true;
-                                               return *this; }
+    MyTestInStream& getVersion(int /*version*/) { d_versionFlag = true;
+                                                  return *this; }
 
 
     typedef bsls::Types::Uint64 Uint64;
 
-    MyTestInStream& getInt64(Int64 &value)   { d_fun = -64; return *this; }
-    MyTestInStream& getUint64(Uint64 &value) { d_fun = +64; return *this; }
-    MyTestInStream& getInt56(Int64 &value)   { d_fun = -56; return *this; }
-    MyTestInStream& getUint56(Int64 &value)  { d_fun = +56; return *this; }
-    MyTestInStream& getInt48(Int64 &value)   { d_fun = -48; return *this; }
-    MyTestInStream& getUint48(Int64 &value)  { d_fun = +48; return *this; }
-    MyTestInStream& getInt40(Int64 &value)   { d_fun = -40; return *this; }
-    MyTestInStream& getUint40(Int64 &value)  { d_fun = +40; return *this; }
-    MyTestInStream& getInt32(int &value)     { d_fun = -32; return *this; }
-    MyTestInStream& getUint32(unsigned int &value)
+    MyTestInStream& getInt64(Int64& /*value*/)   { d_fun = -64; return *this; }
+    MyTestInStream& getUint64(Uint64& /*value*/) { d_fun = +64; return *this; }
+    MyTestInStream& getInt56(Int64& /*value*/)   { d_fun = -56; return *this; }
+    MyTestInStream& getUint56(Int64& /*value*/)  { d_fun = +56; return *this; }
+    MyTestInStream& getInt48(Int64& /*value*/)   { d_fun = -48; return *this; }
+    MyTestInStream& getUint48(Int64& /*value*/)  { d_fun = +48; return *this; }
+    MyTestInStream& getInt40(Int64& /*value*/)   { d_fun = -40; return *this; }
+    MyTestInStream& getUint40(Int64& /*value*/)  { d_fun = +40; return *this; }
+    MyTestInStream& getInt32(int& /*value*/)     { d_fun = -32; return *this; }
+    MyTestInStream& getUint32(unsigned int& /*value*/)
                                               { d_fun = +32; return *this; }
-    MyTestInStream& getInt24(int &value)     { d_fun = -24; return *this; }
-    MyTestInStream& getUint24(int &value)    { d_fun = +24; return *this; }
-    MyTestInStream& getInt16(short &value)   { d_fun = -16; return *this; }
-    MyTestInStream& getUint16(unsigned short &value)
+    MyTestInStream& getInt24(int& /*value*/)     { d_fun = -24; return *this; }
+    MyTestInStream& getUint24(int& /*value*/)    { d_fun = +24; return *this; }
+    MyTestInStream& getInt16(short& /*value*/)   { d_fun = -16; return *this; }
+    MyTestInStream& getUint16(unsigned short& /*value*/)
                                               { d_fun = +16; return *this; }
-    MyTestInStream& getInt8(char &value)     { d_fun =  -8; return *this; }
-    MyTestInStream& getInt8(signed char &value)
+    MyTestInStream& getInt8(char& /*value*/)     { d_fun =  -8; return *this; }
+    MyTestInStream& getInt8(signed char& /*value*/)
                                               { d_fun =  -8; return *this; }
-    MyTestInStream& getUint8(unsigned char &value)
+    MyTestInStream& getUint8(unsigned char& /*value*/)
                                               { d_fun =  +8; return *this; }
-    MyTestInStream& getFloat64(double &value){ d_fun = 164; return *this; }
-    MyTestInStream& getFloat32(float &value) { d_fun = 132; return *this; }
+    MyTestInStream& getFloat64(double& /*value*/){ d_fun = 164; return *this; }
+    MyTestInStream& getFloat32(float& /*value*/) { d_fun = 132; return *this; }
 
-    MyTestInStream& getArrayInt64(Int64 *array, int count)
+    MyTestInStream& getArrayInt64(Int64* /*array*/, int /*count*/)
                                             { d_fun = -1064; return *this; }
-    MyTestInStream& getArrayUint64(Uint64 *array, int count)
+    MyTestInStream& getArrayUint64(Uint64* /*array*/, int /*count*/)
                                             { d_fun = +1064; return *this; }
-    MyTestInStream& getArrayInt56(Int64 *array, int count)
+    MyTestInStream& getArrayInt56(Int64* /*array*/, int /*count*/)
                                             { d_fun = -1056; return *this; }
-    MyTestInStream& getArrayUint56(Uint64 *array, int count)
+    MyTestInStream& getArrayUint56(Uint64* /*array*/, int /*count*/)
                                             { d_fun = +1056; return *this; }
-    MyTestInStream& getArrayInt48(Int64 *array, int count)
+    MyTestInStream& getArrayInt48(Int64* /*array*/, int /*count*/)
                                             { d_fun = -1048; return *this; }
-    MyTestInStream& getArrayUint48(Uint64 *array, int count)
+    MyTestInStream& getArrayUint48(Uint64* /*array*/, int /*count*/)
                                             { d_fun = +1048; return *this; }
-    MyTestInStream& getArrayInt40(Int64 *array, int count)
+    MyTestInStream& getArrayInt40(Int64* /*array*/, int /*count*/)
                                             { d_fun = -1040; return *this; }
-    MyTestInStream& getArrayUint40(Uint64 *array, int count)
+    MyTestInStream& getArrayUint40(Uint64* /*array*/, int /*count*/)
                                             { d_fun = +1040; return *this; }
-    MyTestInStream& getArrayInt32(int *array, int count)
+    MyTestInStream& getArrayInt32(int* /*array*/, int /*count*/)
                                             { d_fun = -1032; return *this; }
-    MyTestInStream& getArrayUint32(unsigned int *array, int count)
+    MyTestInStream& getArrayUint32(unsigned int* /*array*/, int /*count*/)
                                             { d_fun = +1032; return *this; }
-    MyTestInStream& getArrayInt24(int *array, int count)
+    MyTestInStream& getArrayInt24(int* /*array*/, int /*count*/)
                                             { d_fun = -1024; return *this; }
-    MyTestInStream& getArrayUint24(unsigned int *array, int count)
+    MyTestInStream& getArrayUint24(unsigned int* /*array*/, int /*count*/)
                                             { d_fun = +1024; return *this; }
-    MyTestInStream& getArrayInt16(short *array, int count)
+    MyTestInStream& getArrayInt16(short* /*array*/, int /*count*/)
                                             { d_fun = -1016; return *this; }
-    MyTestInStream& getArrayUint16(unsigned short *array, int count)
+    MyTestInStream& getArrayUint16(unsigned short* /*array*/, int /*count*/)
                                             { d_fun = +1016; return *this; }
-    MyTestInStream& getArrayInt8(signed char *array, int count)
+    MyTestInStream& getArrayInt8(signed char* /*array*/, int /*count*/)
                                             { d_fun = -1008; return *this; }
-    MyTestInStream& getArrayUint8(unsigned char *array, int count)
+    MyTestInStream& getArrayUint8(unsigned char* /*array*/, int /*count*/)
                                             { d_fun = +1008; return *this; }
-    MyTestInStream& getArrayInt8(char *array, int count)
+    MyTestInStream& getArrayInt8(char* /*array*/, int /*count*/)
                                             { d_fun = -1001; return *this; }
-    MyTestInStream& getArrayUint8(char *array, int count)
+    MyTestInStream& getArrayUint8(char* /*array*/, int /*count*/)
                                             { d_fun = +1001; return *this; }
-    MyTestInStream& getArrayFloat64(double *array, int count)
+    MyTestInStream& getArrayFloat64(double* /*array*/, int /*count*/)
                                             { d_fun = +1164; return *this; }
-    MyTestInStream& getArrayFloat32(float *array, int count)
+    MyTestInStream& getArrayFloat32(float* /*array*/, int /*count*/)
                                             { d_fun = +1132; return *this; }
 
-    MyTestInStream& getString(bsl::string& value)
+    MyTestInStream& getString(bsl::string& /*value*/)
                                             { d_fun = +10000; return *this; }
 
     // MANIPULATORS
     void            invalidate()            { d_fun =  99; }
     void            removeAll()             { d_fun =  98; }
-    void            reserveCapacity(int newCapacity)
+    void            reserveCapacity(int /*newCapacity*/)
                                             { d_fun =  97; }
     void            resetVersionFlag()      { d_versionFlag = false; }
 
@@ -640,7 +639,7 @@ class MyTestClass {
 };
 
 template <class STREAM>
-STREAM& MyTestClass::bslxStreamIn(STREAM& stream, int version)
+STREAM& MyTestClass::bslxStreamIn(STREAM& stream, int /*version*/)
 {
     stream.removeAll();
     return stream;
@@ -686,12 +685,12 @@ int main(int argc, char *argv[])
          int        i         = 0;
 
          MyInStream in1(buffer, 4);  // use the one buffer
-         InStreamFunctions::streamIn(in1, i, 1);
+         bslx::InStreamFunctions::streamIn(in1, i, 1);
                                           ASSERT(in1);  ASSERT(EXP == i);
 
          i = 0;                       // reset 'i'
          MyInStream in2(buffer, 4);  // re-use 'buffer (no version)
-         InStreamFunctions::streamIn(in2, i, 0);
+         bslx::InStreamFunctions::streamIn(in2, i, 0);
                                           ASSERT(in2);  ASSERT(EXP == i);
      }
 
@@ -702,13 +701,13 @@ int main(int argc, char *argv[])
          MyPoint p1, p2;  // two default points
 
          MyInStream in1(buffer1, 5);  // 'buffer1' has no version byte
-         InStreamFunctions::streamIn(in1, p1, 1);
+         bslx::InStreamFunctions::streamIn(in1, p1, 1);
                                           ASSERT(in1);  ASSERT(EXP == p1);
 
          MyInStream in2(buffer2, 6);  // 'buffer2' *has* a version byte
          int version;
          in2.getVersion(version);         ASSERT(1 == version);
-         InStreamFunctions::streamIn(in2, p2, version);
+         bslx::InStreamFunctions::streamIn(in2, p2, version);
                                           ASSERT(in2);  ASSERT(EXP == p2);
      }
 //
@@ -795,159 +794,158 @@ int main(int argc, char *argv[])
 
         if (verbose) cout << "\nTesting 'streamIn'" << endl;
         {
-            using namespace InStreamFunctions;
 
             MyTestInStream stream;
 
-            streamIn(stream, X0, 1);
+            bslx::InStreamFunctions::streamIn(stream, X0, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -8 == stream.fun());
 
-            streamIn(stream, XA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -8 == stream.fun());
 
-            streamIn(stream, XB, 1);
+            bslx::InStreamFunctions::streamIn(stream, XB, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -8 == stream.fun());
 
-            streamIn(stream, XC, 1);
+            bslx::InStreamFunctions::streamIn(stream, XC, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +8 == stream.fun());
 
-            streamIn(stream, XD, 1);
+            bslx::InStreamFunctions::streamIn(stream, XD, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -16 == stream.fun());
 
-            streamIn(stream, XE, 1);
+            bslx::InStreamFunctions::streamIn(stream, XE, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +16 == stream.fun());
 
-            streamIn(stream, XF, 1);
+            bslx::InStreamFunctions::streamIn(stream, XF, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -32 == stream.fun());
 
-            streamIn(stream, XG, 1);
+            bslx::InStreamFunctions::streamIn(stream, XG, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +32 == stream.fun());
 
-            streamIn(stream, XFA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XFA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -32 == stream.fun());
 
-            streamIn(stream, XFB, 1);
+            bslx::InStreamFunctions::streamIn(stream, XFB, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 32 == stream.fun());
 
-            streamIn(stream, XH, 1);
+            bslx::InStreamFunctions::streamIn(stream, XH, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -64 == stream.fun());
 
-            streamIn(stream, XI, 1);
+            bslx::InStreamFunctions::streamIn(stream, XI, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +64 == stream.fun());
 
-            streamIn(stream, XJ, 1);
+            bslx::InStreamFunctions::streamIn(stream, XJ, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 132 == stream.fun());
 
-            streamIn(stream, XK, 1);
+            bslx::InStreamFunctions::streamIn(stream, XK, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 164 == stream.fun());
 
-            streamIn(stream, XL, 1);
+            bslx::InStreamFunctions::streamIn(stream, XL, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 10000 == stream.fun());
 
-            streamIn(stream, XM, 1);
+            bslx::InStreamFunctions::streamIn(stream, XM, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 98 == stream.fun());
 
-            streamIn(stream, XN, 1);
+            bslx::InStreamFunctions::streamIn(stream, XN, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1001 == stream.fun());
 
-            streamIn(stream, XNU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XNU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 8 == stream.fun());
 
-            streamIn(stream, XNS, 1);
+            bslx::InStreamFunctions::streamIn(stream, XNS, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -8 == stream.fun());
 
-            streamIn(stream, XO, 1);
+            bslx::InStreamFunctions::streamIn(stream, XO, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 98 == stream.fun());
 
-            streamIn(stream, XQ, 1);
+            bslx::InStreamFunctions::streamIn(stream, XQ, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1016 == stream.fun());
 
-            streamIn(stream, XQU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XQU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 16 == stream.fun());
 
-            streamIn(stream, XR, 1);
+            bslx::InStreamFunctions::streamIn(stream, XR, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1032 == stream.fun());
 
-            streamIn(stream, XRU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XRU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 32 == stream.fun());
 
-            streamIn(stream, XS, 1);
+            bslx::InStreamFunctions::streamIn(stream, XS, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1064 == stream.fun());
 
-            streamIn(stream, XSU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XSU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 64 == stream.fun());
 
-            streamIn(stream, XT, 1);
+            bslx::InStreamFunctions::streamIn(stream, XT, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +1132 == stream.fun());
 
-            streamIn(stream, XU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), +1164 == stream.fun());
 
-            streamIn(stream, XV, 1);
+            bslx::InStreamFunctions::streamIn(stream, XV, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 10000 == stream.fun());
 
-            streamIn(stream, XZ, 1);
+            bslx::InStreamFunctions::streamIn(stream, XZ, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -32 == stream.fun());
 
-            streamIn(stream, XXA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XXA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -32 == stream.fun());
 
-            streamIn(stream, XNA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XNA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1001 == stream.fun());
 
-            streamIn(stream, XNAU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XNAU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 8 == stream.fun());
 
-            streamIn(stream, XNAS, 1);
+            bslx::InStreamFunctions::streamIn(stream, XNAS, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -8 == stream.fun());
 
-            streamIn(stream, XQA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XQA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1016 == stream.fun());
 
-            streamIn(stream, XQAU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XQAU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 16 == stream.fun());
 
-            streamIn(stream, XRA, 1);
+            bslx::InStreamFunctions::streamIn(stream, XRA, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), -1032 == stream.fun());
 
-            streamIn(stream, XRAU, 1);
+            bslx::InStreamFunctions::streamIn(stream, XRAU, 1);
             ASSERT(false == stream.versionFlag());
             LOOP_ASSERT(stream.fun(), 32 == stream.fun());
         }

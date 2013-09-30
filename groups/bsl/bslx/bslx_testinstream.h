@@ -441,11 +441,11 @@ BSLS_IDENT("$Id: $")
 //          const char *const PD  = out.data();
 //          const int         NPB = out.length();
 //
-//          MyObj t(X);    ASSERT(W != t);   ASSERT(X == t);     ASSERT(Y != t);
+//          MyObj t(X);    ASSERT(W != t);   ASSERT(X == t);    ASSERT(Y != t);
 //          TestInStream in(PD, NPB); ASSERT(in);
 //          in.setSuppressVersionCheck(1);
 //          InStreamFunctions::streamIn(in, t, VERSION);  ASSERT(in);
-//                         ASSERT(W != t);   ASSERT(X != t);     ASSERT(Y == t);
+//                         ASSERT(W != t);   ASSERT(X != t);    ASSERT(Y == t);
 //      }
 //
 //      if (verbose) {
@@ -478,12 +478,12 @@ BSLS_IDENT("$Id: $")
 //          const char *const PD  = out.data();
 //          const int         NPB = out.length();
 //
-//          MyObj t(X);    ASSERT(W != t);    ASSERT(X == t);    ASSERT(Y != t);
+//          MyObj t(X);    ASSERT(W != t);    ASSERT(X == t);   ASSERT(Y != t);
 //          TestInStream in(PD, NPB);
 //          in.setSuppressVersionCheck(1);
 //          ASSERT(in);
 //          InStreamFunctions::streamIn(in, t, version); ASSERT(!in);
-//                         ASSERT(W != t);    ASSERT(X == t);    ASSERT(Y != t);
+//                         ASSERT(W != t);    ASSERT(X == t);   ASSERT(Y != t);
 //      }
 //
 //      if (verbose) bsl::cout << "\t\tBad length." << bsl::endl;

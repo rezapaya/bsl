@@ -1,6 +1,7 @@
-//bslx_testinstream.t.cpp                                            -*-C++-*-
+// bslx_testinstream.t.cpp                                            -*-C++-*-
 #include <bslx_testinstream.h>
-#include <bslx_testoutstream.h>                 // for testing only
+#include <bslx_testoutstream.h>
+#include <bslx_testinstreamexception.h>
 
 #include <bsl_cstdlib.h>     // atoi()
 #include <bsl_cstdio.h>      // sprintf()
@@ -10,7 +11,6 @@
 
 using namespace BloombergLP;
 using namespace bsl;  // automatically added by script
-using namespace bslx;
 
 //=============================================================================
 //                                 TEST PLAN
@@ -114,7 +114,7 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) ++testStatus;
+        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -155,9 +155,9 @@ static void aSsErT(int c, const char *s, int i)
 #define INT8_FL   "\xe0"
 #define INT8_BITS "11100000"
 
-typedef TestInStream Obj;
-typedef TestOutStream Out;
-typedef FieldCode FC;
+typedef bslx::TestInStream Obj;
+typedef bslx::TestOutStream Out;
+typedef bslx::FieldCode FC;
 
 const int SIZEOF_INT64   = 8;
 const int SIZEOF_INT56   = 7;
@@ -245,7 +245,7 @@ static int globalVeryVerbose;
 //                    GENERATOR FUNCTION 'g' FOR TESTING
 //-----------------------------------------------------------------------------
 // The following function interprets the given 'spec' in order from left to
-// right to configure a 'bsls::TestOutStream' object according to a custom
+// right to configure a 'bslx::TestOutStream' object according to a custom
 // language.  The language consists of letters in the ranges [A-T] and [a-t],
 // and digits in the range [0-9].  A letter must be followed by one or more
 // digits.  Each letter is associated with an unique output method to be
@@ -336,7 +336,9 @@ int g(Out *o, const char *spec) {
 
     // read spec from left to right
     for (int i = 0; spec[i]; ++i) {
-        if (spec[i] == ' ' || spec[i] == '\t') continue; // Skip spaces
+        if (spec[i] == ' ' || spec[i] == '\t')  {
+            continue; // Skip spaces
+        }
 
         if (('A' <= spec[i] && spec[i] <= 'T') ||
            ('a' <= spec[i] && spec[i] <= 't' ) ) {
@@ -352,7 +354,7 @@ int g(Out *o, const char *spec) {
                     haveDigit = true;
                     int n = spec[j] - '0';
 
-                    switch(spec[i]) {
+                    switch (spec[i]) {
                       case 'A':    o->putInt8(VA[n]);            break;
                       case 'B':    o->putInt8(VB[n]);            break;
                       case 'C':    o->putUint8(VC[n]);           break;
@@ -497,7 +499,7 @@ void testGetArray(const ArrayTestTable *data,
                 ElemType arr[SIZE];                   // array of read values
                 const ElemType VX = (ElemType) 0xFF;  // "uninitialized" value
                 int k;
-                for (k = 0; k < SIZE; ++k) arr[k] = VX;
+                for (k = 0; k < SIZE; ++k) { arr[k] = VX; }
 
                 const int arrLen = data[i].d_arrLen[j];
                 (x.*getArrayFunc)(arr, arrLen);
@@ -505,11 +507,13 @@ void testGetArray(const ArrayTestTable *data,
                 const int expArrLen = data[i].d_expArrLen[j];
 
                 // verify read values
-                for (k = 0; k < expArrLen; ++k)
+                for (k = 0; k < expArrLen; ++k) {
                     LOOP4_ASSERT(line, i, j, k, origVal[k] == arr[k]);
+                }
                 // Check for overrun
-                for (k = expArrLen; k < SIZE - expArrLen; ++k)
+                for (k = expArrLen; k < SIZE - expArrLen; ++k) {
                     LOOP4_ASSERT(line, i, j, k, VX == arr[k]);
+                }
             }
             LOOP2_ASSERT(line, i, !!x == !!expObjValidity);
             if (expObjValidity) {
@@ -637,7 +641,7 @@ void testGetArrayInputLimit(const InputLimitTestTable *data,
                             const char                *spec,
                             int                        numArrayElments,
                             FuncPtr                    getFunc,
-                            FieldCode::Type            dataType)
+                            bslx::FieldCode::Type      dataType)
     // Iterate over the specified 'data' test vectors 'numData' times.  In each
     // iteration, create a test input stream object initialized with the output
     // of the generator function 'g' using the specified 'spec'.  Invoke some
@@ -685,7 +689,7 @@ void testGetArrayInputLimit(const InputLimitTestTable *data,
                     (x.*getFunc)(array, numArrayElments);
                 }
             }
-            catch (TestInStreamException& e) {
+            catch (bslx::TestInStreamException& e) {
                 thrown = 1;
                 if (veryVerbose) cout << "\t*** Caught Exception : type = "
                                       << e.dataType() << " ***" << endl;
@@ -710,7 +714,7 @@ void testGetArrayInputLimit(const InputLimitTestTable *data,
                         (x.*getFunc)(array, numArrayElments);
                     }
                 }
-                catch (TestInStreamException& e) {
+                catch (bslx::TestInStreamException& e) {
                     LOOP3_ASSERT(LINE, i, numInput,
                                  0 && "\t*** Unexpected exception ***\n");
                     if (veryVerbose) {
@@ -752,7 +756,7 @@ void testGetScalarInputLimit(const InputLimitTestTable        *data,
                              int                              numData,
                              const char                      *spec,
                              Obj& (Obj::*getFunc)(ElemType&),
-                             FieldCode::Type                  dataType)
+                             bslx::FieldCode::Type            dataType)
     // Iterate over the specified 'data' test vectors 'numData' times.  In each
     // iteration, create a test input stream object initialized with the output
     // of the generator function 'g' using the specified 'spec'.  Invoke some
@@ -797,7 +801,7 @@ void testGetScalarInputLimit(const InputLimitTestTable        *data,
                     (x.*getFunc)(value);
                 }
             }
-            catch (TestInStreamException& e) {
+            catch (bslx::TestInStreamException& e) {
                 thrown = 1;
                 if (veryVerbose) cout << "\t*** Caught Exception : type = "
                                       << e.dataType() << " ***" << endl;
@@ -822,7 +826,7 @@ void testGetScalarInputLimit(const InputLimitTestTable        *data,
                         (x.*getFunc)(value);
                     }
                 }
-                catch (TestInStreamException& e) {
+                catch (bslx::TestInStreamException& e) {
                     LOOP3_ASSERT(LINE, i, numInput,
                                  0 && "\t*** Unexpected exception ***\n");
                     if (veryVerbose) {
@@ -886,7 +890,7 @@ struct ForEachIn<LIST, 0> {
 //-----------------------------------------------------------------------------
 template <typename ElemType,
           Obj& (Obj::*getFunc)(ElemType&),
-          FieldCode::Type fc>
+          bslx::FieldCode::Type fc>
 struct GetScalar {
     // The struct 'GetScalar' is a generic, templatized structure that
     // helps to store an address of 'TestInStream' access function for
@@ -908,7 +912,7 @@ struct GetScalar {
 //-----------------------------------------------------------------------------
 template <typename ElemType,
           Obj& (Obj::*getFunc)(ElemType*, int),
-          FieldCode::Type fc,
+          bslx::FieldCode::Type fc,
           int numArrayElements>
 struct GetArray {
     // The struct 'GetArray' is a generic, templatized structure that
@@ -1244,11 +1248,9 @@ int hhh(MyDoubleArray *object, const char *spec, int verboseFlag = 1)
     for (int i = 0; spec[i]; ++i) {
         if ('A' <= spec[i] && spec[i] <= 'E') {
             object->append(VALUES[spec[i] - 'A']);
-        }
-        else if ('~' == spec[i]) {
+        } else if ('~' == spec[i]) {
             object->setLength(0);
-        }
-        else {
+        } else {
             if (verboseFlag) {
                 cout << "Error, bad character ('" << spec[i] << "') in spec \""
                      << spec << "\" at position " << i << '.' << endl;
@@ -1419,11 +1421,11 @@ int main(int argc, char *argv[]) {
      }
      {
          const MyObj X(h("ABC"));
-         TestOutStream out;              X.bslxStreamOut(out, VERSION);
+         bslx::TestOutStream out;              X.bslxStreamOut(out, VERSION);
 
          const char *const PD  = out.data();
          const int         NPB = out.length();
-         TestInStream in(PD, NPB);
+         bslx::TestInStream in(PD, NPB);
          ASSERT(in);                          ASSERT(!in.isEmpty());
          in.setSuppressVersionCheck(1);
 
@@ -1438,7 +1440,7 @@ int main(int argc, char *argv[]) {
      {
          for (int i = 0; SPECS[i]; ++i) {
              const MyObj X(h(SPECS[i]));
-             TestOutStream out;
+             bslx::TestOutStream out;
              X.bslxStreamOut(out, VERSION);
              const char *const PD  = out.data();
                                              LOOP_ASSERT(i, *PD != M1);
@@ -1448,12 +1450,12 @@ int main(int argc, char *argv[]) {
              // and that the input stream is emptied, but remains valid.
 
              for (int j = 0; SPECS[j]; ++j) {
-                 TestInStream in(PD, NPB);
+                 bslx::TestInStream in(PD, NPB);
                  in.setSuppressVersionCheck(1);
                  LOOP2_ASSERT(i,j,in);   LOOP2_ASSERT(i,j,!in.isEmpty());
 
                  MyObj t(h(SPECS[j]));
-                 LOOP2_ASSERT(i, j, X == t == (i == j));
+                 LOOP2_ASSERT(i, j, (X == t) == (i == j));
                  t.bslxStreamIn(in, VERSION);
                  LOOP2_ASSERT(i, j, X == t);
                  LOOP2_ASSERT(i, j, in); LOOP2_ASSERT(i,j,in.isEmpty());
@@ -1469,7 +1471,7 @@ int main(int argc, char *argv[]) {
      {
          for (int i = 0; SPECS[i]; ++i) {
              const MyObj X(h(SPECS[i]));
-             TestOutStream out;
+             bslx::TestOutStream out;
              X.bslxStreamOut(out, VERSION);
              const char *const PD  = out.data();
                                              LOOP_ASSERT(i, *PD != M1);
@@ -1479,13 +1481,13 @@ int main(int argc, char *argv[]) {
              // and that the input stream is emptied, but remains valid.
 
              for (int j = 0; SPECS[j]; ++j) {
-                 TestInStream testInStream(PD, NPB);
-                 TestInStream& in = testInStream;
+                 bslx::TestInStream testInStream(PD, NPB);
+                 bslx::TestInStream& in = testInStream;
                  in.setSuppressVersionCheck(1);
                  LOOP2_ASSERT(i,j,in);   LOOP2_ASSERT(i,j,!in.isEmpty());
 
                  MyObj t(h(SPECS[j]));
-                 LOOP2_ASSERT(i, j, X == t == (i == j));
+                 LOOP2_ASSERT(i, j, (X == t) == (i == j));
                  BEGIN_BSLX_EXCEPTION_TEST {
                      in.reset();
                      t.bslxStreamIn(in, VERSION);
@@ -1500,13 +1502,13 @@ int main(int argc, char *argv[]) {
          bsl::cout << "\tOn empty and invalid streams." << bsl::endl;
      }
      {
-         TestOutStream out;
+         bslx::TestOutStream out;
          const char *const  PD = out.data();
          const int         NPB = out.length();
          ASSERT(0 == NPB);
 
          for (int i = 0; SPECS[i]; ++i) {
-             TestInStream in(PD, NPB);
+             bslx::TestInStream in(PD, NPB);
              in.setSuppressVersionCheck(1);
              LOOP_ASSERT(i, in);            LOOP_ASSERT(i, in.isEmpty());
 
@@ -1531,7 +1533,7 @@ int main(int argc, char *argv[]) {
          const MyObj W2 = h("BCBCBCB"), X2 = h("ADEAD"),  Y2 = h("CABDE");
          const MyObj W3 = h("DEEDDE"),  X3 = h("ABABAB"), Y3 = h("C");
 
-         TestOutStream out;
+         bslx::TestOutStream out;
          X1.bslxStreamOut(out, VERSION);
          const int NPB1 = out.length();
          X2.bslxStreamOut(out, VERSION);
@@ -1541,7 +1543,7 @@ int main(int argc, char *argv[]) {
          const char *const PD = out.data(); ASSERT(*PD != M1);
 
          for (int i = 0; i < NPB; ++i) {
-             TestInStream in(PD,i);  in.setQuiet(!veryVerbose);
+             bslx::TestInStream in(PD,i);  in.setQuiet(!veryVerbose);
              in.setSuppressVersionCheck(1);
              LOOP_ASSERT(i, in); LOOP_ASSERT(i, !i == in.isEmpty());
              MyObj t1(W1), t2(W2), t3(W3);
@@ -1556,8 +1558,7 @@ int main(int argc, char *argv[]) {
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W2 == t2);
                  t3.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W3 == t3);
-             }
-             else if (i < NPB2) {
+             } else if (i < NPB2) {
                  t1.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i,  in); LOOP_ASSERT(i, X1 == t1);
                  t2.bslxStreamIn(in, VERSION);
@@ -1567,8 +1568,7 @@ int main(int argc, char *argv[]) {
                  }
                  t3.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W3 == t3);
-             }
-             else {
+             } else {
                  t1.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i,  in); LOOP_ASSERT(i, X1 == t1);
                  t2.bslxStreamIn(in, VERSION);
@@ -1604,14 +1604,14 @@ int main(int argc, char *argv[]) {
      {
          const int length  = 5;
 
-         TestOutStream out;    // Stream out "new" value.
+         bslx::TestOutStream out;    // Stream out "new" value.
          out.putLength(length);
          out.putArrayFloat64(VALUES, 5);
          const char *const PD  = out.data();
          const int         NPB = out.length();
 
          MyObj t(X);    ASSERT(W != t);   ASSERT(X == t);     ASSERT(Y != t);
-         TestInStream in(PD, NPB); ASSERT(in);
+         bslx::TestInStream in(PD, NPB); ASSERT(in);
          in.setSuppressVersionCheck(1);
          t.bslxStreamIn(in, VERSION);  ASSERT(in);
                         ASSERT(W != t);   ASSERT(X != t);     ASSERT(Y == t);
@@ -1624,14 +1624,14 @@ int main(int argc, char *argv[]) {
          const char version = -1; // too small
          const int  length  = 5;
 
-         TestOutStream out;    // Stream out "new" value.
+         bslx::TestOutStream out;    // Stream out "new" value.
          out.putLength(length);
          out.putArrayFloat64(VALUES, 5);
          const char *const PD  = out.data();
          const int         NPB = out.length();
 
          MyObj t(X);    ASSERT(W != t);    ASSERT(X == t);   ASSERT(Y != t);
-         TestInStream in(PD, NPB);  in.setQuiet(!veryVerbose);
+         bslx::TestInStream in(PD, NPB);  in.setQuiet(!veryVerbose);
          in.setSuppressVersionCheck(1);
          ASSERT(in);
          t.bslxStreamIn(in, version); ASSERT(!in);
@@ -1641,14 +1641,14 @@ int main(int argc, char *argv[]) {
          const char version = 100; // too large
          const int  length  = 5;
 
-         TestOutStream out;    // Stream out "new" value.
+         bslx::TestOutStream out;    // Stream out "new" value.
          out.putLength(length);
          out.putArrayFloat64(VALUES, 5);
          const char *const PD  = out.data();
          const int         NPB = out.length();
 
          MyObj t(X);    ASSERT(W != t);    ASSERT(X == t);    ASSERT(Y != t);
-         TestInStream in(PD, NPB);
+         bslx::TestInStream in(PD, NPB);
          in.setSuppressVersionCheck(1);
          ASSERT(in);
          t.bslxStreamIn(in, version); ASSERT(!in);
@@ -1659,14 +1659,14 @@ int main(int argc, char *argv[]) {
      {
          const int length = -1; // too small
 
-         TestOutStream out;    // Stream out "new" value.
+         bslx::TestOutStream out;    // Stream out "new" value.
          out.putLength(length);
          out.putArrayFloat64(VALUES, 5);
          const char *const PD  = out.data();
          const int         NPB = out.length();
 
          MyObj t(X);    ASSERT(W != t);   ASSERT(X == t);    ASSERT(Y != t);
-         TestInStream in(PD, NPB);
+         bslx::TestInStream in(PD, NPB);
          in.setSuppressVersionCheck(1);
          ASSERT(in);
          t.bslxStreamIn(in, VERSION); ASSERT(!in);
@@ -1693,10 +1693,10 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getLength'." << endl;
         {
             for (int len = 0; len <= 512; ++len) {
-                TestOutStream out;
+                bslx::TestOutStream out;
                 out.putVersion(1);
                 out.putLength(len);
-                TestInStream in(out.data(), out.length());
+                bslx::TestInStream in(out.data(), out.length());
                 int tmp;
                 in.getVersion(tmp);
                 in.getLength(tmp);
@@ -1707,7 +1707,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getVersion'." << endl;
         {
             typedef int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getVersion;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -1715,34 +1715,44 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                                },
     // stream without version
-    { L_, "C01",            0,     2,      { 0 }                             },
+    { L_, "C01",            0,     2,   { 0 }                                },
     // valid streams without version and version check turned off
-    { L_, "C0123",          1,     4,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "C4567",          1,     4,      { VC[4], VC[5], VC[6], VC[7] }    },
+    { L_, "C0123",          1,     4,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3]}  },
+    { L_, "C4567",          1,     4,   { (ElemType)VC[4], (ElemType)VC[5],
+                                          (ElemType)VC[6], (ElemType)VC[7] } },
     // valid streams
-    { L_, "A0 C0123",       0,     4,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C4567",       0,     4,      { VC[4], VC[5], VC[6], VC[7] }    },
+    { L_, "A0 C0123",       0,     4,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C4567",       0,     4,   { (ElemType)VC[4], (ElemType)VC[5],
+                                          (ElemType)VC[6], (ElemType)VC[7] } },
     // streams containing incompatible data types
-    { L_, "A0 A0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 B1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 E2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 F3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 G4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 H3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 I2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 J1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 K0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 L1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 M2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 N3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 O4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 P3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 Q2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 R1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 S0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 T1 C234",  0,     5,      { VC[0] }                         },
+    { L_, "A0 A0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 B1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 E2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 F3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 G4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 H3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 I2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 J1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 K0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 L1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 M2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 N3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 O4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 P3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 Q2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 R1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 S0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 T1 C234",  0,     5,   { (ElemType)VC[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -1869,7 +1879,7 @@ int main(int argc, char *argv[]) {
                 "A0 I123", "A0 J123", "A0 K123", "A0 L123",
                 0}; // Null string required as last element.
 
-            typedef FieldCode FC;
+            typedef bslx::FieldCode FC;
 
         typedef bslmf::TypeList20<
             GetScalar<char,                &Obj::getInt8,    FC::BSLX_INT8   >,
@@ -1921,7 +1931,7 @@ int main(int argc, char *argv[]) {
                 "A0 i3i3i3", "A0 j3j3j3", "A0 k3k3k3", "A0 l3l3l3",
                 0}; // Null string required as last element.
 
-            typedef FieldCode FC;
+            typedef bslx::FieldCode FC;
 
  typedef bslmf::TypeList20<
      GetArray<char,                &Obj::getArrayInt8,    FC::BSLX_INT8,    3>,
@@ -2043,7 +2053,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayFloat64'." << endl;
         {
             typedef double ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayFloat64;
             const ElemType *V_ORIG = VL;        // base-comparison array
 
@@ -2111,7 +2121,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayFloat32'." << endl;
         {
             typedef float ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayFloat32;
             const ElemType *V_ORIG = VK;        // base-comparison array
 
@@ -2180,7 +2190,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt64'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt64;
             const ElemType *V_ORIG = VI;        // base-comparison array
 
@@ -2233,7 +2243,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint64'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint64;
             const ElemType *V_ORIG = VJ;        // base-comparison array
 
@@ -2303,7 +2313,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt56'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt56;
             const ElemType *V_ORIG = VI;        // base-comparison array
 
@@ -2356,7 +2366,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint56'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint56;
             const ElemType *V_ORIG = VJ;        // base-comparison array
 
@@ -2426,7 +2436,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt48'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt48;
             const ElemType *V_ORIG = VI;        // base-comparison array
 
@@ -2479,7 +2489,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint48'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint48;
             const ElemType *V_ORIG = VJ;        // base-comparison array
 
@@ -2549,7 +2559,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt40'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt40;
             const ElemType *V_ORIG = VI;        // base-comparison array
 
@@ -2602,7 +2612,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint40'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint40;
             const ElemType *V_ORIG = VJ;        // base-comparison array
 
@@ -2672,7 +2682,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt32'." << endl;
         {
             typedef int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt32;
             const ElemType *V_ORIG = VG;        // base-comparison array
 
@@ -2725,7 +2735,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint32'." << endl;
         {
             typedef unsigned int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint32;
             const ElemType *V_ORIG = VH;        // base-comparison array
 
@@ -2794,7 +2804,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt24'." << endl;
         {
             typedef int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt24;
             const ElemType *V_ORIG = VG;        // base-comparison array
 
@@ -2847,7 +2857,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint24'." << endl;
         {
             typedef unsigned int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint24;
             const ElemType *V_ORIG = VH;        // base-comparison array
 
@@ -2916,7 +2926,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt16'." << endl;
         {
             typedef short ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt16;
             const ElemType *V_ORIG = VE;        // base-comparison array
 
@@ -2969,7 +2979,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint16'." << endl;
         {
             typedef unsigned short ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint16;
             const ElemType *V_ORIG = VF;        // base-comparison array
 
@@ -3040,7 +3050,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayInt8' w/ 'char*'." << endl;
         {
             typedef char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt8;
             const ElemType *V_ORIG = VA;        // base-comparison array
 
@@ -3093,7 +3103,7 @@ int main(int argc, char *argv[]) {
             cout << "\nTesting 'getArrayInt8' w/ 'signed char*'." << endl;
         {
             typedef signed char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayInt8;
             const ElemType *V_ORIG = VB;        // base-comparison array
 
@@ -3145,7 +3155,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getArrayUint8' w/ 'char*'." << endl;
         {
             typedef char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint8;
             const ElemType *V_ORIG = VC;        // base-comparison array
 
@@ -3198,7 +3208,7 @@ int main(int argc, char *argv[]) {
             cout << "\nTesting 'getArrayUint8' w/ 'unsigned char*'." << endl;
         {
             typedef unsigned char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType*, int);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType*, int);
             const FuncPtr FUNC = &Obj::getArrayUint8;
             const ElemType *V_ORIG = VD;        // base-comparison array
 
@@ -3265,7 +3275,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getFloat64'." << endl;
         {
             typedef double ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getFloat64;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3273,35 +3283,45 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                             },
     // stream without version
-    { L_, "L01",            0,     2,      { 0 }                             },
+    { L_, "L01",            0,     2,   { 0 }                             },
     // valid streams without version and version check turned off
-    { L_, "L0123",          1,     4,      { VL[0], VL[1], VL[2], VL[3] }    },
-    { L_, "L4567",          1,     4,      { VL[4], VL[5], VL[6], VL[7] }    },
+    { L_, "L0123",          1,     4,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2], (ElemType)VL[3] } },
+    { L_, "L4567",          1,     4,   { (ElemType)VL[4], (ElemType)VL[5],
+                                          (ElemType)VL[6], (ElemType)VL[7] } },
     // valid streams
-    { L_, "A0 L0123",       0,     4,      { VL[0], VL[1], VL[2], VL[3] }    },
-    { L_, "A0 L4567",       0,     4,      { VL[4], VL[5], VL[6], VL[7] }    },
+    { L_, "A0 L0123",       0,     4,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2], (ElemType)VL[3] } },
+    { L_, "A0 L4567",       0,     4,   { (ElemType)VL[4], (ElemType)VL[5],
+                                          (ElemType)VL[6], (ElemType)VL[7] } },
     // streams containing incompatible data types
-    { L_, "A0 A0 L1234",    0,     5,      { 0 }                             },
-    { L_, "A0 L0 B1 L234",  0,     5,      { VL[0] }                         },
-    { L_, "A0 L01 C2 L34",  0,     5,      { VL[0], VL[1] }                  },
-    { L_, "A0 L012 D3 L4",  0,     5,      { VL[0], VL[1], VL[2] }           },
-    { L_, "A0 L0123 E4",    0,     5,      { VL[0], VL[1], VL[2], VL[3] }    },
-    { L_, "A0 L012 F3 L4",  0,     5,      { VL[0], VL[1], VL[2] }           },
-    { L_, "A0 L01 G2 L34",  0,     5,      { VL[0], VL[1] }                  },
-    { L_, "A0 L0 H1 L234",  0,     5,      { VL[0] }                         },
-    { L_, "A0 I0 L1234",    0,     5,      { 0 }                             },
-    { L_, "A0 L0 J1 L234",  0,     5,      { VL[0] }                         },
-    { L_, "A0 L01 K2 L34",  0,     5,      { VL[0], VL[1] }                  },
-    { L_, "A0 L01 M2 L34",  0,     5,      { VL[0], VL[1] }                  },
-    { L_, "A0 L012 N3 L4",  0,     5,      { VL[0], VL[1], VL[2] }           },
-    { L_, "A0 L0123 O4",    0,     5,      { VL[0], VL[1], VL[2], VL[3] }    },
-    { L_, "A0 L012 P3 L4",  0,     5,      { VL[0], VL[1], VL[2] }           },
-    { L_, "A0 L01 Q2 L34",  0,     5,      { VL[0], VL[1] }                  },
-    { L_, "A0 L0 R1 L234",  0,     5,      { VL[0] }                         },
-    { L_, "A0 S0 L1234",    0,     5,      { 0 }                             },
-    { L_, "A0 L0 T1 L234",  0,     5,      { VL[0] }                         },
+    { L_, "A0 A0 L1234",    0,     5,   { 0 }                                },
+    { L_, "A0 L0 B1 L234",  0,     5,   { (ElemType)VL[0] }                  },
+    { L_, "A0 L01 C2 L34",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1] } },
+    { L_, "A0 L012 D3 L4",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2] }                  },
+    { L_, "A0 L0123 E4",    0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2], (ElemType)VL[3] } },
+    { L_, "A0 L012 F3 L4",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2] }                  },
+    { L_, "A0 L01 G2 L34",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1] } },
+    { L_, "A0 L0 H1 L234",  0,     5,   { (ElemType)VL[0] }                  },
+    { L_, "A0 I0 L1234",    0,     5,   { 0 }                                },
+    { L_, "A0 L0 J1 L234",  0,     5,   { (ElemType)VL[0] }                  },
+    { L_, "A0 L01 K2 L34",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1] } },
+    { L_, "A0 L01 M2 L34",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1] } },
+    { L_, "A0 L012 N3 L4",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2] }                  },
+    { L_, "A0 L0123 O4",    0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2], (ElemType)VL[3] } },
+    { L_, "A0 L012 P3 L4",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1],
+                                          (ElemType)VL[2] }                  },
+    { L_, "A0 L01 Q2 L34",  0,     5,   { (ElemType)VL[0], (ElemType)VL[1] } },
+    { L_, "A0 L0 R1 L234",  0,     5,   { (ElemType)VL[0] }                  },
+    { L_, "A0 S0 L1234",    0,     5,   { 0 }                                },
+    { L_, "A0 L0 T1 L234",  0,     5,   { (ElemType)VL[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -3328,7 +3348,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getFloat32'." << endl;
         {
             typedef float ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getFloat32;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3336,35 +3356,45 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                                },
     // stream without version
-    { L_, "K01",            0,     2,      { 0 }                             },
+    { L_, "K01",            0,     2,   { 0 }                                },
     // valid streams without version and version check turned off
-    { L_, "K0123",          1,     4,      { VK[0], VK[1], VK[2], VK[3] }    },
-    { L_, "K4567",          1,     4,      { VK[4], VK[5], VK[6], VK[7] }    },
+    { L_, "K0123",          1,     4,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2], (ElemType)VK[3] } },
+    { L_, "K4567",          1,     4,   { (ElemType)VK[4], (ElemType)VK[5],
+                                          (ElemType)VK[6], (ElemType)VK[7] } },
     // valid streams
-    { L_, "A0 K0123",       0,     4,      { VK[0], VK[1], VK[2], VK[3] }    },
-    { L_, "A0 K4567",       0,     4,      { VK[4], VK[5], VK[6], VK[7] }    },
+    { L_, "A0 K0123",       0,     4,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2], (ElemType)VK[3] } },
+    { L_, "A0 K4567",       0,     4,   { (ElemType)VK[4], (ElemType)VK[5],
+                                          (ElemType)VK[6], (ElemType)VK[7] } },
     // streams containing incompatible data types
-    { L_, "A0 A0 K1234",    0,     5,      { 0 }                             },
-    { L_, "A0 K0 B1 K234",  0,     5,      { VK[0] }                         },
-    { L_, "A0 K01 C2 K34",  0,     5,      { VK[0], VK[1] }                  },
-    { L_, "A0 K012 D3 K4",  0,     5,      { VK[0], VK[1], VK[2] }           },
-    { L_, "A0 K0123 E4",    0,     5,      { VK[0], VK[1], VK[2], VK[3] }    },
-    { L_, "A0 K012 F3 K4",  0,     5,      { VK[0], VK[1], VK[2] }           },
-    { L_, "A0 K01 G2 K34",  0,     5,      { VK[0], VK[1] }                  },
-    { L_, "A0 K0 H1 K234",  0,     5,      { VK[0] }                         },
-    { L_, "A0 I0 K1234",    0,     5,      { 0 }                             },
-    { L_, "A0 K0 J1 K234",  0,     5,      { VK[0] }                         },
-    { L_, "A0 K01 L2 K34",  0,     5,      { VK[0], VK[1] }                  },
-    { L_, "A0 K01 M2 K34",  0,     5,      { VK[0], VK[1] }                  },
-    { L_, "A0 K012 N3 K4",  0,     5,      { VK[0], VK[1], VK[2] }           },
-    { L_, "A0 K0123 O4",    0,     5,      { VK[0], VK[1], VK[2], VK[3] }    },
-    { L_, "A0 K012 P3 K4",  0,     5,      { VK[0], VK[1], VK[2] }           },
-    { L_, "A0 K01 Q2 K34",  0,     5,      { VK[0], VK[1] }                  },
-    { L_, "A0 K0 R1 K234",  0,     5,      { VK[0] }                         },
-    { L_, "A0 S0 K1234",    0,     5,      { 0 }                             },
-    { L_, "A0 K0 T1 K234",  0,     5,      { VK[0] }                         },
+    { L_, "A0 A0 K1234",    0,     5,   { 0 }                                },
+    { L_, "A0 K0 B1 K234",  0,     5,   { (ElemType)VK[0] }                  },
+    { L_, "A0 K01 C2 K34",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1] } },
+    { L_, "A0 K012 D3 K4",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2] }                  },
+    { L_, "A0 K0123 E4",    0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2], (ElemType)VK[3] } },
+    { L_, "A0 K012 F3 K4",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2] }                  },
+    { L_, "A0 K01 G2 K34",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1] } },
+    { L_, "A0 K0 H1 K234",  0,     5,   { (ElemType)VK[0] }                  },
+    { L_, "A0 I0 K1234",    0,     5,   { 0 }                                },
+    { L_, "A0 K0 J1 K234",  0,     5,   { (ElemType)VK[0] }                  },
+    { L_, "A0 K01 L2 K34",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1] } },
+    { L_, "A0 K01 M2 K34",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1] } },
+    { L_, "A0 K012 N3 K4",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2] }                  },
+    { L_, "A0 K0123 O4",    0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2], (ElemType)VK[3] } },
+    { L_, "A0 K012 P3 K4",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1],
+                                          (ElemType)VK[2] }                  },
+    { L_, "A0 K01 Q2 K34",  0,     5,   { (ElemType)VK[0], (ElemType)VK[1] } },
+    { L_, "A0 K0 R1 K234",  0,     5,   { (ElemType)VK[0] }                  },
+    { L_, "A0 S0 K1234",    0,     5,   { 0 }                                },
+    { L_, "A0 K0 T1 K234",  0,     5,   { (ElemType)VK[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -3392,7 +3422,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt64'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt64;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3400,35 +3430,45 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                                },
     // stream without version
-    { L_, "I01",            0,     2,      { 0 }                             },
+    { L_, "I01",            0,     2,   { 0 }                                },
     // valid streams without version and version check turned off
-    { L_, "I0123",          1,     4,      { VI[0], VI[1], VI[2], VI[3] }    },
-    { L_, "I4567",          1,     4,      { VI[4], VI[5], VI[6], VI[7] }    },
+    { L_, "I0123",          1,     4,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2], (ElemType)VI[3] } },
+    { L_, "I4567",          1,     4,   { (ElemType)VI[4], (ElemType)VI[5],
+                                          (ElemType)VI[6], (ElemType)VI[7] } },
     // valid streams
-    { L_, "A0 I0123",       0,     4,      { VI[0], VI[1], VI[2], VI[3] }    },
-    { L_, "A0 I4567",       0,     4,      { VI[4], VI[5], VI[6], VI[7] }    },
+    { L_, "A0 I0123",       0,     4,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2], (ElemType)VI[3] } },
+    { L_, "A0 I4567",       0,     4,   { (ElemType)VI[4], (ElemType)VI[5],
+                                          (ElemType)VI[6], (ElemType)VI[7] } },
     // streams containing incompatible data types
-    { L_, "A0 A0 I1234",    0,     5,      { 0 }                             },
-    { L_, "A0 I0 B1 I234",  0,     5,      { VI[0] }                         },
-    { L_, "A0 I01 C2 I34",  0,     5,      { VI[0], VI[1] }                  },
-    { L_, "A0 I012 D3 I4",  0,     5,      { VI[0], VI[1], VI[2] }           },
-    { L_, "A0 I0123 E4",    0,     5,      { VI[0], VI[1], VI[2], VI[3] }    },
-    { L_, "A0 I012 F3 I4",  0,     5,      { VI[0], VI[1], VI[2] }           },
-    { L_, "A0 I01 G2 I34",  0,     5,      { VI[0], VI[1] }                  },
-    { L_, "A0 I0 H1 I234",  0,     5,      { VI[0] }                         },
-    { L_, "A0 J0 I1234",    0,     5,      { 0 }                             },
-    { L_, "A0 I0 K1 I234",  0,     5,      { VI[0] }                         },
-    { L_, "A0 I01 L2 I34",  0,     5,      { VI[0], VI[1] }                  },
-    { L_, "A0 I01 M2 I34",  0,     5,      { VI[0], VI[1] }                  },
-    { L_, "A0 I012 N3 I4",  0,     5,      { VI[0], VI[1], VI[2] }           },
-    { L_, "A0 I0123 O4",    0,     5,      { VI[0], VI[1], VI[2], VI[3] }    },
-    { L_, "A0 I012 P3 I4",  0,     5,      { VI[0], VI[1], VI[2] }           },
-    { L_, "A0 I01 Q2 I34",  0,     5,      { VI[0], VI[1] }                  },
-    { L_, "A0 I0 R1 I234",  0,     5,      { VI[0] }                         },
-    { L_, "A0 S0 I1234",    0,     5,      { 0 }                             },
-    { L_, "A0 I0 T1 I234",  0,     5,      { VI[0] }                         },
+    { L_, "A0 A0 I1234",    0,     5,   { 0 }                                },
+    { L_, "A0 I0 B1 I234",  0,     5,   { (ElemType)VI[0] }                  },
+    { L_, "A0 I01 C2 I34",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1] } },
+    { L_, "A0 I012 D3 I4",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2] }                  },
+    { L_, "A0 I0123 E4",    0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2], (ElemType)VI[3] } },
+    { L_, "A0 I012 F3 I4",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2] }                  },
+    { L_, "A0 I01 G2 I34",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1] } },
+    { L_, "A0 I0 H1 I234",  0,     5,   { (ElemType)VI[0] }                  },
+    { L_, "A0 J0 I1234",    0,     5,   { 0 }                                },
+    { L_, "A0 I0 K1 I234",  0,     5,   { (ElemType)VI[0] }                  },
+    { L_, "A0 I01 L2 I34",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1] } },
+    { L_, "A0 I01 M2 I34",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1] } },
+    { L_, "A0 I012 N3 I4",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2] }                  },
+    { L_, "A0 I0123 O4",    0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2], (ElemType)VI[3] } },
+    { L_, "A0 I012 P3 I4",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1],
+                                          (ElemType)VI[2] }                  },
+    { L_, "A0 I01 Q2 I34",  0,     5,   { (ElemType)VI[0], (ElemType)VI[1] } },
+    { L_, "A0 I0 R1 I234",  0,     5,   { (ElemType)VI[0] }                  },
+    { L_, "A0 S0 I1234",    0,     5,   { 0 }                                },
+    { L_, "A0 I0 T1 I234",  0,     5,   { (ElemType)VI[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -3440,7 +3480,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint64'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint64;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3504,7 +3544,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt56'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt56;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3552,7 +3592,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint56'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint56;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3616,7 +3656,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt48'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt48;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3664,7 +3704,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint48'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint48;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3728,7 +3768,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt40'." << endl;
         {
             typedef bsls::Types::Int64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt40;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3776,7 +3816,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint40'." << endl;
         {
             typedef bsls::Types::Uint64 ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint40;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3841,7 +3881,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt32'." << endl;
         {
             typedef int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt32;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3889,7 +3929,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint32'." << endl;
         {
             typedef unsigned int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint32;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -3953,7 +3993,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt24'." << endl;
         {
             typedef int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt24;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4001,7 +4041,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint24'." << endl;
         {
             typedef unsigned int ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint24;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4065,7 +4105,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt16'." << endl;
         {
             typedef short ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt16;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4113,7 +4153,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint16'." << endl;
         {
             typedef unsigned short ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint16;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4179,7 +4219,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getInt8' w/ 'signed char'." << endl;
         {
             typedef signed char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt8;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4225,7 +4265,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nTesting 'getUint8' w/ 'char'." << endl;
         {
             typedef unsigned char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint8;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4233,34 +4273,44 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                             },
     // stream without version
-    { L_, "C01",            0,     2,      { 0 }                             },
+    { L_, "C01",            0,     2,   { 0 }                             },
     // valid streams without version and version check turned off
-    { L_, "C0123",          1,     4,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "C4567",          1,     4,      { VC[4], VC[5], VC[6], VC[7] }    },
+    { L_, "C0123",          1,     4,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "C4567",          1,     4,   { (ElemType)VC[4], (ElemType)VC[5],
+                                          (ElemType)VC[6], (ElemType)VC[7] } },
     // valid streams
-    { L_, "A0 C0123",       0,     4,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C4567",       0,     4,      { VC[4], VC[5], VC[6], VC[7] }    },
+    { L_, "A0 C0123",       0,     4,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C4567",       0,     4,   { (ElemType)VC[4], (ElemType)VC[5],
+                                          (ElemType)VC[6], (ElemType)VC[7] } },
     // streams containing incompatible data types
-    { L_, "A0 A0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 B1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 E2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 F3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 G4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 H3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 I2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 J1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 K0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 L1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 M2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 N3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 O4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 P3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 Q2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 R1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 S0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 T1 C234",  0,     5,      { VC[0] }                         },
+    { L_, "A0 A0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 B1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 E2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 F3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 G4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 H3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 I2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 J1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 K0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 L1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 M2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 N3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 O4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 P3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 Q2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 R1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 S0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 T1 C234",  0,     5,   { (ElemType)VC[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -4272,7 +4322,7 @@ int main(int argc, char *argv[]) {
         if (verbose)cout << "\nTesting 'getUint8' w/ 'unsigned char'." << endl;
         {
             typedef unsigned char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getUint8;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4280,34 +4330,40 @@ int main(int argc, char *argv[]) {
     //L#  spec             ver   to read    values
     //--  ---------------  ----  ---------  ----------------------------------
     // read from empty stream
-    { L_, "",               0,     1,      { 0 }                             },
+    { L_, "",               0,     1,   { 0 }                                },
     // stream without version
-    { L_, "D01",            0,     2,      { 0 }                             },
+    { L_, "D01",            0,     2,   { 0 }                                },
     // valid streams without version and version check turned off
-    { L_, "D0123",          1,     4,      { VD[0], VD[1], VD[2], VD[3] }    },
-    { L_, "D4567",          1,     4,      { VD[4], VD[5], VD[6], VD[7] }    },
+    { L_, "D0123",          1,     4,   { VD[0], VD[1], VD[2], VD[3] }       },
+    { L_, "D4567",          1,     4,   { VD[4], VD[5], VD[6], VD[7] }       },
     // valid streams
-    { L_, "A0 D0123",       0,     4,      { VD[0], VD[1], VD[2], VD[3] }    },
-    { L_, "A0 D4567",       0,     4,      { VD[4], VD[5], VD[6], VD[7] }    },
+    { L_, "A0 D0123",       0,     4,   { VD[0], VD[1], VD[2], VD[3] }       },
+    { L_, "A0 D4567",       0,     4,   { VD[4], VD[5], VD[6], VD[7] }       },
     // streams containing incompatible data types
-    { L_, "A0 A0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 B1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 E2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 F3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 G4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 H3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 I2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 J1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 K0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 L1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 C01 M2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C012 N3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C0123 O4",    0,     5,      { VC[0], VC[1], VC[2], VC[3] }    },
-    { L_, "A0 C012 P3 C4",  0,     5,      { VC[0], VC[1], VC[2] }           },
-    { L_, "A0 C01 Q2 C34",  0,     5,      { VC[0], VC[1] }                  },
-    { L_, "A0 C0 R1 C234",  0,     5,      { VC[0] }                         },
-    { L_, "A0 S0 C1234",    0,     5,      { 0 }                             },
-    { L_, "A0 C0 T1 C234",  0,     5,      { VC[0] }                         },
+    { L_, "A0 A0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 B1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 E2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 F3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 G4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 H3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 I2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 J1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 K0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 L1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 C01 M2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C012 N3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C0123 O4",    0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2], (ElemType)VC[3] } },
+    { L_, "A0 C012 P3 C4",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1],
+                                          (ElemType)VC[2] }                  },
+    { L_, "A0 C01 Q2 C34",  0,     5,   { (ElemType)VC[0], (ElemType)VC[1] } },
+    { L_, "A0 C0 R1 C234",  0,     5,   { (ElemType)VC[0] }                  },
+    { L_, "A0 S0 C1234",    0,     5,   { 0 }                                },
+    { L_, "A0 C0 T1 C234",  0,     5,   { (ElemType)VC[0] }                  },
             };
             const int DATA_LEN = sizeof DATA / sizeof *DATA;
 
@@ -4418,7 +4474,7 @@ int main(int argc, char *argv[]) {
             LOOP_ASSERT(i, x);
 
             Out o;    o.putInt8(VERSION);
-            for (j = 0; j < i;  ++j) o.putInt8(j);
+            for (j = 0; j < i;  ++j) { o.putInt8(j); }
 
             Obj x2(o.data(), o.length());
             int len = x2.length();
@@ -4435,7 +4491,7 @@ int main(int argc, char *argv[]) {
             // invalidate stream x2 by making excessive 'get' calls
             char c;
             x2.setQuiet(1);
-            for (j = 0; j < i + 10; ++j) x2.getInt8(c);
+            for (j = 0; j < i + 10; ++j) { x2.getInt8(c); }
             LOOP_ASSERT(i, !x && !x2);
             LOOP_ASSERT(i, !x.isValid() && !x2.isValid());
         }
@@ -4455,7 +4511,9 @@ int main(int argc, char *argv[]) {
 
             // test objects of variable lengths
             Out o;    o.putInt8(VERSION);
-            for (j = 0; j < i;  ++j) o.putInt8(j);
+            for (j = 0; j < i;  ++j) {
+                o.putInt8(j);
+            }
 
             Obj x2(o.data(), o.length());
             if (veryVerbose) { P(x2) }
@@ -4506,7 +4564,7 @@ int main(int argc, char *argv[]) {
         if (verbose)cout << "\nTesting 'getInt8' w/ 'char' and ctors." << endl;
         {
             typedef char ElemType;
-            typedef TestInStream& (Obj::*FuncPtr)(ElemType&);
+            typedef bslx::TestInStream& (Obj::*FuncPtr)(ElemType&);
             const FuncPtr FUNC = &Obj::getInt8;
 
             static const ScalarTestTable<ElemType> DATA[] = {
@@ -4551,7 +4609,7 @@ int main(int argc, char *argv[]) {
 
             // test objects of variable lengths
             Out o;    o.putInt8(VERSION);
-            for (int j = 0; j < i;  ++j) o.putInt8(j);
+            for (int j = 0; j < i;  ++j) { o.putInt8(j); }
 
             Obj x2(o.data(), o.length());
             if (veryVerbose) { P(x2) }
@@ -4708,7 +4766,7 @@ int main(int argc, char *argv[]) {
             const char *SPEC = "a012";
             if (veryVerbose) cout << "\tSPEC : \"" << SPEC << '"' << endl;
             Out mX;    const Out& X = mX;
-            for (i = 0; i < 3; ++i) mX.putArrayInt8(VA, i);
+            for (i = 0; i < 3; ++i) { mX.putArrayInt8(VA, i); }
 
             Out o;
             int res = g(&o, SPEC);
@@ -4789,7 +4847,7 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nCreate object x2 w/ an initial value." << endl;
         int i;
         Out o;    o.putInt8(VERSION);
-        for (i = 0; i < 5; ++i) o.putInt8(i);
+        for (i = 0; i < 5; ++i) { o.putInt8(i); }
         Obj x2(o.data(), o.length());
         if (veryVerbose) { P(x2); }
         ASSERT(o.length() == x2.length());

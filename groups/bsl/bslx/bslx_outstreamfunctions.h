@@ -628,7 +628,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&     stream,
                                       const bool& value,
-                                      int         version)
+                                      int         /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -641,7 +641,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&     stream,
                                       const char& value,
-                                      int         version)
+                                      int         /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -654,7 +654,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&            stream,
                                       const signed char& value,
-                                      int                version)
+                                      int               /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -667,7 +667,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&              stream,
                                       const unsigned char& value,
-                                      int                  version)
+                                      int                  /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'.  No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -680,7 +680,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&      stream,
                                       const short& value,
-                                      int          version)
+                                      int          /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -693,7 +693,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&               stream,
                                       const unsigned short& value,
-                                      int                   version)
+                                      int                   /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -706,7 +706,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&    stream,
                                       const int& value,
-                                      int        version)
+                                      int        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -720,7 +720,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&             stream,
                                       const unsigned int& value,
-                                      int                 version)
+                                      int                 /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -733,7 +733,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&     stream,
                                       const long& value,
-                                      int         version)
+                                      int         /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -747,7 +747,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&              stream,
                                       const unsigned long& value,
-                                      int                  version)
+                                      int                  /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -761,7 +761,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                   stream,
                                       const bsls::Types::Int64& value,
-                                      int                       version)
+                                      int                       /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -774,7 +774,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                    stream,
                                       const bsls::Types::Uint64& value,
-                                      int                        version)
+                                      int                        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -787,7 +787,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&            stream,
                                       const bsl::string& value,
-                                      int                version)
+                                      int                /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -800,7 +800,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&      stream,
                                       const float& value,
-                                      int          vector)
+                                      int          /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -813,7 +813,7 @@ template <class STREAM>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&       stream,
                                       const double& value,
-                                      int           version)
+                                      int           /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -826,7 +826,7 @@ template <class STREAM, class ALLOC>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                         stream,
                                       const bsl::vector<char, ALLOC>& value,
-                                      int                             version)
+                                      int                        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used.  The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -842,7 +842,7 @@ template <class STREAM, class ALLOC>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                          stream,
                                       const bsl::vector<short, ALLOC>& value,
-                                      int                              version)
+                                      int                        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -858,7 +858,7 @@ template <class STREAM, class ALLOC>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                        stream,
                                       const bsl::vector<int, ALLOC>& value,
-                                      int                            version)
+                                      int                        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -876,7 +876,7 @@ inline
 STREAM& OutStreamFunctions::streamOut(
                          STREAM&                                       stream,
                          const bsl::vector<bsls::Types::Int64, ALLOC>& value,
-                         int                                           version)
+                         int                                     /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -893,7 +893,7 @@ template <class STREAM, class ALLOC>
 inline
 STREAM& OutStreamFunctions::streamOut(STREAM&                          stream,
                                       const bsl::vector<float, ALLOC>& value,
-                                      int                              version)
+                                      int                        /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
@@ -911,7 +911,7 @@ inline
 STREAM& OutStreamFunctions::streamOut(
                                      STREAM&                           stream,
                                      const bsl::vector<double, ALLOC>& value,
-                                     int                               version)
+                                     int                         /* version */)
     // Write the specified 'value' to the specified output 'stream' using
     // the appropriate 'put' method of 'stream'. No version is used. The
     // behavior is undefined unless 'STREAM' is a 'bslx'-compliant output
