@@ -22,7 +22,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -159,7 +161,7 @@ const int SIZEOF_FLOAT32 = 4;
 
      public:
        // CLASS METHODS
-       static bool isBslxVersionSupported(int version) { return 1 == version; }
+       static bool isBslxVersionSupported(int version);
            // Return 'true' if the specified 'version' is supported by
            // this class, and 'flase' otherwise.
 
@@ -240,7 +242,13 @@ const int SIZEOF_FLOAT32 = 4;
        // Write the specified 'date' value to the specified output 'stream' in
        // some reasonable format.
 
-   // INLINE FUNCTION DEFINITIONS
+   // CLASS METHODS
+   bool MyPerson::isBslxVersionSupported(int version)
+   {
+       return 1 == version;
+   }
+
+   // CREATORS
    inline
    MyPerson::MyPerson()
    : d_firstName("")
@@ -262,6 +270,7 @@ const int SIZEOF_FLOAT32 = 4;
    {
    }
 
+   // MANIPULATORS
    template <class STREAM>
    inline
    STREAM& MyPerson::bslxStreamIn(STREAM& stream, int version)
@@ -403,7 +412,8 @@ int main(int argc, char *argv[])
                     << "\n\tFirstName: " << janeCopy.firstName()
                     << "\n\tLastName : " << janeCopy.lastName()
                     << "\n\tAge      : " << janeCopy.age() << endl;
-           } else {
+           }
+           else {
                cout << "Serialization unsuccessful.  'janeCopy' holds:"
                     << "\n\tFirstName: " << janeCopy.firstName()
                     << "\n\tLastName : " << janeCopy.lastName()
@@ -439,7 +449,9 @@ int main(int argc, char *argv[])
             o.putLength(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-              if (veryVerbose) { P(x) }
+              if (veryVerbose) {
+                  P(x)
+              }
               char marker;
               int val;
               x.getLength(val);          x.getInt8(marker);
@@ -459,7 +471,9 @@ int main(int argc, char *argv[])
               o.putLength(256);             o.putInt8(0xFF);
 
               Obj x(o.data(), o.length());
-              if (veryVerbose) { P(x) }
+              if (veryVerbose) {
+                  P(x)
+              }
               char marker;
               int val;
               x.getLength(val);          x.getInt8(marker);
@@ -484,7 +498,9 @@ int main(int argc, char *argv[])
               o.putVersion(4);
 
               Obj x(o.data(), o.length());
-              if (veryVerbose) { P(x) }
+              if (veryVerbose) {
+                  P(x)
+              }
               int val;
               x.getVersion(val);            ASSERT(1 == val);
               x.getVersion(val);            ASSERT(2 == val);
@@ -502,7 +518,9 @@ int main(int argc, char *argv[])
               o.putVersion(255);
 
               Obj x(o.data(), o.length());
-              if (veryVerbose) { P(x) }
+              if (veryVerbose) {
+                  P(x)
+              }
               int val;
               x.getVersion(val);            ASSERT(252 == val);
               x.getVersion(val);            ASSERT(253 == val);
@@ -540,7 +558,9 @@ int main(int argc, char *argv[])
             o.putArrayFloat64(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             double ar[] = { V, V, V };
             x.getArrayFloat64(ar, 0);
@@ -574,7 +594,9 @@ int main(int argc, char *argv[])
             o.putArrayFloat64(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             double ar[] = { V, V, V };
             x.getArrayFloat64(ar, 0);
@@ -626,7 +648,9 @@ int main(int argc, char *argv[])
             o.putArrayFloat32(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             float ar[] = { V, V, V };
             x.getArrayFloat32(ar, 0);
@@ -660,7 +684,9 @@ int main(int argc, char *argv[])
             o.putArrayFloat32(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             float ar[] = { V, V, V };
             x.getArrayFloat32(ar, 0);
@@ -713,7 +739,9 @@ int main(int argc, char *argv[])
             o.putArrayInt64(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt64(ar, 0);
@@ -747,7 +775,9 @@ int main(int argc, char *argv[])
             o.putArrayInt64(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt64(ar, 0);
@@ -787,7 +817,9 @@ int main(int argc, char *argv[])
             o.putArrayUint64(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint64(ar, 0);
@@ -821,7 +853,9 @@ int main(int argc, char *argv[])
             o.putArrayUint64(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint64(ar, 0);
@@ -873,7 +907,9 @@ int main(int argc, char *argv[])
             o.putArrayInt56(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt56(ar, 0);
@@ -907,7 +943,9 @@ int main(int argc, char *argv[])
             o.putArrayInt56(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt56(ar, 0);
@@ -947,7 +985,9 @@ int main(int argc, char *argv[])
             o.putArrayUint56(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint56(ar, 0);
@@ -981,7 +1021,9 @@ int main(int argc, char *argv[])
             o.putArrayUint56(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint56(ar, 0);
@@ -1033,7 +1075,9 @@ int main(int argc, char *argv[])
             o.putArrayInt48(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt48(ar, 0);
@@ -1067,7 +1111,9 @@ int main(int argc, char *argv[])
             o.putArrayInt48(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt48(ar, 0);
@@ -1107,7 +1153,9 @@ int main(int argc, char *argv[])
             o.putArrayUint48(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint48(ar, 0);
@@ -1141,7 +1189,9 @@ int main(int argc, char *argv[])
             o.putArrayUint48(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint48(ar, 0);
@@ -1193,7 +1243,9 @@ int main(int argc, char *argv[])
             o.putArrayInt40(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt40(ar, 0);
@@ -1227,7 +1279,9 @@ int main(int argc, char *argv[])
             o.putArrayInt40(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 ar[] = { V, V, V };
             x.getArrayInt40(ar, 0);
@@ -1267,7 +1321,9 @@ int main(int argc, char *argv[])
             o.putArrayUint40(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint40(ar, 0);
@@ -1301,7 +1357,9 @@ int main(int argc, char *argv[])
             o.putArrayUint40(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 ar[] = { V, V, V };
             x.getArrayUint40(ar, 0);
@@ -1353,7 +1411,9 @@ int main(int argc, char *argv[])
             o.putArrayInt32(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int ar[] = { V, V, V };
             x.getArrayInt32(ar, 0);
@@ -1387,7 +1447,9 @@ int main(int argc, char *argv[])
             o.putArrayInt32(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int ar[] = { V, V, V };
             x.getArrayInt32(ar, 0);
@@ -1427,7 +1489,9 @@ int main(int argc, char *argv[])
             o.putArrayUint32(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int ar[] = { V, V, V };
             x.getArrayUint32(ar, 0);
@@ -1461,7 +1525,9 @@ int main(int argc, char *argv[])
             o.putArrayUint32(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int ar[] = { V, V, V };
             x.getArrayUint32(ar, 0);
@@ -1514,7 +1580,9 @@ int main(int argc, char *argv[])
             o.putArrayInt24(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int ar[] = { V, V, V };
             x.getArrayInt24(ar, 0);
@@ -1548,7 +1616,9 @@ int main(int argc, char *argv[])
             o.putArrayInt24(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int ar[] = { V, V, V };
             x.getArrayInt24(ar, 0);
@@ -1588,7 +1658,9 @@ int main(int argc, char *argv[])
             o.putArrayUint24(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int ar[] = { V, V, V };
             x.getArrayUint24(ar, 0);
@@ -1622,7 +1694,9 @@ int main(int argc, char *argv[])
             o.putArrayUint24(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int ar[] = { V, V, V };
             x.getArrayUint24(ar, 0);
@@ -1674,7 +1748,9 @@ int main(int argc, char *argv[])
             o.putArrayInt16(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             short ar[] = { V, V, V };
             x.getArrayInt16(ar, 0);
@@ -1708,7 +1784,9 @@ int main(int argc, char *argv[])
             o.putArrayInt16(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             short ar[] = { V, V, V };
             x.getArrayInt16(ar, 0);
@@ -1748,7 +1826,9 @@ int main(int argc, char *argv[])
             o.putArrayUint16(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned short ar[] = { V, V, V };
             x.getArrayUint16(ar, 0);
@@ -1782,7 +1862,9 @@ int main(int argc, char *argv[])
             o.putArrayUint16(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned short ar[] = { V, V, V };
             x.getArrayUint16(ar, 0);
@@ -1837,7 +1919,9 @@ int main(int argc, char *argv[])
             o.putArrayInt8(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             char ar[] = { V, V, V };
             x.getArrayInt8(ar, 0);
@@ -1871,7 +1955,9 @@ int main(int argc, char *argv[])
             o.putArrayInt8(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             char ar[] = { V, V, V };
             x.getArrayInt8(ar, 0);
@@ -1911,7 +1997,9 @@ int main(int argc, char *argv[])
             o.putArrayInt8(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             signed char ar[] = { V, V, V };
             x.getArrayInt8(ar, 0);
@@ -1945,7 +2033,9 @@ int main(int argc, char *argv[])
             o.putArrayInt8(DATA, 3);             o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             signed char ar[] = { V, V, V };
             x.getArrayInt8(ar, 0);
@@ -1985,7 +2075,9 @@ int main(int argc, char *argv[])
             o.putArrayUint8(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             char ar[] = { V, V, V };
             x.getArrayUint8(ar, 0);
@@ -2019,7 +2111,9 @@ int main(int argc, char *argv[])
             o.putArrayUint8(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             char ar[] = { V, V, V };
             x.getArrayUint8(ar, 0);
@@ -2059,7 +2153,9 @@ int main(int argc, char *argv[])
             o.putArrayUint8(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned char ar[] = { V, V, V };
             x.getArrayUint8(ar, 0);
@@ -2093,7 +2189,9 @@ int main(int argc, char *argv[])
             o.putArrayUint8(DATA, 3);            o.putInt8(0xFC);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned char ar[] = { V, V, V };
             x.getArrayUint8(ar, 0);
@@ -2140,7 +2238,9 @@ int main(int argc, char *argv[])
             o.putFloat64(3);           o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             double val;
             x.getFloat64(val);         x.getInt8(marker);
@@ -2160,7 +2260,9 @@ int main(int argc, char *argv[])
             o.putFloat64(6);           o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             double val;
             x.getFloat64(val);         x.getInt8(marker);
@@ -2197,7 +2299,9 @@ int main(int argc, char *argv[])
             o.putFloat32(3);           o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             float val;
             x.getFloat32(val);         x.getInt8(marker);
@@ -2217,7 +2321,9 @@ int main(int argc, char *argv[])
             o.putFloat32(6);           o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             float val;
             x.getFloat32(val);         x.getInt8(marker);
@@ -2255,7 +2361,9 @@ int main(int argc, char *argv[])
             o.putInt64(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt64(val);           x.getInt8(marker);
@@ -2275,7 +2383,9 @@ int main(int argc, char *argv[])
             o.putInt64(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt64(val);           x.getInt8(marker);
@@ -2301,7 +2411,9 @@ int main(int argc, char *argv[])
             o.putUint64(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint64(val);           x.getInt8(marker);
@@ -2321,7 +2433,9 @@ int main(int argc, char *argv[])
             o.putUint64(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint64(val);           x.getInt8(marker);
@@ -2359,7 +2473,9 @@ int main(int argc, char *argv[])
             o.putInt56(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt56(val);           x.getInt8(marker);
@@ -2379,7 +2495,9 @@ int main(int argc, char *argv[])
             o.putInt56(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt56(val);           x.getInt8(marker);
@@ -2405,7 +2523,9 @@ int main(int argc, char *argv[])
             o.putUint56(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint56(val);           x.getInt8(marker);
@@ -2425,7 +2545,9 @@ int main(int argc, char *argv[])
             o.putUint56(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint56(val);           x.getInt8(marker);
@@ -2464,7 +2586,9 @@ int main(int argc, char *argv[])
             o.putInt48(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt48(val);           x.getInt8(marker);
@@ -2484,7 +2608,9 @@ int main(int argc, char *argv[])
             o.putInt48(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt48(val);           x.getInt8(marker);
@@ -2510,7 +2636,9 @@ int main(int argc, char *argv[])
             o.putUint48(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint48(val);           x.getInt8(marker);
@@ -2530,7 +2658,9 @@ int main(int argc, char *argv[])
             o.putUint48(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint48(val);           x.getInt8(marker);
@@ -2569,7 +2699,9 @@ int main(int argc, char *argv[])
             o.putInt40(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt40(val);           x.getInt8(marker);
@@ -2589,7 +2721,9 @@ int main(int argc, char *argv[])
             o.putInt40(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Int64 val;
             x.getInt40(val);           x.getInt8(marker);
@@ -2615,7 +2749,9 @@ int main(int argc, char *argv[])
             o.putUint40(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint40(val);           x.getInt8(marker);
@@ -2635,7 +2771,9 @@ int main(int argc, char *argv[])
             o.putUint40(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             bsls::Types::Uint64 val;
             x.getUint40(val);           x.getInt8(marker);
@@ -2674,7 +2812,9 @@ int main(int argc, char *argv[])
             o.putInt32(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int val;
             x.getInt32(val);           x.getInt8(marker);
@@ -2694,7 +2834,9 @@ int main(int argc, char *argv[])
             o.putInt32(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int val;
             x.getInt32(val);           x.getInt8(marker);
@@ -2720,7 +2862,9 @@ int main(int argc, char *argv[])
             o.putUint32(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int val;
             x.getUint32(val);           x.getInt8(marker);
@@ -2740,7 +2884,9 @@ int main(int argc, char *argv[])
             o.putUint32(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int val;
             x.getUint32(val);           x.getInt8(marker);
@@ -2779,7 +2925,9 @@ int main(int argc, char *argv[])
             o.putInt24(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int val;
             x.getInt24(val);           x.getInt8(marker);
@@ -2799,7 +2947,9 @@ int main(int argc, char *argv[])
             o.putInt24(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             int val;
             x.getInt24(val);           x.getInt8(marker);
@@ -2825,7 +2975,9 @@ int main(int argc, char *argv[])
             o.putUint24(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int val;
             x.getUint24(val);           x.getInt8(marker);
@@ -2845,7 +2997,9 @@ int main(int argc, char *argv[])
             o.putUint24(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned int val;
             x.getUint24(val);           x.getInt8(marker);
@@ -2884,7 +3038,9 @@ int main(int argc, char *argv[])
             o.putInt16(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             short val;
             x.getInt16(val);           x.getInt8(marker);
@@ -2904,7 +3060,9 @@ int main(int argc, char *argv[])
             o.putInt16(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             short val;
             x.getInt16(val);           x.getInt8(marker);
@@ -2930,7 +3088,9 @@ int main(int argc, char *argv[])
             o.putUint16(3);             o.putInt8(0xFD);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned short val;
             x.getUint16(val);           x.getInt8(marker);
@@ -2950,7 +3110,9 @@ int main(int argc, char *argv[])
             o.putUint16(6);             o.putInt8(0xFF);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char marker;
             unsigned short val;
             x.getUint16(val);           x.getInt8(marker);
@@ -2993,7 +3155,9 @@ int main(int argc, char *argv[])
             o.putInt8(4);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             signed char val;
             x.getInt8(val);            ASSERT(1 == val);
             x.getInt8(val);            ASSERT(2 == val);
@@ -3011,7 +3175,9 @@ int main(int argc, char *argv[])
             o.putInt8(8);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             signed char val;
             x.getInt8(val);            ASSERT(5 == val);
             x.getInt8(val);            ASSERT(6 == val);
@@ -3035,7 +3201,9 @@ int main(int argc, char *argv[])
             o.putUint8(4);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char val;
             x.getUint8(val);            ASSERT(1 == val);
             x.getUint8(val);            ASSERT(2 == val);
@@ -3053,7 +3221,9 @@ int main(int argc, char *argv[])
             o.putUint8(8);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char val;
             x.getUint8(val);            ASSERT(5 == val);
             x.getUint8(val);            ASSERT(6 == val);
@@ -3077,7 +3247,9 @@ int main(int argc, char *argv[])
             o.putUint8(4);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             unsigned char val;
             x.getUint8(val);            ASSERT(1 == val);
             x.getUint8(val);            ASSERT(2 == val);
@@ -3095,7 +3267,9 @@ int main(int argc, char *argv[])
             o.putUint8(8);
 
             Obj x(o.data(), o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             unsigned char val;
             x.getUint8(val);            ASSERT(5 == val);
             x.getUint8(val);            ASSERT(6 == val);
@@ -3215,10 +3389,14 @@ int main(int argc, char *argv[])
             LOOP_ASSERT(i, 0 == x.data());
 
             Out o;
-            for (j = 0; j < i;  j++) { o.putInt8(j); }
+            for (j = 0; j < i;  j++) {
+                o.putInt8(j);
+            }
 
             Obj x2(o.data(), o.length());
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, x2 && x2.isValid());
             LOOP_ASSERT(i, 0 == bsl::memcmp(x2.data(), o.data(), o.length()));
 
@@ -3230,7 +3408,9 @@ int main(int argc, char *argv[])
 
             // invalidate stream x2 by making excessive 'get' calls
             char c;
-            for (j = 0; j < i + 1; j++) { x2.getInt8(c); }
+            for (j = 0; j < i + 1; j++) {
+                x2.getInt8(c);
+            }
             LOOP_ASSERT(i, !x && !x2);
             LOOP_ASSERT(i, !x.isValid() && !x2.isValid());
         }
@@ -3254,7 +3434,9 @@ int main(int argc, char *argv[])
             }
 
             Obj x2(o.data(), o.length());
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, (0 == i && x2.isEmpty()) || !x2.isEmpty());
             LOOP_ASSERT(i, x2.length() == i);
             LOOP_ASSERT(i, x2.cursor() == 0);
@@ -3297,7 +3479,9 @@ int main(int argc, char *argv[])
         }
         {
             Obj x0; // test default ctor
-            if (veryVerbose) { P(x0) }
+            if (veryVerbose) {
+                P(x0)
+            }
             ASSERT(x0);
             ASSERT(0 == x0.length());
 
@@ -3311,7 +3495,9 @@ int main(int argc, char *argv[])
                                              // test ctor initialized w/ char *
             ASSERT(x);
             ASSERT(x.length() == o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char val;
             x.getInt8(val);              ASSERT(1 == val);
             x.getInt8(val);              ASSERT(2 == val);
@@ -3323,7 +3509,9 @@ int main(int argc, char *argv[])
         }
         {
             Obj x0;
-            if (veryVerbose) { P(x0) }
+            if (veryVerbose) {
+                P(x0)
+            }
             ASSERT(x0);
             ASSERT(0 == x0.length());
 
@@ -3336,7 +3524,9 @@ int main(int argc, char *argv[])
             Obj x(o.data(), o.length());
             ASSERT(x);
             ASSERT(x.length() == o.length());
-            if (veryVerbose) { P(x) }
+            if (veryVerbose) {
+                P(x)
+            }
             char val;
             x.getInt8(val);              ASSERT(5 == val);
             x.getInt8(val);              ASSERT(6 == val);
@@ -3361,10 +3551,14 @@ int main(int argc, char *argv[])
 
             // test objects of variable lengths
             Out o;
-            for (int j = 0; j < i;  j++) { o.putInt8(j); }
+            for (int j = 0; j < i; j++) {
+                o.putInt8(j);
+            }
 
             Obj x2(o.data(), o.length());
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, x2);
             x2.invalidate();
             LOOP_ASSERT(i, !x2);
@@ -3399,7 +3593,9 @@ int main(int argc, char *argv[])
             cout << "\nCreate object x2 w/ an initial value." << endl;
         }
         Obj x2("\x00\x01\x02\x03\x04", 5);
-        if (veryVerbose) { P(x2); }
+        if (veryVerbose) {
+            P(x2);
+        }
         ASSERT(5 == x2.length());
 
         if (verbose) {

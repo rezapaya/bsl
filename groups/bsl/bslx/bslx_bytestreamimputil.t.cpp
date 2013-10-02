@@ -27,7 +27,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -238,7 +240,8 @@ static void setBits(char *byte, int mask, int booleanValue)
 {
     if (booleanValue) {
         *byte |= mask;
-    } else {
+    }
+    else {
         *byte &= ~mask;
     }
 }
@@ -405,7 +408,8 @@ static int g(char *buffer, const char *spec, int numBits)
         resetBits(buffer, numBits, '1' == spec[rangeStartIndex]);
         setLeading(buffer, spec, rangeStartIndex);
         setTrailing(buffer, numBits, spec + i, i - 1 - rangeEndIndex);
-    } else {
+    }
+    else {
         resetBits(buffer, numBits, 0);
         setLeading(buffer, spec, i);
     }
@@ -725,7 +729,8 @@ int main(int argc, char *argv[]) {
         if (testIndividualDoubles) {
             if (verbose) cout << "put/getFloat64" << endl;
             mSize *= COUNT;
-        } else {
+        }
+        else {
             if (verbose) cout << "put/getArrayFloat64" << endl;
         }
         const int SIZE = mSize;
@@ -758,7 +763,9 @@ int main(int argc, char *argv[]) {
 
         if (testIndividualDoubles) {
             for (i = SIZE - 1; i >= 0; --i)  {
-                if (verbose && 0 == i % feedback) { cerr << '.'; }
+                if (verbose && 0 == i % feedback) {
+                    cerr << '.';
+                }
 
                 bslx::ByteStreamImpUtil::putFloat64(b, x);
                 bslx::ByteStreamImpUtil::getFloat64(&y, b);
@@ -767,9 +774,12 @@ int main(int argc, char *argv[]) {
             for (i = 0; i < COUNT; ++i) {
                 LOOP_ASSERT(i, xa[i] != ya[i]);
             }
-        } else {
+        }
+        else {
             for (i = SIZE - 1; i >= 0; --i)  {
-                if (verbose && 0 == i % feedback) { cerr << '.'; }
+                if (verbose && 0 == i % feedback) {
+                    cerr << '.';
+                }
 
                 bslx::ByteStreamImpUtil::putArrayFloat64(buffer, xa, COUNT);
                 bslx::ByteStreamImpUtil::getArrayFloat64(ya, buffer, COUNT);
@@ -866,9 +876,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -956,10 +970,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayFloat32(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayFloat32(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayFloat32(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayFloat32(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -1085,9 +1099,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -1175,10 +1193,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayFloat64(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayFloat64(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayFloat64(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayFloat64(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -1263,9 +1281,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -1364,12 +1386,12 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt8(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayInt8(result2,
-                                        buffer2 + align, length);
-                bslx::ByteStreamImpUtil::getArrayInt8(result3,
-                                        buffer3 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt8(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt8(
+                                            result2, buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt8(
+                                            result3, buffer3 + align, length);
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
                     if (veryVerbose || input[i] != result1[i]
@@ -1454,9 +1476,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -1536,10 +1562,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt16(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint16(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt16(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint16(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -1633,9 +1659,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -1716,10 +1746,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt24(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint24(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt24(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint24(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -1815,9 +1845,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }       // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -1897,10 +1931,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt32(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint32(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt32(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint32(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -2004,9 +2038,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }       // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -2088,10 +2126,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt40(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint40(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt40(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint40(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -2199,9 +2237,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq)  { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -2283,10 +2325,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt48(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint48(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt48(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint48(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -2394,9 +2436,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }       // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -2478,10 +2524,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt56(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint56(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt56(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint56(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -2587,9 +2633,13 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer, SIZE) << endl;
                 }
                 LOOP_ASSERT(i, isEq);
-                if (!isEq) { wasError = 1; }
+                if (!isEq) {
+                    wasError = 1;
+                }
             }
-            if (wasError) { break; }        // no need to continue.
+            if (wasError) {
+                break;  // no need to continue.
+            }
         }
 
         const int NUM_TRIALS = 10;
@@ -2670,10 +2720,10 @@ int main(int argc, char *argv[]) {
                 }
 
                 // fetch data from arrays
-                bslx::ByteStreamImpUtil::getArrayInt64(result1,
-                                        buffer1 + align, length);
-                bslx::ByteStreamImpUtil::getArrayUint64(result2,
-                                        buffer2 + align, length);
+                bslx::ByteStreamImpUtil::getArrayInt64(
+                                            result1, buffer1 + align, length);
+                bslx::ByteStreamImpUtil::getArrayUint64(
+                                            result2, buffer2 + align, length);
 
                 int i = 0;
                 for (; i < length; ++i) {       // check values in range
@@ -2846,7 +2896,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 // check negative
                 memset(buffer, '\x32', sizeof buffer);
@@ -3063,7 +3115,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 // check negative
                 memset(buffer, '\x64', sizeof buffer);
@@ -3188,7 +3242,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xa5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
@@ -3309,7 +3365,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
@@ -3425,7 +3483,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
@@ -3542,7 +3602,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
@@ -3663,7 +3725,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
@@ -3787,7 +3851,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,
@@ -3912,7 +3978,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }              // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp + OFFSET,      buffer + i,
@@ -4033,7 +4101,9 @@ int main(int argc, char *argv[]) {
                     cout << "act: "; pBytes(buffer + i, SIZE) << endl;
                 }
                 LOOP2_ASSERT(LINE, i, isEq);
-                if (!isEq) { break; }               // no need to continue.
+                if (!isEq) {
+                    break;  // no need to continue.
+                }
 
                 memset(buffer, '\xA5', sizeof buffer);
                 LOOP2_ASSERT(LINE, i, !eq(exp, buffer + i, NUM_BITS));
@@ -4559,7 +4629,7 @@ int main(int argc, char *argv[]) {
                 const int numBits = DATA[di].d_numBits;
                 const char *origSpec = DATA[di].d_spec;
                 const char *exp =
-                        reinterpret_cast<const char *>(DATA[di].d_exp);
+                                reinterpret_cast<const char *>(DATA[di].d_exp);
 
                 char spec[1000];    // big buffer to hold "perturbed specs
                 const int N = 3;    // perturb specs N different ways
@@ -4593,8 +4663,7 @@ int main(int argc, char *argv[]) {
                         static int count = 1;
                         char *q = spec;
                         for (const char *p = origSpec; *p; ++p) {
-                            ++count;
-                            count = 1 + (count % 3);
+                            count = (count + 1) % 3 + 1;
                             for (int i = 0; i < count; ++i) {
                                 *q++ = ' ';
                             }
@@ -4795,7 +4864,8 @@ int main(int argc, char *argv[]) {
                 if (res) { // If failure, result is not affected.
                     LOOP_ASSERT(LINE, 0 == memcmp(result_0, control_0, SIZE));
                     LOOP_ASSERT(LINE, 0 == memcmp(result_1, control_1, SIZE));
-                } else { // on success, the two results are the same.
+                }
+                else { // on success, the two results are the same.
                     LOOP_ASSERT(LINE, 1 == eq(result_0, result_1, numBits));
                 }
 

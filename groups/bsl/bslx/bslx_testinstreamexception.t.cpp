@@ -34,7 +34,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -405,7 +407,9 @@ static bool areEqual(const short *array1, const short *array2, int numElement)
     // 'array1' and 'array2' have the same values, and 'false' otherwise.
 {
     for (int i = 0; i < numElement; ++i) {
-        if (array1[i] != array2[i]) { return 0; }
+        if (array1[i] != array2[i]) {
+            return 0;
+        }
     }
     return 1;
 }
@@ -476,7 +480,9 @@ int main(int argc, char *argv[])
                 testInStream.reset();
                 MyShortArray mA;  const MyShortArray& A = mA;
                 mA.bslxStreamIn(testInStream);
-                if (veryVerbose) { P_(ti); P_(NUM_ELEM); P(A); }
+                if (veryVerbose) {
+                    P_(ti); P_(NUM_ELEM); P(A);
+                }
                 LOOP2_ASSERT(LINE, ti, areEqual(EXP, A, NUM_ELEM));
             } END_BSLX_EXCEPTION_TEST
         }

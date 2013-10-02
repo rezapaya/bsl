@@ -114,7 +114,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -396,9 +398,11 @@ int g(Out *o, const char *spec) {
                       case 's':    o->putArrayInt56(VS, n);      break;
                       case 't':    o->putArrayUint56(VT, n);     break;
                     }
-                } else if (spec[j] == ' ' || spec[j] == '\t') {
+                }
+                else if (spec[j] == ' ' || spec[j] == '\t') {
                     ; // skip spaces
-                } else {
+                }
+                else {
                     // spec[j] is not in [0-9] and is not a space.  Break.
                     // assign 'i' to j - 1 b/c 'i' will be incremented later.
                     i = j - 1;
@@ -417,7 +421,8 @@ int g(Out *o, const char *spec) {
                     cout << "*** missing digit after letter ***" << endl;
                 return 0;     // discontinue processing this spec.
             }
-        } else {
+        }
+        else {
             if (veryVerbose)
                 cout << "*** bad character ('" << spec[i] << "') in spec \""
                      << spec << "\" at position " << i << " ***" << endl;
@@ -499,7 +504,9 @@ void testGetArray(const ArrayTestTable *data,
                 ElemType arr[SIZE];                   // array of read values
                 const ElemType VX = (ElemType) 0xFF;  // "uninitialized" value
                 int k;
-                for (k = 0; k < SIZE; ++k) { arr[k] = VX; }
+                for (k = 0; k < SIZE; ++k) {
+                    arr[k] = VX;
+                }
 
                 const int arrLen = data[i].d_arrLen[j];
                 (x.*getArrayFunc)(arr, arrLen);
@@ -595,7 +602,8 @@ void testGetScalar(const ScalarTestTable<ElemType> *data,
                 if (expVal != 0) {       // valid value read
                     LOOP3_ASSERT(line, i, j, expVal == val);
                     ++numRead;
-                } else {                 // invalid value read
+                }
+                else {                 // invalid value read
                     LOOP3_ASSERT(line, i, j, VX == val);
                     LOOP3_ASSERT(line, i, j, !x);
                 }
@@ -679,7 +687,10 @@ void testGetArrayInputLimit(const InputLimitTestTable *data,
             Obj x(o.data() + offset,
                   o.length() - offset);
             x.setSuppressVersionCheck(novers);
-            if (!novers) { char ver; x.getInt8(ver); }
+            if (!novers) {
+                char ver;
+                x.getInt8(ver);
+            }
             x.setInputLimit(LIMIT);
 
             int numInput;
@@ -708,7 +719,10 @@ void testGetArrayInputLimit(const InputLimitTestTable *data,
             // been thrown, then no exception will be thrown again
             if (x.inputLimit() < 0) {
                 x.seek(0);
-                if (!novers) { char ver; x.getInt8(ver); }
+                if (!novers) {
+                    char ver;
+                    x.getInt8(ver);
+                }
                 try {
                     for (numInput = 0; numInput < NUM_IN; ++numInput) {
                         (x.*getFunc)(array, numArrayElments);
@@ -791,7 +805,10 @@ void testGetScalarInputLimit(const InputLimitTestTable        *data,
             Obj x(o.data() + offset,
                   o.length() - offset);
             x.setSuppressVersionCheck(novers);
-            if (!novers) { char ver; x.getInt8(ver); }
+            if (!novers) {
+                char ver;
+                x.getInt8(ver);
+            }
             x.setInputLimit(LIMIT);
 
             int numInput;
@@ -820,7 +837,10 @@ void testGetScalarInputLimit(const InputLimitTestTable        *data,
             // been thrown, then no exception will be thrown again
             if (x.inputLimit() < 0) {
                 x.seek(0);
-                if (!novers) { char ver; x.getInt8(ver); }
+                if (!novers) {
+                    char ver;
+                    x.getInt8(ver);
+                }
                 try {
                     for (numInput = 0; numInput < NUM_IN; ++numInput) {
                         (x.*getFunc)(value);
@@ -952,7 +972,7 @@ class MyDoubleArray {
 
   public:
     // CLASS METHODS
-    static bool isBslxVersionSupported(int version) { return 1 == version; }
+    static bool isBslxVersionSupported(int version);
 
     // CREATORS
     MyDoubleArray();
@@ -986,6 +1006,11 @@ void MyDoubleArray::append(double item)
         increaseSize();
     }
     d_array_p[d_length++] = item;
+}
+
+bool MyDoubleArray::isBslxVersionSupported(int version)
+{
+    return 1 == version;
 }
 
 inline
@@ -1248,9 +1273,11 @@ int hhh(MyDoubleArray *object, const char *spec, int verboseFlag = 1)
     for (int i = 0; spec[i]; ++i) {
         if ('A' <= spec[i] && spec[i] <= 'E') {
             object->append(VALUES[spec[i] - 'A']);
-        } else if ('~' == spec[i]) {
+        }
+        else if ('~' == spec[i]) {
             object->setLength(0);
-        } else {
+        }
+        else {
             if (verboseFlag) {
                 cout << "Error, bad character ('" << spec[i] << "') in spec \""
                      << spec << "\" at position " << i << '.' << endl;
@@ -1558,7 +1585,8 @@ int main(int argc, char *argv[]) {
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W2 == t2);
                  t3.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W3 == t3);
-             } else if (i < NPB2) {
+             }
+             else if (i < NPB2) {
                  t1.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i,  in); LOOP_ASSERT(i, X1 == t1);
                  t2.bslxStreamIn(in, VERSION);
@@ -1568,7 +1596,8 @@ int main(int argc, char *argv[]) {
                  }
                  t3.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i, !in); LOOP_ASSERT(i, W3 == t3);
-             } else {
+             }
+             else {
                  t1.bslxStreamIn(in, VERSION);
                  LOOP_ASSERT(i,  in); LOOP_ASSERT(i, X1 == t1);
                  t2.bslxStreamIn(in, VERSION);
@@ -4474,12 +4503,16 @@ int main(int argc, char *argv[]) {
             LOOP_ASSERT(i, x);
 
             Out o;    o.putInt8(VERSION);
-            for (j = 0; j < i;  ++j) { o.putInt8(j); }
+            for (j = 0; j < i;  ++j) {
+                o.putInt8(j);
+            }
 
             Obj x2(o.data(), o.length());
             int len = x2.length();
             LOOP_ASSERT(i, len != 0);
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, x2 && x2.isValid());
 
             LOOP_ASSERT(i, x && x2);
@@ -4491,7 +4524,9 @@ int main(int argc, char *argv[]) {
             // invalidate stream x2 by making excessive 'get' calls
             char c;
             x2.setQuiet(1);
-            for (j = 0; j < i + 10; ++j) { x2.getInt8(c); }
+            for (j = 0; j < i + 10; ++j) {
+                x2.getInt8(c);
+            }
             LOOP_ASSERT(i, !x && !x2);
             LOOP_ASSERT(i, !x.isValid() && !x2.isValid());
         }
@@ -4516,7 +4551,9 @@ int main(int argc, char *argv[]) {
             }
 
             Obj x2(o.data(), o.length());
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, !x2.isEmpty());
             LOOP_ASSERT(i,
                         x2.length() ==
@@ -4609,10 +4646,14 @@ int main(int argc, char *argv[]) {
 
             // test objects of variable lengths
             Out o;    o.putInt8(VERSION);
-            for (int j = 0; j < i;  ++j) { o.putInt8(j); }
+            for (int j = 0; j < i;  ++j) {
+                o.putInt8(j);
+            }
 
             Obj x2(o.data(), o.length());
-            if (veryVerbose) { P(x2) }
+            if (veryVerbose) {
+                P(x2)
+            }
             LOOP_ASSERT(i, x2);
             x2.invalidate();
             LOOP_ASSERT(i, !x2);
@@ -4670,7 +4711,9 @@ int main(int argc, char *argv[]) {
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o) }
+            if (veryVerbose) {
+                P(o)
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4688,7 +4731,9 @@ int main(int argc, char *argv[]) {
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o); }
+            if (veryVerbose) {
+                P(o);
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4707,7 +4752,9 @@ int main(int argc, char *argv[]) {
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o); }
+            if (veryVerbose) {
+                P(o);
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4734,7 +4781,9 @@ int main(int argc, char *argv[]) {
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o); }
+            if (veryVerbose) {
+                P(o);
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4755,7 +4804,9 @@ int main(int argc, char *argv[]) {
 
                 Out o;
                 int res = g(&o, spec);
-                if (veryVerbose) { P(o); }
+                if (veryVerbose) {
+                    P(o);
+                }
                 ASSERT(1 == res);
                 ASSERT(X.length() == o.length());
                 ASSERT(0 == memcmp(X.data(),
@@ -4766,11 +4817,15 @@ int main(int argc, char *argv[]) {
             const char *SPEC = "a012";
             if (veryVerbose) cout << "\tSPEC : \"" << SPEC << '"' << endl;
             Out mX;    const Out& X = mX;
-            for (i = 0; i < 3; ++i) { mX.putArrayInt8(VA, i); }
+            for (i = 0; i < 3; ++i) {
+                mX.putArrayInt8(VA, i);
+            }
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o); }
+            if (veryVerbose) {
+                P(o);
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4798,7 +4853,9 @@ int main(int argc, char *argv[]) {
 
             Out o;
             int res = g(&o, SPEC);
-            if (veryVerbose) { P(o); }
+            if (veryVerbose) {
+                P(o);
+            }
             ASSERT(1 == res);
             ASSERT(X.length() == o.length());
             ASSERT(0 == memcmp(X.data(),
@@ -4820,7 +4877,9 @@ int main(int argc, char *argv[]) {
                     cout << "\tSPEC : \"" << SPEC[i] << '"' << endl;
                 Out o;
                 int res = g(&o, SPEC[i]);
-                if (veryVerbose) { P(o); }
+                if (veryVerbose) {
+                    P(o);
+                }
                 ASSERT(0 == res);
             }
         }
@@ -4847,9 +4906,13 @@ int main(int argc, char *argv[]) {
         if (verbose) cout << "\nCreate object x2 w/ an initial value." << endl;
         int i;
         Out o;    o.putInt8(VERSION);
-        for (i = 0; i < 5; ++i) { o.putInt8(i); }
+        for (i = 0; i < 5; ++i) {
+            o.putInt8(i);
+        }
         Obj x2(o.data(), o.length());
-        if (veryVerbose) { P(x2); }
+        if (veryVerbose) {
+            P(x2);
+        }
         ASSERT(o.length() == x2.length());
 
         if (verbose) cout << "\nTry getInt8() with x2." << endl;

@@ -68,7 +68,8 @@ void TestInStream::checkScalar(FieldCode::Type  code, int scalarSize)
             }
             return;                                                 // RETURN
         }
-    } else {
+    }
+    else {
         // Incomplete stream.
         return;                                                     // RETURN
     }
@@ -109,7 +110,8 @@ void TestInStream::checkArray(FieldCode::Type  code,
             }
             return;                                                 // RETURN
         }
-    } else {
+    }
+    else {
         // Incomplete stream.
         return;                                                     // RETURN
     }
@@ -128,7 +130,8 @@ void TestInStream::checkArray(FieldCode::Type  code,
             }
             return;                                                 // RETURN
         }
-    } else {
+    }
+    else {
         // Incomplete stream.
         return;                                                     // RETURN
     }
@@ -164,7 +167,8 @@ void TestInStream::checkVersion()
             }
             return;                                                 // RETURN
         }
-    } else {
+    }
+    else {
         // Incomplete stream.
         return;                                                     // RETURN
     }
@@ -179,7 +183,8 @@ void TestInStream::checkVersion()
                              " %d ***\n", (int) version);
             }
         }
-    } else {
+    }
+    else {
         // Incomplete stream.
         return;                                                     // RETURN
     }
@@ -226,7 +231,8 @@ TestInStream& TestInStream::getLength(int& variable)
 
     if (length() - cursor() < SIZEOF_CODE + Util::SIZEOF_INT8) {
         invalidate(); // Incomplete stream.  Invalidate silently.
-    } else {
+    }
+    else {
         if (127 < (unsigned char)d_buffer[cursor() + SIZEOF_CODE]) {
             // If 'length > 127',
             // 'length' is stored as 4 bytes with top-bit set.
@@ -234,7 +240,8 @@ TestInStream& TestInStream::getLength(int& variable)
                 getInt32(variable);
                 variable ^= (1 << 31);  // Clear top bit.
             }
-        } else {
+        }
+        else {
             // If 'length <= 127', 'length' is stored as one byte.
             if (isValid()) {
                 char tmp;

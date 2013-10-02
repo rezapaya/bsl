@@ -22,7 +22,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -208,7 +210,8 @@ int main(int argc, char *argv[])
            for (int i = 0; i < length; ++i) {
                if (isalnum(theChars[i])) {
                    cout << "nextByte (char): " << theChars[i] << endl;
-               } else {
+               }
+               else {
                    cout << "nextByte (int): " << (int)theChars[i] << endl;
                }
            }
@@ -261,7 +264,9 @@ int main(int argc, char *argv[])
                 x.putLength(128);     x.putInt8(0xfd);
                 x.putLength(127);     x.putInt8(0xfc);
                 x.putLength(256);     x.putInt8(0xfb);
-                if (veryVerbose) { P(x); }
+                if (veryVerbose) {
+                    P(x);
+                }
                 const int NUM_BYTES = 7 * SIZEOF_INT8 + 2 * SIZEOF_INT32;
                 const int NUM_BITS = 8 * NUM_BYTES;
                 ASSERT(NUM_BYTES == x.length());
@@ -284,7 +289,9 @@ int main(int argc, char *argv[])
                 x.putVersion(2);
                 x.putVersion(3);
                 x.putVersion(4);
-                if (veryVerbose) { P(x); }
+                if (veryVerbose) {
+                    P(x);
+                }
                 const int NUM_BYTES = 4 * SIZE;
                 const int NUM_BITS = 8 * NUM_BYTES;
                 ASSERT(NUM_BYTES == x.length());
@@ -299,7 +306,9 @@ int main(int argc, char *argv[])
                 x.putVersion(253);
                 x.putVersion(254);
                 x.putVersion(255);
-                if (veryVerbose) { P(x); }
+                if (veryVerbose) {
+                    P(x);
+                }
                 const int NUM_BYTES = 4 * SIZE;
                 const int NUM_BITS = 8 * NUM_BYTES;
                 ASSERT(NUM_BYTES == x.length());
@@ -331,7 +340,9 @@ int main(int argc, char *argv[])
             x.putArrayFloat64(DATA, 1);     x.putInt8(0xfe);
             x.putArrayFloat64(DATA, 2);     x.putInt8(0xfd);
             x.putArrayFloat64(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -351,7 +362,9 @@ int main(int argc, char *argv[])
             x.putArrayFloat64(DATA, 1);     x.putInt8(0xfd);
             x.putArrayFloat64(DATA, 2);     x.putInt8(0xfe);
             x.putArrayFloat64(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -387,7 +400,9 @@ int main(int argc, char *argv[])
             x.putArrayFloat32(DATA, 1);     x.putInt8(0xfe);
             x.putArrayFloat32(DATA, 2);     x.putInt8(0xfd);
             x.putArrayFloat32(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -407,7 +422,9 @@ int main(int argc, char *argv[])
             x.putArrayFloat32(DATA, 1);     x.putInt8(0xfd);
             x.putArrayFloat32(DATA, 2);     x.putInt8(0xfe);
             x.putArrayFloat32(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -444,7 +461,9 @@ int main(int argc, char *argv[])
             x.putArrayInt64(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt64(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt64(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -465,7 +484,9 @@ int main(int argc, char *argv[])
             x.putArrayInt64(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt64(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt64(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -490,7 +511,9 @@ int main(int argc, char *argv[])
             x.putArrayUint64(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint64(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint64(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -511,7 +534,9 @@ int main(int argc, char *argv[])
             x.putArrayUint64(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint64(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint64(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -549,7 +574,9 @@ int main(int argc, char *argv[])
             x.putArrayInt56(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt56(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt56(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -570,7 +597,9 @@ int main(int argc, char *argv[])
             x.putArrayInt56(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt56(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt56(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -595,7 +624,9 @@ int main(int argc, char *argv[])
             x.putArrayUint56(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint56(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint56(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -616,7 +647,9 @@ int main(int argc, char *argv[])
             x.putArrayUint56(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint56(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint56(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -654,7 +687,9 @@ int main(int argc, char *argv[])
             x.putArrayInt48(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt48(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt48(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -675,7 +710,9 @@ int main(int argc, char *argv[])
             x.putArrayInt48(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt48(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt48(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -700,7 +737,9 @@ int main(int argc, char *argv[])
             x.putArrayUint48(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint48(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint48(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -721,7 +760,9 @@ int main(int argc, char *argv[])
             x.putArrayUint48(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint48(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint48(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -759,7 +800,9 @@ int main(int argc, char *argv[])
             x.putArrayInt40(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt40(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt40(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -780,7 +823,9 @@ int main(int argc, char *argv[])
             x.putArrayInt40(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt40(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt40(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -805,7 +850,9 @@ int main(int argc, char *argv[])
             x.putArrayUint40(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint40(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint40(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -826,7 +873,9 @@ int main(int argc, char *argv[])
             x.putArrayUint40(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint40(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint40(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -864,7 +913,9 @@ int main(int argc, char *argv[])
             x.putArrayInt32(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt32(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt32(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -885,7 +936,9 @@ int main(int argc, char *argv[])
             x.putArrayInt32(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt32(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt32(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -910,7 +963,9 @@ int main(int argc, char *argv[])
             x.putArrayUint32(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint32(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint32(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -931,7 +986,9 @@ int main(int argc, char *argv[])
             x.putArrayUint32(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint32(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint32(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -969,7 +1026,9 @@ int main(int argc, char *argv[])
             x.putArrayInt24(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt24(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt24(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -990,7 +1049,9 @@ int main(int argc, char *argv[])
             x.putArrayInt24(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt24(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt24(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1015,7 +1076,9 @@ int main(int argc, char *argv[])
             x.putArrayUint24(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint24(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint24(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1036,7 +1099,9 @@ int main(int argc, char *argv[])
             x.putArrayUint24(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint24(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint24(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1074,7 +1139,9 @@ int main(int argc, char *argv[])
             x.putArrayInt16(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt16(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt16(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1092,7 +1159,9 @@ int main(int argc, char *argv[])
             x.putArrayInt16(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt16(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt16(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1114,7 +1183,9 @@ int main(int argc, char *argv[])
             x.putArrayUint16(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint16(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint16(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1132,7 +1203,9 @@ int main(int argc, char *argv[])
             x.putArrayUint16(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint16(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint16(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1169,7 +1242,9 @@ int main(int argc, char *argv[])
             x.putArrayInt8(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt8(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt8(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1187,7 +1262,9 @@ int main(int argc, char *argv[])
             x.putArrayInt8(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt8(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt8(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1209,7 +1286,9 @@ int main(int argc, char *argv[])
             x.putArrayInt8(DATA, 1);     x.putInt8(0xfe);
             x.putArrayInt8(DATA, 2);     x.putInt8(0xfd);
             x.putArrayInt8(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1227,7 +1306,9 @@ int main(int argc, char *argv[])
             x.putArrayInt8(DATA, 1);     x.putInt8(0xfd);
             x.putArrayInt8(DATA, 2);     x.putInt8(0xfe);
             x.putArrayInt8(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1249,7 +1330,9 @@ int main(int argc, char *argv[])
             x.putArrayUint8(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint8(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint8(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1267,7 +1350,9 @@ int main(int argc, char *argv[])
             x.putArrayUint8(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint8(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint8(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1290,7 +1375,9 @@ int main(int argc, char *argv[])
             x.putArrayUint8(DATA, 1);     x.putInt8(0xfe);
             x.putArrayUint8(DATA, 2);     x.putInt8(0xfd);
             x.putArrayUint8(DATA, 3);     x.putInt8(0xfc);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1308,7 +1395,9 @@ int main(int argc, char *argv[])
             x.putArrayUint8(DATA, 1);     x.putInt8(0xfd);
             x.putArrayUint8(DATA, 2);     x.putInt8(0xfe);
             x.putArrayUint8(DATA, 3);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZEOF_INT8 + 6 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1342,7 +1431,9 @@ int main(int argc, char *argv[])
             x.putFloat64(2);     x.putInt8(0xfd);
             x.putFloat64(3);     x.putInt8(0xfc);
             x.putFloat64(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1359,7 +1450,9 @@ int main(int argc, char *argv[])
             x.putFloat64(2.5);     x.putInt8(0xfd);
             x.putFloat64(3.5);     x.putInt8(0xfe);
             x.putFloat64(5.0);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1392,7 +1485,9 @@ int main(int argc, char *argv[])
             x.putFloat32(2);     x.putInt8(0xfd);
             x.putFloat32(3);     x.putInt8(0xfc);
             x.putFloat32(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1409,7 +1504,9 @@ int main(int argc, char *argv[])
             x.putFloat32(2.5);     x.putInt8(0xfd);
             x.putFloat32(3.5);     x.putInt8(0xfe);
             x.putFloat32(5.0);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1443,7 +1540,9 @@ int main(int argc, char *argv[])
             x.putInt64(2);     x.putInt8(0xfd);
             x.putInt64(3);     x.putInt8(0xfc);
             x.putInt64(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1460,7 +1559,9 @@ int main(int argc, char *argv[])
             x.putInt64(6);     x.putInt8(0xfd);
             x.putInt64(7);     x.putInt8(0xfe);
             x.putInt64(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1481,7 +1582,9 @@ int main(int argc, char *argv[])
             x.putUint64(2);     x.putInt8(0xfd);
             x.putUint64(3);     x.putInt8(0xfc);
             x.putUint64(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1498,7 +1601,9 @@ int main(int argc, char *argv[])
             x.putUint64(6);     x.putInt8(0xfd);
             x.putUint64(7);     x.putInt8(0xfe);
             x.putUint64(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1532,7 +1637,9 @@ int main(int argc, char *argv[])
             x.putInt56(2);     x.putInt8(0xfd);
             x.putInt56(3);     x.putInt8(0xfc);
             x.putInt56(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1549,7 +1656,9 @@ int main(int argc, char *argv[])
             x.putInt56(6);     x.putInt8(0xfd);
             x.putInt56(7);     x.putInt8(0xfe);
             x.putInt56(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1570,7 +1679,9 @@ int main(int argc, char *argv[])
             x.putUint56(2);     x.putInt8(0xfd);
             x.putUint56(3);     x.putInt8(0xfc);
             x.putUint56(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1587,7 +1698,9 @@ int main(int argc, char *argv[])
             x.putUint56(6);     x.putInt8(0xfd);
             x.putUint56(7);     x.putInt8(0xfe);
             x.putUint56(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1621,7 +1734,9 @@ int main(int argc, char *argv[])
             x.putInt48(2);     x.putInt8(0xfd);
             x.putInt48(3);     x.putInt8(0xfc);
             x.putInt48(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1638,7 +1753,9 @@ int main(int argc, char *argv[])
             x.putInt48(6);     x.putInt8(0xfd);
             x.putInt48(7);     x.putInt8(0xfe);
             x.putInt48(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1659,7 +1776,9 @@ int main(int argc, char *argv[])
             x.putUint48(2);     x.putInt8(0xfd);
             x.putUint48(3);     x.putInt8(0xfc);
             x.putUint48(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1676,7 +1795,9 @@ int main(int argc, char *argv[])
             x.putUint48(6);     x.putInt8(0xfd);
             x.putUint48(7);     x.putInt8(0xfe);
             x.putUint48(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1710,7 +1831,9 @@ int main(int argc, char *argv[])
             x.putInt40(2);     x.putInt8(0xfd);
             x.putInt40(3);     x.putInt8(0xfc);
             x.putInt40(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1727,7 +1850,9 @@ int main(int argc, char *argv[])
             x.putInt40(6);     x.putInt8(0xfd);
             x.putInt40(7);     x.putInt8(0xfe);
             x.putInt40(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1748,7 +1873,9 @@ int main(int argc, char *argv[])
             x.putUint40(2);     x.putInt8(0xfd);
             x.putUint40(3);     x.putInt8(0xfc);
             x.putUint40(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1765,7 +1892,9 @@ int main(int argc, char *argv[])
             x.putUint40(6);     x.putInt8(0xfd);
             x.putUint40(7);     x.putInt8(0xfe);
             x.putUint40(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1799,7 +1928,9 @@ int main(int argc, char *argv[])
             x.putInt32(2);     x.putInt8(0xfd);
             x.putInt32(3);     x.putInt8(0xfc);
             x.putInt32(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1816,7 +1947,9 @@ int main(int argc, char *argv[])
             x.putInt32(6);     x.putInt8(0xfd);
             x.putInt32(7);     x.putInt8(0xfe);
             x.putInt32(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1837,7 +1970,9 @@ int main(int argc, char *argv[])
             x.putUint32(2);     x.putInt8(0xfd);
             x.putUint32(3);     x.putInt8(0xfc);
             x.putUint32(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1854,7 +1989,9 @@ int main(int argc, char *argv[])
             x.putUint32(6);     x.putInt8(0xfd);
             x.putUint32(7);     x.putInt8(0xfe);
             x.putUint32(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1888,7 +2025,9 @@ int main(int argc, char *argv[])
             x.putInt24(2);     x.putInt8(0xfd);
             x.putInt24(3);     x.putInt8(0xfc);
             x.putInt24(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1905,7 +2044,9 @@ int main(int argc, char *argv[])
             x.putInt24(6);     x.putInt8(0xfd);
             x.putInt24(7);     x.putInt8(0xfe);
             x.putInt24(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1926,7 +2067,9 @@ int main(int argc, char *argv[])
             x.putUint24(2);     x.putInt8(0xfd);
             x.putUint24(3);     x.putInt8(0xfc);
             x.putUint24(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1943,7 +2086,9 @@ int main(int argc, char *argv[])
             x.putUint24(6);     x.putInt8(0xfd);
             x.putUint24(7);     x.putInt8(0xfe);
             x.putUint24(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1977,7 +2122,9 @@ int main(int argc, char *argv[])
             x.putInt16(2);     x.putInt8(0xfd);
             x.putInt16(3);     x.putInt8(0xfc);
             x.putInt16(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -1994,7 +2141,9 @@ int main(int argc, char *argv[])
             x.putInt16(6);     x.putInt8(0xfd);
             x.putInt16(7);     x.putInt8(0xfe);
             x.putInt16(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2015,7 +2164,9 @@ int main(int argc, char *argv[])
             x.putUint16(2);     x.putInt8(0xfd);
             x.putUint16(3);     x.putInt8(0xfc);
             x.putUint16(4);     x.putInt8(0xfb);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2032,7 +2183,9 @@ int main(int argc, char *argv[])
             x.putUint16(6);     x.putInt8(0xfd);
             x.putUint16(7);     x.putInt8(0xfe);
             x.putUint16(8);     x.putInt8(0xff);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 5 * SIZEOF_INT8 + 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2141,9 +2294,13 @@ int main(int argc, char *argv[])
         const int NUM_TEST = sizeof DATA / sizeof *DATA;
         for (int iLen = 0; iLen < NUM_TEST; iLen++) {
             Obj x;
-            for (int j = 0; j < iLen; j++) { x.putInt8(j); }
+            for (int j = 0; j < iLen; j++) {
+                x.putInt8(j);
+            }
 
-            if (veryVerbose) { P_(iLen); P(x); }
+            if (veryVerbose) {
+                P_(iLen); P(x);
+            }
             const int bytes = iLen * SIZEOF_INT8;
             // verify length()
             LOOP_ASSERT(iLen, x.length() == bytes);
@@ -2197,7 +2354,9 @@ int main(int argc, char *argv[])
             x.putInt8(2);
             x.putInt8(3);
             x.putInt8(4);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2216,7 +2375,9 @@ int main(int argc, char *argv[])
             x.putInt8(6);
             x.putInt8(7);
             x.putInt8(8);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2236,7 +2397,9 @@ int main(int argc, char *argv[])
             x.putUint8(2);
             x.putUint8(3);
             x.putUint8(4);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2251,7 +2414,9 @@ int main(int argc, char *argv[])
             x.putUint8(6);
             x.putUint8(7);
             x.putUint8(8);
-            if (veryVerbose) { P(x); }
+            if (veryVerbose) {
+                P(x);
+            }
             const int NUM_BYTES = 4 * SIZE;
             const int NUM_BITS = 8 * NUM_BYTES;
             ASSERT(NUM_BYTES == x.length());
@@ -2267,10 +2432,14 @@ int main(int argc, char *argv[])
             const int NUM_TEST = 5;
             for (int iLen = 1; iLen < NUM_TEST; iLen++) {
                 Obj x;
-                for (int j = 0; j < iLen; j++) { x.putInt8(j); }
+                for (int j = 0; j < iLen; j++) {
+                    x.putInt8(j);
+                }
 
                 x.removeAll();
-                if (veryVerbose) { P_(iLen); P(x); }
+                if (veryVerbose) {
+                    P_(iLen); P(x);
+                }
                 LOOP_ASSERT(iLen, 0 == x.length());
             }
         }
@@ -2297,7 +2466,9 @@ int main(int argc, char *argv[])
 
         if (verbose) cout << "\nTry putInt32 with x1." << endl;
         x1.putInt32(1);
-        if (veryVerbose) { P(x1); }
+        if (veryVerbose) {
+            P(x1);
+        }
         ASSERT(SIZEOF_INT32 == x1.length());
         ASSERT(1 == eq("\x00\x00\x00\x01",
                        x1.data(), SIZEOF_INT32 * 8));
@@ -2310,7 +2481,9 @@ int main(int argc, char *argv[])
         const char data[] = {0x01, 0x02, 0x03, 0x04};
         const int size = sizeof data / sizeof *data;
         x1.putArrayInt8(data, size);
-        if (veryVerbose) { P(x1); }
+        if (veryVerbose) {
+            P(x1);
+        }
         ASSERT(SIZEOF_INT8 * size == x1.length());
         ASSERT(1 == eq("\x01\x02\x03\x04",
                        x1.data(),

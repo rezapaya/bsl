@@ -103,7 +103,7 @@ BSLS_IDENT("$Id: $")
 //      // Verify the results on 'stdout'.
 //      const char *theChars = outStream.data();
 //      int length = outStream.length();
-//      for(int i = 0; i < length; ++i) {
+//      for (int i = 0; i < length; ++i) {
 //          if(bsl::isalnum(static_cast<unsigned char>(theChars[i]))) {
 //              cout << "nextByte (char): " << theChars[i] << endl;
 //          }
@@ -655,7 +655,8 @@ ByteOutStream& ByteOutStream::putLength(int length)
 
     if (length > 127) {
         putInt32(length | (1 << 31));
-    } else {
+    }
+    else {
         putInt8(length);
     }
     return *this;

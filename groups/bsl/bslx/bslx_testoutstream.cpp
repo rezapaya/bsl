@@ -46,11 +46,13 @@ TestOutStream& TestOutStream::putLength(int length)
         d_makeNextInvalidFlag = 0;
         d_imp.putInt8(code);
         d_imp.putInt32(length);
-    } else if (length > 127) {
+    }
+    else if (length > 127) {
         code = FieldCode::BSLX_INT32;
         d_imp.putInt8(code);
         d_imp.putInt32(length | (1 << 31));
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT8;
         d_imp.putInt8(code);
         d_imp.putInt8(length);
@@ -64,7 +66,8 @@ TestOutStream& TestOutStream::putVersion(int version)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT8;
     }
     d_imp.putInt8(code);
@@ -79,7 +82,8 @@ TestOutStream& TestOutStream::putInt64(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT64;
     }
     d_imp.putInt8(code);
@@ -93,7 +97,8 @@ TestOutStream& TestOutStream::putUint64(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT64;
     }
     d_imp.putInt8(code);
@@ -107,7 +112,8 @@ TestOutStream& TestOutStream::putInt56(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT56;
     }
     d_imp.putInt8(code);
@@ -121,7 +127,8 @@ TestOutStream& TestOutStream::putUint56(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT56;
     }
     d_imp.putInt8(code);
@@ -135,7 +142,8 @@ TestOutStream& TestOutStream::putInt48(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT48;
     }
     d_imp.putInt8(code);
@@ -149,7 +157,8 @@ TestOutStream& TestOutStream::putUint48(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT48;
     }
     d_imp.putInt8(code);
@@ -163,7 +172,8 @@ TestOutStream& TestOutStream::putInt40(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT40;
     }
     d_imp.putInt8(code);
@@ -177,7 +187,8 @@ TestOutStream& TestOutStream::putUint40(bsls::Types::Int64 value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT40;
     }
     d_imp.putInt8(code);
@@ -191,7 +202,8 @@ TestOutStream& TestOutStream::putInt32(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT32;
     }
     d_imp.putInt8(code);
@@ -205,7 +217,8 @@ TestOutStream& TestOutStream::putUint32(unsigned int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT32;
     }
     d_imp.putInt8(code);
@@ -219,7 +232,8 @@ TestOutStream& TestOutStream::putInt24(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT24;
     }
     d_imp.putInt8(code);
@@ -233,7 +247,8 @@ TestOutStream& TestOutStream::putUint24(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT24;
     }
     d_imp.putInt8(code);
@@ -247,7 +262,8 @@ TestOutStream& TestOutStream::putInt16(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT16;
     }
     d_imp.putInt8(code);
@@ -261,7 +277,8 @@ TestOutStream& TestOutStream::putUint16(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT16;
     }
     d_imp.putInt8(code);
@@ -275,7 +292,8 @@ TestOutStream& TestOutStream::putInt8(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT8;
     }
     d_imp.putInt8(code);
@@ -289,7 +307,8 @@ TestOutStream& TestOutStream::putUint8(int value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT8;
     }
     d_imp.putInt8(code);
@@ -303,7 +322,8 @@ TestOutStream& TestOutStream::putFloat64(double value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_FLOAT64;
     }
     d_imp.putInt8(code);
@@ -317,7 +337,8 @@ TestOutStream& TestOutStream::putFloat32(float value)
     if (d_makeNextInvalidFlag) {
         code = FieldCode::BSLX_INVALID;
         d_makeNextInvalidFlag = 0;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_FLOAT32;
     }
     d_imp.putInt8(code);
@@ -336,7 +357,8 @@ TestOutStream& TestOutStream::putArrayInt64(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT64;
     }
     d_imp.putInt8(code);
@@ -359,7 +381,8 @@ TestOutStream& TestOutStream::putArrayUint64(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT64;
     }
     d_imp.putInt8(code);
@@ -381,7 +404,8 @@ TestOutStream& TestOutStream::putArrayInt56(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT56;
     }
     d_imp.putInt8(code);
@@ -404,7 +428,8 @@ TestOutStream& TestOutStream::putArrayUint56(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT56;
     }
     d_imp.putInt8(code);
@@ -426,7 +451,8 @@ TestOutStream& TestOutStream::putArrayInt48(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT48;
     }
     d_imp.putInt8(code);
@@ -449,7 +475,8 @@ TestOutStream& TestOutStream::putArrayUint48(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT48;
     }
     d_imp.putInt8(code);
@@ -471,7 +498,8 @@ TestOutStream& TestOutStream::putArrayInt40(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT40;
     }
     d_imp.putInt8(code);
@@ -494,7 +522,8 @@ TestOutStream& TestOutStream::putArrayUint40(
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT40;
     }
     d_imp.putInt8(code);
@@ -514,7 +543,8 @@ TestOutStream& TestOutStream::putArrayInt32(const int *values, int numValues)
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT32;
     }
      d_imp.putInt8(code);
@@ -536,7 +566,8 @@ TestOutStream& TestOutStream::putArrayUint32(const unsigned int *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT32;
     }
     d_imp.putInt8(code);
@@ -557,7 +588,8 @@ TestOutStream& TestOutStream::putArrayInt24(const int *values, int numValues)
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT24;
     }
     d_imp.putInt8(code);
@@ -579,7 +611,8 @@ TestOutStream& TestOutStream::putArrayUint24(const unsigned int *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT24;
     }
     d_imp.putInt8(code);
@@ -600,7 +633,8 @@ TestOutStream& TestOutStream::putArrayInt16(const short *values, int numValues)
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT16;
     }
     d_imp.putInt8(code);
@@ -622,7 +656,8 @@ TestOutStream& TestOutStream::putArrayUint16(const unsigned short *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT16;
     }
     d_imp.putInt8(code);
@@ -643,7 +678,8 @@ TestOutStream& TestOutStream::putArrayInt8(const char *values, int numValues)
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT8;
     }
     d_imp.putInt8(code);
@@ -665,7 +701,8 @@ TestOutStream& TestOutStream::putArrayInt8(const signed char *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_INT8;
     }
     d_imp.putInt8(code);
@@ -686,7 +723,8 @@ TestOutStream& TestOutStream::putArrayUint8(const char *values, int numValues)
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT8;
     }
     d_imp.putInt8(code);
@@ -708,7 +746,8 @@ TestOutStream& TestOutStream::putArrayUint8(const unsigned char *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_UINT8;
     }
     d_imp.putInt8(code);
@@ -730,7 +769,8 @@ TestOutStream& TestOutStream::putArrayFloat64(const double *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_FLOAT64;
     }
     d_imp.putInt8(code);
@@ -752,7 +792,8 @@ TestOutStream& TestOutStream::putArrayFloat32(const float *values,
     if (d_makeNextInvalidFlag) {
         d_makeNextInvalidFlag = 0;
         code = FieldCode::BSLX_INVALID;
-    } else {
+    }
+    else {
         code = FieldCode::BSLX_FLOAT32;
     }
     d_imp.putInt8(code);

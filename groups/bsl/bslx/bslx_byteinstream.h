@@ -1030,7 +1030,8 @@ ByteInStream& ByteInStream::getLength(int& variable)
             getInt32(variable);
             variable ^= (1 << 31);  // Clear top bit.
         }
-    } else {
+    }
+    else {
         // If 'length <= 127', 'length' is stored as one byte.
         if (isValid()) {
             unsigned char tmp;

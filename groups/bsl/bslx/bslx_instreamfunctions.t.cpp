@@ -87,7 +87,9 @@ static void aSsErT(int c, const char *s, int i)
     if (c) {
         cout << "Error " << __FILE__ << "(" << i << "): " << s
              << "    (failed)" << endl;
-        if (testStatus >= 0 && testStatus <= 100) { ++testStatus; }
+        if (testStatus >= 0 && testStatus <= 100) {
+            ++testStatus;
+        }
     }
 }
 #define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
@@ -632,10 +634,7 @@ class MyTestClass {
     STREAM& bslxStreamIn(STREAM& stream, int version);
 
     // ACCESSORS
-    bool isBslxVersionSupported(int version) const
-    {
-        return VERSION == version;
-    }
+    bool isBslxVersionSupported(int version) const;
 };
 
 template <class STREAM>
@@ -643,6 +642,11 @@ STREAM& MyTestClass::bslxStreamIn(STREAM& stream, int /*version*/)
 {
     stream.removeAll();
     return stream;
+}
+
+bool MyTestClass::isBslxVersionSupported(int version) const
+{
+    return VERSION == version;
 }
 
 //=============================================================================

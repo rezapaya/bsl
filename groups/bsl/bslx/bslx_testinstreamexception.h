@@ -314,13 +314,13 @@ class TestInStreamException {
 {                                                                             \
     {                                                                         \
         static int firstTime = 1;                                             \
-        if (veryVerbose && firstTime) { bsl::cout <<                          \
-            "### BSLX EXCEPTION TEST -- (ENABLED) --" << '\n';                \
+        if (veryVerbose && firstTime) {                                       \
+            bsl::cout << "### BSLX EXCEPTION TEST -- (ENABLED) --" << '\n';   \
         }                                                                     \
         firstTime = 0;                                                        \
     }                                                                         \
-    if (veryVeryVerbose) { bsl::cout <<                                       \
-        "### Begin bslx exception test." << '\n';                             \
+    if (veryVeryVerbose) {                                                    \
+        bsl::cout << "### Begin bslx exception test." << '\n';                \
     }                                                                         \
     int bslxExceptionCounter = 0;                                             \
     static int bslxExceptionLimit = 100;                                      \
@@ -331,7 +331,8 @@ class TestInStreamException {
 
 #ifndef END_BSLX_EXCEPTION_TEST
 #define END_BSLX_EXCEPTION_TEST                                               \
-        } catch (bslx::TestInStreamException& e) {                            \
+        }                                                                     \
+        catch (bslx::TestInStreamException& e) {                              \
             if ((veryVerbose && bslxExceptionLimit) || veryVeryVerbose)       \
             {                                                                 \
                 --bslxExceptionLimit;                                         \
@@ -343,7 +344,8 @@ class TestInStreamException {
                               << ", "                                         \
                               << "last data type = "                          \
                               << e.dataType();                                \
-                } else if (0 == bslxExceptionLimit) {                         \
+                }                                                             \
+                else if (0 == bslxExceptionLimit) {                           \
                     bsl::cout << " [ Note: 'bslxExceptionLimit' reached. ]";  \
                 }                                                             \
                 bsl::cout << '\n';                                            \
