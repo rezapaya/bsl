@@ -5,15 +5,16 @@
 #include <bslstl_allocator.h>
 #include <bslstl_forwarditerator.h>
 #include <bslstl_iterator.h>
+#include <bslstl_list.h>
 
 #include <bslma_allocator.h>
 #include <bslma_default.h>
-#include <bslma_defaultallocatorguard.h>   // for testing only
+#include <bslma_defaultallocatorguard.h>
 #include <bslma_newdeleteallocator.h>
-#include <bslma_testallocator.h>           // for testing only
-#include <bslma_testallocatorexception.h>  // for testing only
+#include <bslma_testallocator.h>
+#include <bslma_testallocatorexception.h>
 
-#include <bslmf_issame.h>                  // for testing only
+#include <bslmf_issame.h>
 
 #include <bsls_alignmentutil.h>
 #include <bsls_assert.h>
@@ -23,7 +24,7 @@
 #include <bsls_objectbuffer.h>
 #include <bsls_platform.h>
 #include <bsls_types.h>
-#include <bsls_stopwatch.h>                // for testing only
+#include <bsls_stopwatch.h>
 #include <bsls_util.h>
 
 #include <bsltf_nontypicaloverloadstesttype.h>
@@ -1415,6 +1416,59 @@ struct TestDriver {
                                // TEST APPARATUS
                                // --------------
 
+void VA_PTR()
+{
+    return;
+}
+
+void VB_PTR()
+{
+    return;
+}
+
+void VC_PTR()
+{
+    return;
+}
+
+void VD_PTR()
+{
+    return;
+}
+
+void VE_PTR()
+{
+    return;
+}
+
+template <class TYPE>
+char lookupValue(char index)
+{
+    return index;
+}
+
+typedef void (*voidFnPtr)();
+
+voidFnPtr lookupValue(char index)
+{
+    switch (index) {
+        case VA:
+            return VA_PTR;
+            break;
+        case VB:
+            return VB_PTR;
+            break;
+        case VC:
+            return VC_PTR;
+            break;
+        case VD:
+            return VD_PTR;
+            break;
+        default:
+            return VE_PTR;
+    }
+}
+
 template <class TYPE, class ALLOC>
 int TestDriver<TYPE,ALLOC>::getValues(const TYPE **valuesPtr)
 {
@@ -1422,11 +1476,11 @@ int TestDriver<TYPE,ALLOC>::getValues(const TYPE **valuesPtr)
                                       &bslma::NewDeleteAllocator::singleton());
 
     static TYPE values[5]; // avoid DEFAULT_VALUE and UNINITIALIZED_VALUE
-    values[0] = TYPE(VA);
-    values[1] = TYPE(VB);
-    values[2] = TYPE(VC);
-    values[3] = TYPE(VD);
-    values[4] = TYPE(VE);
+    values[0] = TYPE(lookupValue<TYPE>(VA));
+    values[1] = TYPE(lookupValue<TYPE>(VB));
+    values[2] = TYPE(lookupValue<TYPE>(VC));
+    values[3] = TYPE(lookupValue<TYPE>(VD));
+    values[4] = TYPE(lookupValue<TYPE>(VE));
 
     const int NUM_VALUES = 5;
 
@@ -9202,6 +9256,19 @@ int main(int argc, char *argv[])
     printf("TEST " __FILE__ " CASE %d\n", test);
 
     switch (test) { case 0:  // Zero is always the leading case.
+      case 25: {
+        const voidFnPtr values[] = { VA_PTR, VB_PTR, VC_PTR, VD_PTR };
+        const int NUM_VALUES = sizeof values / sizeof *values;
+
+        list<voidFnPtr> l;
+
+        l.push_back(VD_PTR);
+        list<voidFnPtr>::const_iterator listIterator = l.cbegin();
+
+        vector<voidFnPtr> w(l.begin(), l.end());
+
+        break;
+      };
       case 24: {
         // --------------------------------------------------------------------
         // USAGE EXAMPLE
@@ -9441,6 +9508,9 @@ int main(int argc, char *argv[])
         if (verbose) printf("\n... with 'BitwiseCopyableTestType'.\n");
         TestDriver<BCT>::testCase17();
 
+        if (verbose) printf("\n... with pointer to function.\n");
+        TestDriver<void (*)()>::testCase17();
+
         if (verbose) printf("\nTesting Value Emplacement"
                             "\n=======================\n");
 
@@ -9570,6 +9640,9 @@ int main(int argc, char *argv[])
         if (verbose) printf("\n... with 'TestType'.\n");
         TestDriver<T>::testCase15();
 
+        if (verbose) printf("\n... with pointer to function.\n");
+        TestDriver<void (*)()>::testCase15();
+
 #ifdef BDE_BUILD_TARGET_EXC
         if (verbose) printf("\nNegative Testing Element Access"
                             "\n===============================\n");
@@ -9627,6 +9700,9 @@ int main(int argc, char *argv[])
 
         if (verbose) printf("\n... with 'BitwiseCopyableTestType'.\n");
         TestDriver<BCT>::testCase13();
+
+        if (verbose) printf("\n... with pointer to function.\n");
+        TestDriver<void (*)()>::testCase13();
 
         if (verbose) printf("\nTesting Initial-Range Assignment"
                             "\n================================\n");
