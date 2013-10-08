@@ -3602,7 +3602,7 @@ int main(int argc, char *argv[])
             cout << "\nTry getInt8() with x2." << endl;
         }
         for (i = 0; i < 5; i++) {
-            char c;
+            char c = ~i;  // Populate 'c' with a value different from 'i'.
             x2.getInt8(c);
             LOOP_ASSERT(i, i == c);
         }

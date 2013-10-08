@@ -1034,9 +1034,11 @@ ByteInStream& ByteInStream::getLength(int& variable)
     else {
         // If 'length <= 127', 'length' is stored as one byte.
         if (isValid()) {
-            unsigned char tmp;
+            unsigned char tmp = 0;
             getUint8(tmp);
-            variable = tmp;
+            if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(isValid())) {
+                variable = tmp;
+            }
         }
     }
 
@@ -1053,9 +1055,11 @@ ByteInStream& ByteInStream::getVersion(int& variable)
         return *this;
     }
 
-    unsigned char tmp;
+    unsigned char tmp = 0;
     getUint8(tmp);
-    variable = tmp;
+    if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(isValid())) {
+        variable = tmp;
+    }
 
     return *this;
 }
@@ -1428,7 +1432,7 @@ ByteInStream& ByteInStream::getString(bsl::string& stringValue)
         return *this;
     }
 
-    int length;
+    int length = 0;
     getLength(length);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(!isValid())) {

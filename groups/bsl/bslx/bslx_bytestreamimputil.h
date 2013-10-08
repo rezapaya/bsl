@@ -922,8 +922,11 @@ void ByteStreamImpUtil::getInt64(bsls::Types::Int64 *variable,
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT64) {
-        *variable = 0x80 & buffer[0] ? -1 : 0;  // sign extend
+    if (sizeof *variable > SIZEOF_INT64 && 0x80 & buffer[0]) {
+        *variable = -1;  // sign extend
+    }
+    else {
+        *variable = 0;
     }
     getIntImpl(variable, buffer, SIZEOF_INT64);
 }
@@ -934,9 +937,7 @@ void ByteStreamImpUtil::getUint64(bsls::Types::Uint64 *variable,
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT64) {
-        *variable = 0;  // zero extend
-    }
+    *variable = 0;  // zero extend
     getIntImpl(variable, buffer, SIZEOF_INT64);
 }
 
@@ -1005,8 +1006,11 @@ void ByteStreamImpUtil::getInt32(int *variable, const char *buffer)
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT32) {
-        *variable = 0x80 & buffer[0] ? -1 : 0;  // sign extend
+    if (sizeof *variable > SIZEOF_INT32 && 0x80 & buffer[0]) {
+        *variable =  -1;  // sign extend
+    }
+    else {
+        *variable = 0;
     }
     getIntImpl(variable, buffer, SIZEOF_INT32);
 }
@@ -1016,9 +1020,7 @@ void ByteStreamImpUtil::getUint32(unsigned int *variable, const char *buffer)
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT32) {
-        *variable = 0;  // zero extend
-    }
+    *variable = 0;  // zero extend
     getIntImpl(variable, buffer, SIZEOF_INT32);
 }
 
@@ -1045,8 +1047,11 @@ void ByteStreamImpUtil::getInt16(short *variable, const char *buffer)
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT16) {
-        *variable = (short)(0x80 & buffer[0] ? -1 : 0);  // sign extend
+    if (sizeof *variable > SIZEOF_INT16 && 0x80 & buffer[0]) {
+        *variable = (short) -1;  // sign extend
+    }
+    else {
+        *variable = (short) 0;
     }
     getIntImpl(variable, buffer, SIZEOF_INT16);
 }
@@ -1056,9 +1061,7 @@ void ByteStreamImpUtil::getUint16(unsigned short *variable, const char *buffer)
 {
     BSLS_ASSERT_SAFE(buffer);
     BSLS_ASSERT_SAFE(variable);
-    if (sizeof *variable > SIZEOF_INT16) {
-        *variable = 0;  // zero extend
-    }
+    *variable = 0;  // zero extend
     getIntImpl(variable, buffer, SIZEOF_INT16);
 }
 
