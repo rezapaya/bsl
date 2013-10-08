@@ -9263,7 +9263,6 @@ int main(int argc, char *argv[])
         list<voidFnPtr> l;
 
         l.push_back(VD_PTR);
-        list<voidFnPtr>::const_iterator listIterator = l.cbegin();
 
         vector<voidFnPtr> w(l.begin(), l.end());
 
