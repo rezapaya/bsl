@@ -6,7 +6,7 @@ BSLS_IDENT_RCSID(bslx_testinstream_cpp,"$Id$ $CSID$")
 
 #include <bslx_bytestreamimputil.h>
 
-#ifdef FOR_TESTING_ONLY
+#ifdef BSL_FOR_TESTING_ONLY
 #include <bslx_testoutstream.h>             // for testing only
 #include <bslx_testinstreamexception.h>     // for testing only
 #endif

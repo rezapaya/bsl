@@ -1,5 +1,7 @@
 // bslx_testinstream.t.cpp                                            -*-C++-*-
+
 #include <bslx_testinstream.h>
+
 #include <bslx_testoutstream.h>
 #include <bslx_testinstreamexception.h>
 

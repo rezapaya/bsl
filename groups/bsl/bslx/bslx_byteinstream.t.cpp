@@ -1,6 +1,7 @@
 // bslx_byteinstream.t.cpp                                            -*-C++-*-
 
 #include <bslx_byteinstream.h>
+
 #include <bslx_byteoutstream.h>
 
 #include <bsl_cstdlib.h>     // atoi()

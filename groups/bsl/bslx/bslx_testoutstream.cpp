@@ -4,8 +4,6 @@
 #include <bsls_ident.h>
 BSLS_IDENT_RCSID(bslx_testoutstream_cpp,"$Id$ $CSID$")
 
-
-//#include <bslx_bytestreamimputil.h>
 #include <bslx_fieldcode.h>
 
 #include <bslma_default.h>

@@ -1,6 +1,10 @@
 // bslx_testinstreamexception.cpp                                     -*-C++-*-
 #include <bslx_testinstreamexception.h>
 
+#ifdef BSL_FOR_TESTING_ONLY
+#include <bslx_bytestreamimputil.h>  // for testing only
+#endif
+
 #include <bsls_ident.h>
 BSLS_IDENT_RCSID(bslx_testinstreamexception_cpp,"$Id$ $CSID$")
 

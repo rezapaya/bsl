@@ -1,6 +1,7 @@
 // bslx_testinstreamexception.t.cpp                                   -*-C++-*-
 
 #include <bslx_testinstreamexception.h>
+
 #include <bslx_bytestreamimputil.h>
 
 #include <bsl_cstdlib.h>     // atoi()
