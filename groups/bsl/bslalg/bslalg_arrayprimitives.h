@@ -511,6 +511,8 @@ struct ArrayPrimitives {
         // range '[ fromBegin, *fromEndPtr )' will have unspecified but valid
         // values.
 
+
+
     template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
     static void destructiveMoveAndInsert(TARGET_TYPE  *toBegin,
                                          TARGET_TYPE **fromEndPtr,
@@ -1027,6 +1029,12 @@ struct ArrayPrimitives_Imp {
                               FWD_ITER                    fromEnd,
                               ALLOCATOR                  *allocator,
                               bslmf::MetaInt<NIL_TRAITS> *);
+    template <class FWD_ITER, class ALLOCATOR>
+    static void copyConstruct(void                      **toBegin,
+                              FWD_ITER                    fromBegin,
+                              FWD_ITER                    fromEnd,
+                              ALLOCATOR                  *allocator,
+                              bslmf::MetaInt<NIL_TRAITS> *);
         // These functions follow the 'copyConstruct' contract.  If the
         // parameterized 'ALLOCATOR' is based on 'bslma::Allocator' and the
         // 'TARGET_TYPE' constructors take an allocator argument, then pass the
@@ -1370,6 +1378,14 @@ struct ArrayPrimitives_Imp {
     template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
     static void insert(TARGET_TYPE                             *toBegin,
                        TARGET_TYPE                             *toEnd,
+                       FWD_ITER                                 fromBegin,
+                       FWD_ITER                                 fromEnd,
+                       size_type                                numElements,
+                       ALLOCATOR                               *allocator,
+                       bslmf::MetaInt<BITWISE_MOVEABLE_TRAITS> *);
+    template <class FWD_ITER, class ALLOCATOR>
+    static void insert(void                                   **toBegin,
+                       void                                   **toEnd,
                        FWD_ITER                                 fromBegin,
                        FWD_ITER                                 fromEnd,
                        size_type                                numElements,
@@ -2659,6 +2675,35 @@ void ArrayPrimitives_Imp::copyConstruct(TARGET_TYPE                *toBegin,
         // 'TARGET_TYPE'.  Use 'construct' instead.
 
         ScalarPrimitives::construct(toBegin, *fromBegin, allocator);
+        ++fromBegin;
+        toBegin = guard.moveEnd(1);
+    }
+    guard.release();
+}
+
+template <class FWD_ITER, class ALLOCATOR>
+void ArrayPrimitives_Imp::copyConstruct(void                      **toBegin,
+                                        FWD_ITER                    fromBegin,
+                                        FWD_ITER                    fromEnd,
+                                        ALLOCATOR                  *allocator,
+                                        bslmf::MetaInt<NIL_TRAITS> *)
+{
+    // In the event FWD_ITER is an iterator over function pointers, a
+    // reinterpret_cast is required for conversion to void *.
+
+    BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
+    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
+                                                          fromEnd));
+
+    AutoArrayDestructor<void *> guard(toBegin, toBegin);
+
+    while (fromBegin != fromEnd) {
+        // Note: We are not sure the value type of 'FWD_ITER' is convertible to
+        // 'TARGET_TYPE'.  Use 'construct' instead.
+
+        ScalarPrimitives::construct(toBegin,
+                                    reinterpret_cast<void *>(*fromBegin),
+                                    allocator);
         ++fromBegin;
         toBegin = guard.moveEnd(1);
     }
@@ -4495,6 +4540,100 @@ void ArrayPrimitives_Imp::insert(
         for (; toEnd != destBegin; ++fromBegin) {
             ScalarPrimitives::construct(toEnd,
                                         *fromBegin,
+                                        allocator);
+            toEnd = endGuard1.moveEnd(1);
+        }
+        endGuard1.release();
+        endGuard2.release();
+    }
+}
+
+template <class FWD_ITER, class ALLOCATOR>
+void ArrayPrimitives_Imp::insert(
+                          void                                   **toBegin,
+                          void                                   **toEnd,
+                          FWD_ITER                                 fromBegin,
+                          FWD_ITER,
+                          size_type                                numElements,
+                          ALLOCATOR                               *allocator,
+                          bslmf::MetaInt<BITWISE_MOVEABLE_TRAITS> *)
+{
+    // In the event that FWD_ITER is an iterator over a pointer type to be
+    // cast to a void * type, we wish to use a reinterpret_cast. This allows
+    // for the correct casting of function pointers.
+
+    // 'TARGET_TYPE' is bit-wise moveable.
+    BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin, toEnd));
+    BSLMF_ASSERT((bsl::is_same<size_type, std::size_t>::value));
+
+    if (0 == numElements) {
+        return;                                                       // RETURN
+    }
+
+    // The following assertions only make sense if 'FWD_ITER' is a pointer to a
+    // possibly cv-qualified 'TARGET_TYPE', and are tested in that overload
+    // (see above).
+    //..
+    //  BSLS_ASSERT(fromBegin + numElements == fromEnd);
+    //  BSLS_ASSERT(fromEnd <= toBegin || toEnd + numElements <= fromBegin);
+    //..
+
+    // Key to the transformation diagrams:
+    //..
+    //  A...G   original contents of '[toBegin, toEnd)'  ("tail")
+    //  t...z   contents of '[fromBegin, fromEnd)'       ("input")
+    //  _____   uninitialized array element
+    //  [...]   part of array guarded by exception guard
+    //  |.(.,.) part of array guarded by move guard
+    //          (middle indicated by ',' and dest by '|')
+    //..
+
+    const size_type tailLen  = toEnd - toBegin;
+    const size_type numGuarded = tailLen < numElements ? tailLen : numElements;
+
+    //..
+    //  Transformation: ABCDE____ => ____ABCDE (might overlap).
+    //..
+
+    void **destBegin = toBegin + numElements;
+    std::memmove(destBegin, toBegin, tailLen * sizeof(void **));
+
+    //..
+    //  Transformation: |_______(,ABCDE) => tuvwx|__(ABCDE,).
+    //..
+
+    void **destEnd = toEnd + numElements;
+    AutoArrayMoveDestructor<void *> guard(toBegin,
+                                          destEnd - numGuarded,
+                                          destEnd - numGuarded,
+                                          destEnd);
+
+    for (; guard.middle() != guard.end(); ++fromBegin) {
+        ScalarPrimitives::construct(guard.destination(),
+                                    reinterpret_cast<void *>(*fromBegin),
+                                    allocator);
+        guard.advance();
+    }
+
+    // The bitwise 'guard' is now inactive, since 'middle() == end()', and
+    // 'guard.destination()' is the smaller of 'destBegin' or 'toEnd'.
+
+    if (tailLen < numElements) {
+        // There still is a gap of 'numElements - tailLen' to fill in between
+        // 'toEnd' and 'destBegin'.  The elements that have been 'memmove'-ed
+        // need to be guarded, and we need to continue to fill the hole at the
+        // same guarding the copied elements as well.
+
+        AutoArrayDestructor<void *> endGuard1(toEnd, toEnd);
+        AutoArrayDestructor<void *> endGuard2(destBegin, destEnd);
+
+        //..
+        //  Transformation: tuvwx[]__[ABCDE] => tuvwx[yz][ABCDE].
+        //..
+
+        for (; toEnd != destBegin; ++fromBegin) {
+            ScalarPrimitives::construct(toEnd,
+                                        reinterpret_cast<void *>(*fromBegin),
                                         allocator);
             toEnd = endGuard1.moveEnd(1);
         }
