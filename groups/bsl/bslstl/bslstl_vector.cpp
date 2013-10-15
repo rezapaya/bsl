@@ -22,7 +22,6 @@ BSLS_IDENT("$Id$ $CSID$")
 
 #include <bsls_assert.h>
 
-#include <bslstl_allocator.h>         // for testing only
 #include <bslstl_forwarditerator.h>   // for testing only
 #include <bslstl_iterator.h>          // for testing only
 #include <bslstl_list.h>              // for testing only

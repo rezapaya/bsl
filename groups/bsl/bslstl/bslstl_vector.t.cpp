@@ -1416,29 +1416,10 @@ struct TestDriver {
                                // TEST APPARATUS
                                // --------------
 
-void VA_PTR()
+template<char N>
+char TestFunc()
 {
-    return;
-}
-
-void VB_PTR()
-{
-    return;
-}
-
-void VC_PTR()
-{
-    return;
-}
-
-void VD_PTR()
-{
-    return;
-}
-
-void VE_PTR()
-{
-    return;
+    return N;
 }
 
 template <class TYPE>
@@ -1447,25 +1428,25 @@ char lookupValue(char index)
     return index;
 }
 
-typedef void (*voidFnPtr)();
+typedef char (*charFnPtr) ();
 
-voidFnPtr lookupValue(char index)
+charFnPtr lookupValue(char index)
 {
     switch (index) {
         case VA:
-            return VA_PTR;
+            return TestFunc<'A'>;
             break;
         case VB:
-            return VB_PTR;
+            return TestFunc<'B'>;
             break;
         case VC:
-            return VC_PTR;
+            return TestFunc<'C'>;
             break;
         case VD:
-            return VD_PTR;
+            return TestFunc<'D'>;
             break;
         default:
-            return VE_PTR;
+            return TestFunc<'E'>;
     }
 }
 
@@ -9257,18 +9238,6 @@ int main(int argc, char *argv[])
 
     switch (test) { case 0:  // Zero is always the leading case.
       case 25: {
-        const voidFnPtr values[] = { VA_PTR, VB_PTR, VC_PTR, VD_PTR };
-        const int NUM_VALUES = sizeof values / sizeof *values;
-
-        list<voidFnPtr> l;
-
-        l.push_back(VD_PTR);
-
-        vector<voidFnPtr> w(l.begin(), l.end());
-
-        break;
-      };
-      case 24: {
         // --------------------------------------------------------------------
         // USAGE EXAMPLE
         //
@@ -9311,6 +9280,22 @@ int main(int argc, char *argv[])
             ASSERT(3 == m1.theValue(1, 0));
             ASSERT(4 == m1.theValue(1, 1));
         }
+      } break;
+      case 24: {
+
+        const charFnPtr values[] = { TestFunc<VA>, TestFunc<VB>, TestFunc<VC>,
+                                     TestFunc<VD> };
+        const int NUM_VALUES = sizeof values / sizeof *values;
+
+        list<charFnPtr> l;
+
+        l.push_back(TestFunc<VA>);
+        l.push_back(TestFunc<VB>);
+        l.push_back(TestFunc<VC>);
+        l.push_back(TestFunc<VD>);
+
+        vector<charFnPtr> w(l.begin(), l.end());
+        ASSERT(4 == w.size());
       } break;
       case 23: {
         // --------------------------------------------------------------------
