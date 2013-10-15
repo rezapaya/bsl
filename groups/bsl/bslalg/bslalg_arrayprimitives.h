@@ -4594,8 +4594,18 @@ void ArrayPrimitives_Imp::insert(
     //..
 
     void **destBegin = toBegin + numElements;
+
     std::memmove(destBegin, toBegin, tailLen * sizeof(void **));
-    std::memmove(toBegin, reinterpret_cast<void *>(*fromBegin),
+
+    for (int i = 0; i < numElements; i++) {
+        ScalarPrimitives::construct(toBegin,
+                                    reinterpret_cast<void *>(*fromBegin),
+                                    allocator);
+        fromBegin++;
+        toBegin++;
+    }
+
+//    std::memmove(toBegin, reinterpret_cast<void *>(*fromBegin),
                  numElements * sizeof(void **));
 
 /*
