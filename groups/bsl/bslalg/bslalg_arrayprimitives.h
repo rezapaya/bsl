@@ -4602,11 +4602,10 @@ void ArrayPrimitives_Imp::insert(
                                     reinterpret_cast<void *>(*fromBegin),
                                     allocator);
         fromBegin++;
-        toBegin++;
     }
 
 //    std::memmove(toBegin, reinterpret_cast<void *>(*fromBegin),
-                 numElements * sizeof(void **));
+//                 numElements * sizeof(void **));
 
 /*
     //..
