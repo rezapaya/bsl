@@ -586,13 +586,6 @@ struct ArrayPrimitives {
                        const TARGET_TYPE&  value,
                        size_type           numElements,
                        ALLOCATOR          *allocator);
-    template <class TARGET_TYPE, class SOURCE_TYPE, class ALLOCATOR>
-    static void insert(TARGET_TYPE        *toBegin,
-                       TARGET_TYPE        *toEnd,
-                       SOURCE_TYPE        *fromBegin,
-                       SOURCE_TYPE        *fromEnd,
-                       size_type           numElements,
-                       ALLOCATOR          *allocator);
         // Insert the specified 'numElements' copies of the specified 'value'
         // into the array of the parameterized 'TARGET_TYPE' starting at the
         // 'toBegin' address and ending immediately before the specified
@@ -704,20 +697,29 @@ struct ArrayPrimitives {
                        FWD_ITER     fromEnd,
                        size_type    numElements,
                        ALLOCATOR   *allocator);
+
+    template <class TARGET_TYPE, class SOURCE_TYPE, class ALLOCATOR>
+    static void insert(TARGET_TYPE *toBegin,
+                       TARGET_TYPE *toEnd,
+                       SOURCE_TYPE *fromBegin,
+                       SOURCE_TYPE *fromEnd,
+                       size_type    numElements,
+                       ALLOCATOR   *allocator);
         // Insert the specified 'numElements' from the range starting at the
         // 'fromBegin' and ending immediately before the 'fromEnd' iterators of
-        // the parameterized 'FWD_ITER' type, into the array of elements of the
-        // parameterized 'TARGET_TYPE' starting at the 'toBegin' address and
-        // ending immediately before the 'toEnd' address, shifting the elements
-        // in the array by the specified 'numElements' positions towards larger
-        // addresses.  The behavior is undefined unless the destination array
-        // contains 'numElements' uninitialized elements after 'toEnd',
-        // 'numElements' is the distance between 'fromBegin' and 'fromEnd', and
-        // the input array and the destination array do not overlap.  If a copy
-        // constructor or assignment operator for 'TARGET_TYPE' throws an
-        // exception, then any elements created after 'toEnd' are destroyed and
-        // the elements in the range '[ toBegin, toEnd )' will have
-        // unspecified, but valid, values.
+        // the parameterized 'FWD_ITER' (or 'SOURCE_TYPE *') type, into the
+        // array of elements of the parameterized 'TARGET_TYPE' starting at
+        // the 'toBegin' address and ending immediately before the 'toEnd'
+        // address, shifting the elements in the array by the specified
+        // 'numElements' positions towards larger addresses.  The behavior is
+        // undefined unless the destination array contains 'numElements'
+        // uninitialized elements after 'toEnd', 'numElements' is the distance
+        // between 'fromBegin' and 'fromEnd', and the input array and the
+        // destination array do not overlap.  If a copy constructor or
+        // assignment operator for 'TARGET_TYPE' throws an exception, then any
+        // elements created after 'toEnd' are destroyed and the elements in
+        // the range '[ toBegin, toEnd )' will have unspecified, but valid,
+        // values.
 
     template <class TARGET_TYPE, class ALLOCATOR>
     static void moveInsert(TARGET_TYPE  *toBegin,
@@ -2244,8 +2246,8 @@ void ArrayPrimitives::insert(TARGET_TYPE *toBegin,
                                                    const TARGET_TYPE *>::value
                             && bsl::is_trivially_copyable<TARGET_TYPE>::value,
         VALUE = IS_BITWISECOPYABLE ? Imp::BITWISE_COPYABLE_TRAITS
-              : IS_BITWISEMOVEABLE ? Imp::BITWISE_MOVEABLE_TRAITS
               : ARE_PTRS_TO_FNS ? Imp::IS_ITERATOR_TO_POINTER_TO_FUNCTION
+              : IS_BITWISEMOVEABLE ? Imp::BITWISE_MOVEABLE_TRAITS
               : Imp::NIL_TRAITS
     };
     ArrayPrimitives_Imp::insert(toBegin,
@@ -2683,11 +2685,6 @@ void ArrayPrimitives_Imp::copyConstruct(
                               ALLOCATOR                             *allocator,
                               bslmf::MetaInt<IS_POINTER_TO_POINTER> *)
 {
-    // We may be casting a func ptr to a 'void *' here, so this won't work if
-    // we port to an architecture where the two are of different sizes.
-
-    BSLMF_ASSERT(sizeof(void *) == sizeof(void (*)()));
-
     typedef typename bsl::remove_const<
             typename bsl::remove_pointer<TARGET_TYPE>::type>::type NcPtrType;
 
@@ -2729,12 +2726,12 @@ void ArrayPrimitives_Imp::copyConstruct(
                                                           fromEnd));
 
     while (fromBegin != fromEnd) {
-        // Note: We are not sure the value type of 'FWD_ITER' is convertible to
-        // 'TARGET_TYPE'.  Use 'construct' instead.
+        // 'fromBegin' iterates over pointers to functions, which must be
+        // 'reinterpret_cast' to 'void *'.
 
         *toBegin = reinterpret_cast<void *>(*fromBegin);
-
         ++fromBegin;
+        ++toBegin;
     }
 }
 
@@ -4671,7 +4668,8 @@ void ArrayPrimitives_Imp::insert(
     for (int i = 0; i < numElements; i++) {
         *toBegin = reinterpret_cast<void *>(*fromBegin);
 
-        fromBegin++;
+        ++fromBegin;
+        ++toBegin;
     }
 }
 

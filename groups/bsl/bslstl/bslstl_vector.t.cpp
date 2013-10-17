@@ -9282,6 +9282,21 @@ int main(int argc, char *argv[])
         }
       } break;
       case 24: {
+        // --------------------------------------------------------------------
+        // VECTORS OF FUNCTION PTR BUG
+        //
+        // Concerns:
+        //   In DRQS 34693876, it was observed that function pointers cannot
+        //   be cast into 'void *' pointers. A 'reinterpret_cast' is required
+        //   in this case. This is handled in 'bslalg_arrayprimitives'.
+        //
+        // Diagnosis:
+        //   Vector is specialized for ptr types, and the specialization
+        //   assumes that any pointer type can be cast or copy c'ted into a
+        //   'void *', but for function ptrs on g++, this is not the case.
+        //   Had to fix bslalg_arrayprimitives to deal with this, this test
+        //   verifies that the fix worked.  DRQS 34693876.
+        // --------------------------------------------------------------------
 
         const charFnPtr values[] = { TestFunc<VA>, TestFunc<VB>, TestFunc<VC>,
                                      TestFunc<VD> };
@@ -9296,6 +9311,15 @@ int main(int argc, char *argv[])
 
         vector<charFnPtr> w(l.begin(), l.end());
         ASSERT(4 == w.size());
+
+        // Check the elements of w.
+        vector<charFnPtr>::iterator wit = w.begin();
+        for (list<charFnPtr>::iterator it = l.begin(); it != l.end(); ++it) {
+            ASSERT(wit != w.end());
+            ASSERT(*it == *wit);
+            ++wit;
+        }
+        ASSERT(wit == w.end());
       } break;
       case 23: {
         // --------------------------------------------------------------------

@@ -53,6 +53,7 @@ using namespace std;
 // bslalg::ArrayPrimitives public interface:
 // [ 2] void uninitializedFillN(T *dstB, ne, const T& v, *a);
 // [ 3] void copyConstruct(T *dstB, FWD srcB, FWD srcE, *a);
+// [ 3] void copyConstruct(T *dstB, S *srcB, S *srcE, *a);
 // [ 4] void destructiveMove(T *dstB, T *srcB, T *srcE, *a);
 // [ 5] void insert(T *dstB, T *dstE, const T& v, ne, *a);
 // [ 5] void insert(T *dstB, T *dstE, FWD srcB, FWD srcE, ne, *a);
