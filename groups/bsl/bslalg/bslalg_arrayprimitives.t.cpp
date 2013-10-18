@@ -74,13 +74,14 @@ using namespace std;
 int testStatus = 0;
 
 namespace {
-    void aSsErT(int c, const char *s, int i) {
+void aSsErT(int c, const char *s, int i)
+{
     if (c) {
         printf("Error " __FILE__ "(%d): %s    (failed)\n", i, s);
         if (testStatus >= 0 && testStatus <= 100) ++testStatus;
     }
 }
-}
+}  // close unnamed namespace
 
 # define ASSERT(X) { aSsErT(!(X), #X, __LINE__); }
 //=============================================================================
@@ -125,7 +126,8 @@ class BitwiseMoveableTestType;
 class BitwiseCopyableTestType;
 typedef int (*FuncPtrType)();
 
-template <int ADDITIONAL_FOOTPRINT>  class LargeBitwiseMoveableTestType;
+template <int ADDITIONAL_FOOTPRINT>
+class LargeBitwiseMoveableTestType;
 
 typedef TestType                      T;    // uses 'bslma' allocators
 typedef TestTypeNoAlloc               TNA;  // does not use 'bslma' allocators
@@ -161,6 +163,204 @@ template <class C>
 char getValue(const C& c)
 {
     return c.datum();
+}
+
+                           // ===================
+                           // class ArrayIterator
+                           // ===================
+template <class VALUE>
+class ArrayIterator {
+    // This class provide a STL-conforming input iterator over values used for
+    // testing (see section [24.2.3 input.iterators] of the C++11 standard.  A
+    // 'ArrayIterator' provide access to elements of parameterized
+    // type 'VALUE'.  An iterator is considered dereferenceable all of the
+    // following are satisfied:
+    //: 1 The iterator refers to a valid element (not 'end').
+    //:
+    //: 2 The iterator has not been dereferenced.
+    //:
+    //: 3 The iterator is not a copy of another iterator of which 'operator++'
+    //:   have been invoked.
+    // An iterator is comparable if the iterator is not a copy of another
+    // iterator of which 'operator++' have been invoked.
+    //
+    // This class is *not* thread-safe: different iterator objects manipulate
+    // shared state without synchronization.  This is rarely a concern for the
+    // test scenarios supported by this component.
+
+    // DATA
+    const VALUE *d_data_p;              // pointer to array of values (held,
+                                        // not owned)
+
+    const VALUE *d_end_p;               // end pointer (held, not owned)
+
+
+  private:
+    // FRIENDS
+    template <class OTHER_VALUE>
+    friend bool operator==(const ArrayIterator<OTHER_VALUE>&,
+                           const ArrayIterator<OTHER_VALUE>&);
+
+    template <class OTHER_VALUE>
+    friend bool operator!=(const ArrayIterator<OTHER_VALUE>&,
+                           const ArrayIterator<OTHER_VALUE>&);
+
+  public:
+    // TYPES
+    typedef VALUE                           value_type;
+    typedef ptrdiff_t                       difference_type;
+    typedef const VALUE                    *pointer;
+    typedef const VALUE&                    reference;
+        // Standard iterator defined types [24.4.2].
+
+  public:
+    // CREATORS
+    ArrayIterator(const VALUE *object,
+                  const VALUE *end);
+        // Create an iterator referring to the specified 'object' for a
+        // container with the specified 'end', with two arrays of boolean
+        // referred to by the specified 'dereferenceable' and 'isValid' to
+        // indicate whether this iterator and its subsequent values until
+        // 'end' is allowed to be dereferenced and is not yet invalidated
+        // respectively.
+
+    ArrayIterator(const ArrayIterator& original);
+
+    // MANIPULATORS
+    ArrayIterator& operator=(const ArrayIterator& rhs);
+
+    ArrayIterator& operator++();
+        // Move this iterator to the next element in the container.  Any copies
+        // of this iterator are no longer dereferenceable or comparable.  The
+        // behavior is undefined unless this iterator refers to a valid value
+        // in the container.
+
+    ArrayIterator operator++(int);
+        // Move this iterator to the next element in the container, and return
+        // an object that can be dereferenced to refer to the same object that
+        // this iterator initially points to.  Any copies
+        // of this iterator are no longer dereferenceable or comparable.  The
+        // behavior is undefined unless this iterator refers to a valid value
+        // in the container.
+
+    // ACCESSORS
+    const VALUE& operator *() const;
+        // Return the value referred to by this object.  This object is no
+        // longer dereferenceable after a call to this function.  The
+        // behavior is undefined unless this iterator is dereferenceable.
+
+    const VALUE *operator->() const;
+        // Return the address of the value (of the parameterized 'VALUE_TYPE')
+        // of the element at which this iterator is positioned.  The behavior
+        // is undefined unless this iterator dereferenceable.
+};
+
+template <class VALUE>
+bool operator==(const ArrayIterator<VALUE>& lhs,
+                const ArrayIterator<VALUE>& rhs);
+    // Return 'true' if this object and 'rhs' refers to the same element, and
+    // 'false' otherwise.  The behavior is undefined unless 'lhs' and 'rhs' are
+    // comparable.
+
+template <class VALUE>
+bool operator!=(const ArrayIterator<VALUE>& lhs,
+                const ArrayIterator<VALUE>& rhs);
+    // Return 'true' if this object and 'rhs' does *not* refers to the same
+    // element, and 'false' otherwise.  The behavior is undefined unless 'lhs'
+    // and 'rhs' are comparable.
+
+                       // -----------------------------
+                       // class TestValuesArrayIterator
+                       // -----------------------------
+
+// CREATORS
+template <class VALUE>
+inline
+ArrayIterator<VALUE>::ArrayIterator(
+                                                  const VALUE *object,
+                                                  const VALUE *end)
+: d_data_p(object)
+, d_end_p(end)
+{
+    BSLS_ASSERT_SAFE(object);
+    BSLS_ASSERT_SAFE(end);
+}
+
+template <class VALUE>
+inline
+ArrayIterator<VALUE>::ArrayIterator(
+                                       const ArrayIterator& original)
+: d_data_p(original.d_data_p)
+, d_end_p(original.d_end_p)
+{
+}
+
+// MANIPULATORS
+template <class VALUE>
+ArrayIterator<VALUE>&
+ArrayIterator<VALUE>::operator=(const ArrayIterator& rhs)
+{
+    d_data_p            = rhs.d_data_p;
+    d_end_p             = rhs.d_end_p;
+
+    return *this;
+}
+
+template <class VALUE>
+ArrayIterator<VALUE>&
+ArrayIterator<VALUE>::operator++()
+{
+    BSLS_ASSERT_OPT(d_data_p != d_end_p);
+
+    ++d_data_p;
+    return *this;
+}
+
+template <class VALUE>
+ArrayIterator<VALUE>
+ArrayIterator<VALUE>::operator++(int)
+{
+    BSLS_ASSERT_OPT(d_data_p != d_end_p);
+
+    ArrayIterator<VALUE> result(*this);
+    this->operator++();
+    return result;
+}
+
+// ACCESSORS
+template <class VALUE>
+inline
+const VALUE& ArrayIterator<VALUE>::operator *() const
+{
+    BSLS_ASSERT_OPT(d_data_p != d_end_p);
+
+    return *d_data_p;
+}
+
+template <class VALUE>
+inline
+const VALUE *ArrayIterator<VALUE>::operator->() const
+{
+    BSLS_ASSERT_OPT(d_data_p != d_end_p);
+
+    return d_data_p;
+}
+
+// FREE OPERATORS
+template <class VALUE>
+inline
+bool operator==(const ArrayIterator<VALUE>& lhs,
+                const ArrayIterator<VALUE>& rhs)
+{
+    return lhs.d_data_p == rhs.d_data_p;
+}
+
+template <class VALUE>
+inline
+bool operator!=(const ArrayIterator<VALUE>& lhs,
+                const ArrayIterator<VALUE>& rhs)
+{
+    return !(lhs == rhs);
 }
 
                                 // ===========
@@ -493,9 +693,9 @@ struct ConstructEnabler {
     ConstructEnabler() : d_c(0) {}
     explicit
     ConstructEnabler(char ch) : d_c(ch) {}
-    ConstructEnabler& operator=(char ch)
+    ConstructEnabler& operator=(char rhs)
     {
-        d_c = ch;
+        d_c = rhs;
         return *this;
     }
 
@@ -621,8 +821,8 @@ class TestType {
 namespace BloombergLP {
 namespace bslma {
 template <> struct UsesBslmaAllocator<TestType> : bsl::true_type {};
-}
-}
+}  // close namespace bslma
+}  // close namespace BloombergLP
 
 bool operator==(const TestType& lhs, const TestType& rhs)
 {
@@ -770,12 +970,12 @@ namespace BloombergLP {
 namespace bslma {
 template <> struct UsesBslmaAllocator<BitwiseMoveableTestType>
     : bsl::true_type {};
-}
+}  // close namespace bslma
 namespace bslmf {
 template <> struct IsBitwiseMoveable<BitwiseMoveableTestType>
     : bsl::true_type {};
-}
-}
+}  // close namespace bslmf
+}  // close namespace BloombergLP
 
                        // =============================
                        // class BitwiseCopyableTestType
@@ -823,7 +1023,7 @@ class BitwiseCopyableTestType : public TestTypeNoAlloc {
 namespace bsl {
 template <> struct is_trivially_copyable<BitwiseCopyableTestType>
     : true_type {};
-}
+}  // close namespace bsl
 
                        // ==================================
                        // class LargeBitwiseMoveableTestType
@@ -898,14 +1098,14 @@ namespace bslma {
 template <int FOOTPRINT>
 struct UsesBslmaAllocator<LargeBitwiseMoveableTestType<FOOTPRINT> >
     : bsl::true_type {};
-}
+}  // close namespace bslma
 
 namespace bslmf {
 template <int FOOTPRINT>
 struct IsBitwiseMoveable<LargeBitwiseMoveableTestType<FOOTPRINT> >
     : bsl::true_type {};
-}
-}
+}  // close namespace bslmf
+}  // close namespace BloombergLP
 
 //=============================================================================
 //                  GLOBAL HELPER FUNCTIONS FOR TESTING
@@ -1112,7 +1312,8 @@ int ggg(TYPE *array, const char *spec, int verboseFlag = 1)
                 printf("Error, bad character ('%c') in spec \"%s\""
                        " at position %d.\n", spec[i], spec, i);
             }
-            return i;  // Discontinue processing this spec.
+            // Discontinue processing this spec.
+            return i;                                                 // RETURN
         }
     }
     guard.setLength(0);
@@ -2666,6 +2867,124 @@ void testCopyConstruct(bool, // bitwiseMoveableFlag
     }
 }
 
+template <class TYPE>
+void testCopyConstructWithIterators(bool, // bitwiseMoveableFlag
+                                    bool bitwiseCopyableFlag,
+                                    bool exceptionSafetyFlag = false)
+{
+    const int MAX_SIZE = 16;
+    static union {
+        char                                d_raw[MAX_SIZE * sizeof(TYPE)];
+        bsls::AlignmentUtil::MaxAlignedType d_align;
+    } u;
+    TYPE *buf = (TYPE *) (void *) &u.d_raw[0];
+
+    if (verbose) printf("\t\tfrom same type.\n");
+
+    for (int ti = 0; ti < NUM_DATA_3; ++ti) {
+        const int         LINE = DATA_3[ti].d_lineNum;
+        const char *const SPEC = DATA_3[ti].d_spec;
+        const int         SRC  = DATA_3[ti].d_src;
+        const int         NE   = DATA_3[ti].d_ne;
+        const int         DST  = DATA_3[ti].d_dst;
+        const char *const EXP  = DATA_3[ti].d_expected;
+        ASSERT(MAX_SIZE >= (int)std::strlen(SPEC));
+
+        if (veryVerbose) {
+            printf("LINE = %d, SPEC = %s, SRC = %d, "
+                   "NE = %d, DST = %d, EXP = %s\n",
+                   LINE, SPEC, SRC, NE, DST, EXP);
+        }
+        gg(buf, SPEC);  verify(buf, SPEC);
+
+        const int NUM_COPIES = numCopyCtorCalls;
+        const int NUM_CTORS  = numCharCtorCalls;
+
+        if (exceptionSafetyFlag) {
+            BSLMA_TESTALLOCATOR_EXCEPTION_TEST_BEGIN(*Z) {
+                Obj::copyConstruct(&buf[DST], &buf[SRC], &buf[SRC + NE], Z);
+            } BSLMA_TESTALLOCATOR_EXCEPTION_TEST_END
+            if (veryVerbose) printf("\n");
+        } else {
+            ArrayIterator<TYPE> begin(&buf[SRC], &buf[SRC + NE]);
+            ArrayIterator<TYPE> end(&buf[SRC + NE], &buf[SRC + NE]);
+
+            Obj::copyConstruct(&buf[DST], begin, end, Z);
+        }
+
+        if (veryVerbose) {
+            printf("LINE = %d, #copy ctors = %d, #char ctors = %d.\n",
+                   LINE,
+                   numCopyCtorCalls - NUM_COPIES,
+                   numCharCtorCalls - NUM_CTORS);
+        }
+        if (bitwiseCopyableFlag) {
+            ASSERT(NUM_COPIES == numCopyCtorCalls);
+            ASSERT(NUM_CTORS  == numCharCtorCalls);
+        }
+        else {
+            ASSERT(NUM_COPIES + NE <= numCopyCtorCalls);
+            ASSERT(NUM_CTORS       == numCharCtorCalls);
+        }
+        verify(buf, EXP);
+        cleanup(buf, EXP);
+    }
+
+    if (verbose) printf("\t\tfrom different type.\n");
+
+    for (int ti = 0; ti < NUM_DATA_3; ++ti) {
+        const int         LINE = DATA_3[ti].d_lineNum;
+        const char *const SPEC = DATA_3[ti].d_spec;
+        const int         SRC  = DATA_3[ti].d_src;
+        const int         NE   = DATA_3[ti].d_ne;
+        const int         DST  = DATA_3[ti].d_dst;
+        const char *const EXP  = DATA_3[ti].d_expected;
+        ASSERT(MAX_SIZE >= (int)std::strlen(SPEC));
+
+        enum { SPEC_CE_LEN = 20 };
+        ASSERT(SPEC_CE_LEN > std::strlen(SPEC));
+
+        ConstructEnabler specCe[SPEC_CE_LEN];
+        for (const char *pc = SPEC; *pc; ++pc) {
+            specCe[pc - SPEC] = *pc;
+        }
+
+        if (veryVerbose) {
+            printf("LINE = %d, SPEC = %s, SRC = %d, "
+                   "NE = %d, DST = %d, EXP = %s\n",
+                   LINE, SPEC, SRC, NE, DST, EXP);
+        }
+        gg(buf, SPEC);  verify(buf, SPEC);
+
+        const int NUM_COPIES = numCopyCtorCalls;
+        const int NUM_CTORS  = numCharCtorCalls;
+
+        if (exceptionSafetyFlag) {
+            BSLMA_TESTALLOCATOR_EXCEPTION_TEST_BEGIN(*Z) {
+                Obj::copyConstruct(&buf[DST],
+                                   &specCe[SRC],
+                                   &specCe[SRC + NE],
+                                   Z);
+            } BSLMA_TESTALLOCATOR_EXCEPTION_TEST_END
+            if (veryVerbose) printf("\n");
+        } else {
+            Obj::copyConstruct(&buf[DST], &specCe[SRC], &specCe[SRC + NE], Z);
+        }
+
+        if (veryVerbose) {
+            printf("LINE = %d, #copy ctors = %d, #char ctors = %d.\n",
+                   LINE,
+                   numCopyCtorCalls - NUM_COPIES,
+                   numCharCtorCalls - NUM_CTORS);
+        }
+        ASSERT(NUM_COPIES     == numCopyCtorCalls);
+//      ASSERT(NUM_CTORS + NE <= numCharCtorCalls);
+
+        verify(buf, EXP);
+        cleanup(buf, EXP);
+    }
+}
+
 //=============================================================================
 //                  GLOBAL HELPER FUNCTIONS FOR CASE 2
 //-----------------------------------------------------------------------------
@@ -2914,6 +3233,9 @@ void testUninitializedFillNBCT(TYPE value)
         if (verbose) printf("\t...with 'const int *'.\n");                    \
         func<const int *>(true, true);                                        \
                                                                               \
+        if (verbose) printf("\t...with 'FuncPtrType'.\n");                    \
+        func<FuncPtrType>(true, true);                                        \
+                                                                              \
         if (verbose) printf("\tException test.\n");                           \
         func<T>(false, false, true);                                          \
     } while (false)
@@ -3117,7 +3439,7 @@ int main(int argc, char *argv[])
     Z = &testAllocator;
 
     switch (test) { case 0:  // Zero is always the leading case.
-      case 9: {
+      case 10: {
         // --------------------------------------------------------------------
         // USAGE EXAMPLE
         //   Extracted from component header file.
@@ -3162,7 +3484,7 @@ int main(int argc, char *argv[])
             ASSERT(u[i] == DATA[i]);
         }
       }
-      case 8: {
+      case 9: {
         // --------------------------------------------------------------------
         // TESTING rotate
         //
@@ -3199,7 +3521,7 @@ int main(int argc, char *argv[])
         if (verbose) printf("\t\t...with 128 extra bytes.\n");
         testRotate<XXL128>(true, false);
       } break;
-      case 7: {
+      case 8: {
         // --------------------------------------------------------------------
         // TESTING erase
         //
@@ -3217,7 +3539,7 @@ int main(int argc, char *argv[])
 
         GAUNTLET(testErase);
       } break;
-      case 6: {
+      case 7: {
         // --------------------------------------------------------------------
         // TESTING destructiveMoveAndInsert
         //
@@ -3252,7 +3574,7 @@ int main(int argc, char *argv[])
 
         GAUNTLET(testDestructiveMoveAndMoveInsert);
       } break;
-      case 5: {
+      case 6: {
         // --------------------------------------------------------------------
         // TESTING insert
         //
@@ -3289,7 +3611,7 @@ int main(int argc, char *argv[])
 
         GAUNTLET(testMoveInsert);
       } break;
-      case 4: {
+      case 5: {
         // --------------------------------------------------------------------
         // TESTING destructiveMove
         //
@@ -3307,6 +3629,25 @@ int main(int argc, char *argv[])
         if (verbose) printf("\nTesting 'destructiveMove'\n");
 
         GAUNTLET(testDestructiveMove);
+      } break;
+      case 4: {
+        // --------------------------------------------------------------------
+        // TESTING copyConstruct
+        //
+        // Concerns:
+        //
+        // Plan:
+        //   Let ne = 'srcE' - 'srcB'.  Order test data by increasing ne.
+        //   Include test cases where (1) 'srcE' <= 'dstB', and
+        //   (2) 'dstB' + ne <= 'srcB'.
+        //
+        // Testing:
+        //   void copyConstruct(FWD srcB, FWD srcE, T *dstB, *a);
+        // --------------------------------------------------------------------
+
+        if (verbose) printf("\nTesting 'copyConstruct'\n");
+
+        GAUNTLET(testCopyConstructWithIterators);
       } break;
       case 3: {
         // --------------------------------------------------------------------

@@ -1049,6 +1049,12 @@ struct ArrayPrimitives_Imp {
                               FWD_ITER                               fromEnd,
                               ALLOCATOR                             *allocator,
                          bslmf::MetaInt<IS_ITERATOR_TO_POINTER_TO_FUNCTION> *);
+    template <class TARGET_TYPE, class FWD_ITER, class ALLOCATOR>
+    static void copyConstruct(TARGET_TYPE                           *toBegin,
+                              FWD_ITER                               fromBegin,
+                              FWD_ITER                               fromEnd,
+                              ALLOCATOR                             *allocator,
+                         bslmf::MetaInt<IS_ITERATOR_TO_POINTER_TO_FUNCTION> *);
         // These functions follow the 'copyConstruct' contract.  If the
         // parameterized 'ALLOCATOR' is based on 'bslma::Allocator' and the
         // 'TARGET_TYPE' constructors take an allocator argument, then pass the
@@ -1609,8 +1615,12 @@ void ArrayPrimitives::copyConstruct(TARGET_TYPE *toBegin,
                                                    const TARGET_TYPE *>::value,
         ARE_PTRS_TO_FNS = bslmf::IsFunctionPointer<FwdTarget>::value,
 
+        TARGET_IS_VOID_PTR =
+                     bslmf::IsConvertible<TARGET_TYPE *, const void **>::value,
+
         VALUE = IS_BITWISECOPYABLE ? Imp::BITWISE_COPYABLE_TRAITS
-              : ARE_PTRS_TO_FNS ? Imp::IS_ITERATOR_TO_POINTER_TO_FUNCTION
+              : ARE_PTRS_TO_FNS && TARGET_IS_VOID_PTR ?
+                                        Imp::IS_ITERATOR_TO_POINTER_TO_FUNCTION
               : Imp::NIL_TRAITS
     };
 
@@ -2240,13 +2250,15 @@ void ArrayPrimitives::insert(TARGET_TYPE *toBegin,
     typedef typename FWD_ITER::value_type FwdTarget;
     enum {
         ARE_PTRS_TO_FNS = bslmf::IsFunctionPointer<FwdTarget>::value,
-
+        TARGET_IS_VOID_PTR =
+                     bslmf::IsConvertible<TARGET_TYPE *, const void **>::value,
         IS_BITWISEMOVEABLE  = bslmf::IsBitwiseMoveable<TARGET_TYPE>::value,
         IS_BITWISECOPYABLE  = bslmf::IsConvertible<FWD_ITER,
                                                    const TARGET_TYPE *>::value
                             && bsl::is_trivially_copyable<TARGET_TYPE>::value,
         VALUE = IS_BITWISECOPYABLE ? Imp::BITWISE_COPYABLE_TRAITS
-              : ARE_PTRS_TO_FNS ? Imp::IS_ITERATOR_TO_POINTER_TO_FUNCTION
+              : ARE_PTRS_TO_FNS && TARGET_IS_VOID_PTR ?
+                                        Imp::IS_ITERATOR_TO_POINTER_TO_FUNCTION
               : IS_BITWISEMOVEABLE ? Imp::BITWISE_MOVEABLE_TRAITS
               : Imp::NIL_TRAITS
     };
@@ -2720,7 +2732,6 @@ void ArrayPrimitives_Imp::copyConstruct(
     // we port to an architecture where the two are of different sizes.
 
     BSLMF_ASSERT(sizeof(void *) == sizeof(void (*)()));
-
     BSLS_ASSERT_SAFE(toBegin || fromBegin == fromEnd);
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(fromBegin,
                                                           fromEnd));
@@ -3443,7 +3454,6 @@ void ArrayPrimitives_Imp::emplace(
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
 
-
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
 
@@ -3491,7 +3501,6 @@ void ArrayPrimitives_Imp::emplace(
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
@@ -3546,7 +3555,6 @@ void ArrayPrimitives_Imp::emplace(
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
@@ -3607,7 +3615,6 @@ void ArrayPrimitives_Imp::emplace(
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
@@ -3674,7 +3681,6 @@ void ArrayPrimitives_Imp::emplace(
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
@@ -3748,7 +3754,6 @@ void ArrayPrimitives_Imp::emplace(
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
 
-
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
 
@@ -3816,7 +3821,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
 
-
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
 
@@ -3882,7 +3886,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -3955,7 +3958,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -4034,7 +4036,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -4119,7 +4120,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -4210,7 +4210,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -4320,7 +4319,6 @@ void ArrayPrimitives_Imp::emplace(
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
 
-
     size_type tailLen    = toEnd - toBegin;
     size_type numGuarded = tailLen < numElements ? tailLen : numElements;
 
@@ -4371,7 +4369,6 @@ void ArrayPrimitives_Imp::emplace(TARGET_TYPE                *toBegin,
     BSLS_ASSERT_SAFE(!ArrayPrimitives_Imp::isInvalidRange(toBegin,
                                                           toEnd));
     BSLMF_ASSERT((bslmf::IsSame<size_type, std::size_t>::VALUE));
-
 
     const size_type tailLen = toEnd - toBegin;
     if (tailLen >= numElements) {
@@ -4501,6 +4498,7 @@ void ArrayPrimitives_Imp::insert(
 
     BSLS_ASSERT_SAFE(fromBegin + numElements == fromEnd);
     BSLS_ASSERT_SAFE(fromEnd <= toBegin || toEnd + numElements <= fromBegin);
+
     (void) fromEnd;  // quell warning when 'BSLS_ASSERT_SAFE' is compiled out
 
     // Key to the transformation diagrams:
