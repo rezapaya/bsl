@@ -729,6 +729,84 @@ struct ConstructEnabler {
     }
 };
 
+                       // ==============================
+                       // class AmbiguousConvertibleType
+                       // ==============================
+struct AmbiguousConvertibleType {
+    // This type contains a 'FuncPtrType'. We wish to test how ArrayPrimitives
+    // will handle a user-defined type with defined conversions to both a
+    // function pointer type and to 'void *'.
+
+    // DATA
+    FuncPtrType d_f;
+
+    AmbiguousConvertibleType() : d_f(&funcTemplate<0>) {}
+    explicit
+    AmbiguousConvertibleType(FuncPtrType f) : d_f(f) {}
+    AmbiguousConvertibleType& operator=(FuncPtrType rhs)
+    {
+        d_f = rhs;
+        return *this;
+    }
+
+    operator FuncPtrType() const
+    {
+        return d_f;
+    }
+
+    operator void *() const
+    {
+        return reinterpret_cast<void *>(d_f);
+    }
+};
+
+void setValue(AmbiguousConvertibleType *f, char ch)
+{
+    f->d_f = funcPtrArray[ch];
+}
+
+char getValue(const AmbiguousConvertibleType& f)
+{
+    return f.d_f();
+}
+
+                         // ==========================
+                         // class FnPtrConvertibleType
+                         // ==========================
+
+struct FnPtrConvertibleType {
+    // This type contains a 'FuncPtrType'. We wish to test how ArrayPrimitives
+    // will handle user-defined type with a defined conversion to a function
+    // pointer type.
+
+    // DATA
+    FuncPtrType d_f;
+
+    FnPtrConvertibleType() : d_f(&funcTemplate<0>) {}
+    explicit
+    FnPtrConvertibleType(FuncPtrType f) : d_f(f) {}
+    FnPtrConvertibleType& operator=(FuncPtrType rhs)
+    {
+        d_f = rhs;
+        return *this;
+    }
+
+    operator FuncPtrType() const
+    {
+        return d_f;
+    }
+};
+
+void setValue(FnPtrConvertibleType *f, char ch)
+{
+    f->d_f = funcPtrArray[ch];
+}
+
+char getValue(const FnPtrConvertibleType& f)
+{
+    return f.d_f();
+}
+
                                // ==============
                                // class TestType
                                // ==============
@@ -780,7 +858,8 @@ class TestType {
         }
     }
 
-    ~TestType() {
+    ~TestType()
+    {
         ++numDestructorCalls;
         *d_data_p = '_';
         d_allocator_p->deallocate(d_data_p);
@@ -802,7 +881,8 @@ class TestType {
     }
 
     // ACCESSORS
-    char datum() const {
+    char datum() const
+    {
         return *d_data_p;
     }
 
@@ -830,6 +910,12 @@ bool operator==(const TestType& lhs, const TestType& rhs)
     ASSERT(isalpha(rhs.datum()));
 
     return lhs.datum() == rhs.datum();
+}
+
+bool operator==(const FnPtrConvertibleType& lhs,
+                const FnPtrConvertibleType& rhs)
+{
+    return lhs.d_f == rhs.d_f;
 }
 
                        // =====================
@@ -1158,11 +1244,13 @@ class CleanupGuard {
     }
 
     // MANIPULATORS
-    void setLength(int length) {
+    void setLength(int length)
+    {
         d_length = length;
     }
 
-    void release(const char *newSpec) {
+    void release(const char *newSpec)
+    {
         d_spec_p = newSpec;
         d_length = strlen(newSpec);
         d_endPtr_p = 0;
@@ -3235,6 +3323,12 @@ void testUninitializedFillNBCT(TYPE value)
                                                                               \
         if (verbose) printf("\t...with 'FuncPtrType'.\n");                    \
         func<FuncPtrType>(true, true);                                        \
+                                                                              \
+        if (verbose) printf("\t with 'FnPtrConvertibleType'.\n");             \
+        func<FnPtrConvertibleType>(true, true);                               \
+                                                                              \
+        if (verbose) printf("\t with 'AmbiguousConvertibleType'.\n");         \
+        func<AmbiguousConvertibleType>(true, true);                           \
                                                                               \
         if (verbose) printf("\tException test.\n");                           \
         func<T>(false, false, true);                                          \
