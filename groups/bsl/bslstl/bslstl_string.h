@@ -565,6 +565,8 @@ BSLS_IDENT("$Id: $")
 BSL_OVERRIDES_STD mode"
 #endif
 
+#include <stdio.h>
+
 #ifndef INCLUDED_BSLSCM_VERSION
 #include <bslscm_version.h>
 #endif
@@ -921,6 +923,52 @@ class String_Imp {
         // the returned address can point to either the internal short string
         // buffer or the externally allocated memory depending on the type of
         // the string defined by the return value of 'isShortString'.
+};
+
+                        // ==================================
+                        // class bsl::basic_string_data_proxy
+                        // ==================================
+
+template <typename STRING_TYPE>
+class basic_string_data_proxy
+{
+    // This class acts as a reference-semantic validating proxy for a
+    // 'STRING_TYPE' string, providing an
+    // 'operator const STRING_TYPE::CHAR_TYPE*' and checking the internal state
+    // of the associated 'STRING_TYPE' on all operations including destruction.
+
+  private:
+    // DATA
+    const STRING_TYPE &d_string; // string to proxy
+
+    // PRIVATE ACCESSOR
+    void checkStringInvariants() const;
+        // Validate the invariants of the associated 'd_string'.
+
+  public:
+    // PUBLIC TYPE
+    typedef typename STRING_TYPE::value_type  CHAR_TYPE;
+
+  public:
+    // CREATORS
+    basic_string_data_proxy(const STRING_TYPE &str);
+        // Create a proxy referring to 'str' which will validate the
+        // invariants of 'str' on all operations, including this construction.
+
+    ~basic_string_data_proxy();
+        // Destroy this object, validating the invariants of the associated
+        // 'd_string'.
+
+    // ACCESSORS
+    operator const CHAR_TYPE*() const;
+        // Return the same results as 'd_string.c_str()', after first
+        // validating the invariants of the associated 'STRING_TYPE' object.
+        //
+
+    operator CHAR_TYPE*();
+        // Return the same results as
+        // 'static_cast<CHAR_TYPE*>(d_string.c_str())', after first validating
+        // the invariants of the associated 'STRING_TYPE' object.
 };
 
                         // =======================
@@ -1847,7 +1895,18 @@ class basic_string
         // null-terminated buffer of 'length() + 1' characters whose contents
         // are identical to the value of this string.  Note that any call to
         // the string destructor or any of its manipulators invalidates the
-        // returned pointer.
+        // returned pointer.  Also note that the caller may not change the
+        // value of the terminating null character.
+
+    basic_string_data_proxy<basic_string> c_str_safe() const;
+        // This non-standard extension returns a proxy object providing
+        // non-modifiable access to the null-terminated buffer of
+        // 'length() + 1' characters whose contents are identical to the value
+        // of this string.  Note that any call to the string destructor or any
+        // of its manipulators invalidates the returned proxy.  Also note that
+        // the proxy object will verify that the caller did not change value of
+        // the terminating null character or overwrite this string's internal
+        // state.
 
     const_pointer data() const;
         // Return an address providing non-modifiable access to the
@@ -1855,6 +1914,16 @@ class basic_string
         // identical to the value of this string.  Note that any call to the
         // string destructor or any of its manipulators invalidates the
         // returned pointer.
+
+    basic_string_data_proxy<basic_string> data_safe() const;
+        // This non-standard extension returns a proxy object providing
+        // non-modifiable access to the null-terminated buffer of 'length()'
+        // characters whose contents are identical to the value of this string.
+        // Note that any call to the string destructor or any of its
+        // manipulators invalidates the returned pointer.  Also note that the
+        // proxy object will verify that the caller did not change value of the
+        // terminating null character or overwrite this string's internal
+        // state.
 
     allocator_type get_allocator() const;
         // Return the allocator used by this string to supply memory.
@@ -2474,6 +2543,52 @@ const CHAR_TYPE *String_Imp<CHAR_TYPE, SIZE_TYPE>::dataPtr() const
     return isShortString()
           ? reinterpret_cast<const CHAR_TYPE *>((const void *)d_short.buffer())
           : d_start_p;
+}
+
+                        // ----------------------------------
+                        // class bsl::basic_string_data_proxy
+                        // ----------------------------------
+
+// PRIVATE ACCESSOR
+template <typename STRING_TYPE>
+void basic_string_data_proxy<STRING_TYPE>::checkStringInvariants() const
+{
+    BSLS_ASSERT_OPT(d_string[d_string.length()] == CHAR_TYPE());
+    BSLS_ASSERT_OPT(d_string.capacity() >= d_string.length());
+}
+
+// CREATORS
+template <typename STRING_TYPE>
+basic_string_data_proxy<STRING_TYPE>::basic_string_data_proxy(
+                                                        const STRING_TYPE &str)
+: d_string(str)
+{
+    checkStringInvariants();
+}
+
+template <typename STRING_TYPE>
+basic_string_data_proxy<STRING_TYPE>::~basic_string_data_proxy()
+{
+    checkStringInvariants();
+}
+
+// ACCESSORS
+template <typename STRING_TYPE>
+basic_string_data_proxy<STRING_TYPE>::operator const typename
+                       basic_string_data_proxy<STRING_TYPE>::CHAR_TYPE*() const
+{
+    checkStringInvariants();
+
+    return d_string.c_str();
+}
+
+template <typename STRING_TYPE>
+basic_string_data_proxy<STRING_TYPE>::operator typename
+                             basic_string_data_proxy<STRING_TYPE>::CHAR_TYPE*()
+{
+    checkStringInvariants();
+
+    return const_cast<CHAR_TYPE*>(d_string.c_str());
 }
 
                         // -----------------------
@@ -3245,6 +3360,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     CHAR_TRAITS::assign(*begin(), CHAR_TYPE());
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3257,6 +3376,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
         // Copy long string to either short or long.
         privateCopy(original);
     }
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3270,6 +3393,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
         // Copy long string to either short or long.
         privateCopy(original);
     }
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3282,6 +3409,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     assign(original, position, numChars);
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3294,6 +3425,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
     BSLS_ASSERT_SAFE(characterString);
 
     assign(characterString);
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3307,6 +3442,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     assign(characterString, numChars);
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3318,6 +3457,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     assign(numChars, character);
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3331,6 +3474,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     privateInitDispatch(first, last);
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3342,6 +3489,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     this->assign(original.data(), original.length());
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -3353,14 +3504,18 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::basic_string(
 , BloombergLP::bslalg::ContainerBase<allocator_type>(allocator)
 {
     assign(strRef.begin(), strRef.end());
+
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::~basic_string()
 {
     // perform a validity check
-    BSLS_ASSERT((*this)[this->d_length] == CHAR_TYPE());
-    BSLS_ASSERT(capacity() >= length());
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
 
     privateDeallocate();
     this->d_length = npos;  // invalid length
@@ -3375,6 +3530,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator=(
                                                        const basic_string& rhs)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return assign(rhs, size_type(0), npos);
 }
 
@@ -3382,7 +3541,11 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator=(const CHAR_TYPE *rhs)
 {
+    // perform a validity check
     BSLS_ASSERT_SAFE(rhs);
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
 
     return assign(rhs);
 }
@@ -3391,6 +3554,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator=(CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return assign(1, character);
 }
 
@@ -3400,6 +3567,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::resize(size_type newLength,
                                                            CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(newLength > max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwLengthError(
@@ -3411,6 +3582,10 @@ void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::resize(size_type newLength,
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::resize(size_type newLength)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(newLength > max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwLengthError(
@@ -3423,6 +3598,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reserve(
                                                          size_type newCapacity)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(newCapacity > max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwLengthError(
@@ -3434,6 +3613,10 @@ void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reserve(
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::clear()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     // Note: Stlport and Dinkumware do not deallocate the allocated buffer in
     // long string representation, ApacheSTL does.
 
@@ -3447,6 +3630,9 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::begin()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return this->dataPtr();
 }
 
@@ -3455,6 +3641,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::end()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return begin() + this->d_length;
 }
 
@@ -3463,6 +3653,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::rbegin()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return reverse_iterator(end());
 }
 
@@ -3471,6 +3665,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::rend()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return reverse_iterator(begin());
 }
 
@@ -3481,6 +3679,9 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator[](size_type position)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(position <= length());
 
     return *(begin() + position);
@@ -3490,6 +3691,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::at(size_type position)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     // Note: deliberately not inline, because 1) this is not a very widely used
     // function, and 2) it is very convenient to have at least one non-inlined
     // element accessor for debugging.
@@ -3507,6 +3712,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::front()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(!empty());
 
     return *begin();
@@ -3517,6 +3726,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::back()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(!empty());
 
     return *(begin() + length() - 1);
@@ -3528,6 +3741,10 @@ inline
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::
     operator native_std::basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOC2>() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     native_std::basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOC2> result;
     result.assign(data(), length());
     return result;
@@ -3540,6 +3757,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator+=(
                                                     const basic_string& string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return append(string);
 }
 
@@ -3548,6 +3769,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator+=(
                                                        const CHAR_TYPE *string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(string);
 
     return append(string);
@@ -3557,6 +3782,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::operator+=(CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     push_back(character);
     return *this;
 }
@@ -3566,6 +3795,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(
                                                    const basic_string&  string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return append(string, size_type(0), npos);
 }
 
@@ -3576,6 +3809,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(
                                                   size_type           position,
                                                   size_type           numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > string.length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -3599,6 +3836,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(
                                               const CHAR_TYPE *characterString,
                                               size_type        numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(
@@ -3615,6 +3856,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(
                                               const CHAR_TYPE *characterString)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString);
 
     return append(characterString, CHAR_TRAITS::length(characterString));
@@ -3625,6 +3870,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(size_type numChars,
                                                       CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(
                                      numChars > max_size() - this->d_length)) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
@@ -3641,6 +3890,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::append(INPUT_ITER first,
                                                       INPUT_ITER last)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return privateAppendDispatch(first, last);
 }
 
@@ -3648,6 +3901,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::push_back(
                                                            CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() >= max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwLengthError(
@@ -3666,6 +3923,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(
                                                     const basic_string& string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return assign(string, size_type(0), npos);
 }
 
@@ -3676,6 +3937,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(
                                                   size_type           position,
                                                   size_type           numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > string.length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -3698,6 +3963,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(
                                               const CHAR_TYPE *characterString)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString);
 
     return assign(characterString, CHAR_TRAITS::length(characterString));
@@ -3709,6 +3978,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(
                                               const CHAR_TYPE *characterString,
                                               size_type        numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(numChars > max_size())) {
@@ -3725,6 +3998,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(size_type numChars,
                                                       CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(numChars > max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwLengthError(
@@ -3741,6 +4018,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::assign(INPUT_ITER first,
                                                       INPUT_ITER last)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     basic_string(first, last, get_allocator()).swap(*this);
     return *this;
 }
@@ -3751,6 +4032,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(
                                                   size_type           position,
                                                   const basic_string& string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return insert(position, string, size_type(0), npos);
 }
 
@@ -3762,6 +4047,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(
                                               size_type            position,
                                               size_type            numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(outPosition > length())
      || BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > string.length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
@@ -3787,6 +4076,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(
                                               const CHAR_TYPE *characterString,
                                               size_type        numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > length())) {
@@ -3809,6 +4102,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(
                                               size_type        position,
                                               const CHAR_TYPE *characterString)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString);
 
     return insert(position,
@@ -3822,6 +4119,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(size_type position,
                                                       size_type numChars,
                                                       CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -3841,6 +4142,10 @@ typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(const_iterator position,
                                                       CHAR_TYPE      character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(position >= cbegin());
     BSLS_ASSERT_SAFE(position <= cend());
 
@@ -3871,6 +4176,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(const_iterator position,
                                                       INPUT_ITER     first,
                                                       INPUT_ITER     last)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(position >= cbegin());
     BSLS_ASSERT_SAFE(position <= cend());
 
@@ -3888,6 +4197,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::insert(const_iterator position,
                                                       size_type      numChars,
                                                       CHAR_TYPE      character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(position >= cbegin());
     BSLS_ASSERT_SAFE(position <= cend());
 
@@ -3901,6 +4214,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>&
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::erase(size_type position,
                                                      size_type numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position > length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -3923,6 +4240,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::erase(const_iterator position)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(position >= cbegin());
     BSLS_ASSERT_SAFE(position < cend());
 
@@ -3943,6 +4264,10 @@ typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::erase(const_iterator first,
                                                      const_iterator last)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(last >= cbegin());
@@ -3965,6 +4290,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 inline
 void basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::pop_back()
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(!empty());
 
     --this->d_length;
@@ -3978,6 +4307,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                                size_type           outNumChars,
                                                const basic_string& string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() < outPosition)) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -4007,6 +4340,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                                size_type           position,
                                                size_type           numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(outPosition > length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -4044,6 +4381,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                               const CHAR_TYPE *characterString,
                                               size_type        numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(outPosition > length())) {
@@ -4074,6 +4415,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                               size_type        outNumChars,
                                               const CHAR_TYPE *characterString)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString);
 
     return replace(outPosition,
@@ -4089,6 +4434,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(size_type outPosition,
                                                        size_type numChars,
                                                        CHAR_TYPE character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(outPosition > length())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -4117,6 +4466,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                                     const_iterator      last,
                                                     const basic_string& string)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(first <= last);
@@ -4145,6 +4498,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                               const CHAR_TYPE *characterString,
                                               size_type        numChars)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(first <= last);
@@ -4173,6 +4530,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                               const_iterator   last,
                                               const CHAR_TYPE *characterString)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(first <= last);
@@ -4193,6 +4554,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                                       size_type      numChars,
                                                       CHAR_TYPE      character)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(first <= last);
@@ -4220,6 +4585,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::replace(
                                                     INPUT_ITER     stringFirst,
                                                     INPUT_ITER     stringLast)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(first >= cbegin());
     BSLS_ASSERT_SAFE(first <= cend());
     BSLS_ASSERT_SAFE(first <= last);
@@ -4239,6 +4608,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 void
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::swap(basic_string& other)
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (get_allocator() == other.get_allocator()) {
         privateBase().swap(other.privateBase());
     }
@@ -4260,6 +4633,9 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::begin() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return this->dataPtr();
 }
 
@@ -4268,6 +4644,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::cbegin() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return begin();
 }
 
@@ -4276,6 +4656,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::end() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return begin() + this->d_length;
 }
 
@@ -4284,6 +4668,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::cend() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return end();
 }
 
@@ -4292,6 +4680,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::rbegin() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return const_reverse_iterator(end());
 }
 
@@ -4300,6 +4692,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::crbegin() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return const_reverse_iterator(end());
 }
 
@@ -4307,6 +4703,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::rend() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return const_reverse_iterator(begin());
 }
 
@@ -4314,6 +4714,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reverse_iterator
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::crend() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return const_reverse_iterator(begin());
 }
 
@@ -4379,6 +4783,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::at(size_type position) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     // Note: deliberately not inlined (see comment in non-const version).
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position >= length())) {
@@ -4394,6 +4802,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::front() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(!empty());
 
     return *begin();
@@ -4404,6 +4816,10 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_reference
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::back() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(!empty());
 
     return *(end() - 1);
@@ -4415,6 +4831,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::copy(CHAR_TYPE *characterString,
                                                     size_type  numChars,
                                                     size_type  position) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() < position)) {
@@ -4436,7 +4856,21 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_pointer
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::c_str() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return this->dataPtr();
+}
+
+template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
+inline
+basic_string_data_proxy<basic_string<CHAR_TYPE,
+                                     CHAR_TRAITS,
+                                     ALLOCATOR> >
+basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::c_str_safe() const
+{
+    return basic_string_data_proxy<basic_string>(*this);
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -4444,7 +4878,21 @@ inline
 typename basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::const_pointer
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::data() const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return this->dataPtr();
+}
+
+template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
+inline
+basic_string_data_proxy<basic_string<CHAR_TYPE,
+                                     CHAR_TRAITS,
+                                     ALLOCATOR> >
+basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::data_safe() const
+{
+    return basic_string_data_proxy<basic_string>(*this);
 }
 
 template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
@@ -4471,6 +4919,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::find(
                                                size_type        position,
                                                size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(string);
 
     size_type remChars = length() - position;
@@ -4537,6 +4989,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::rfind(
                                               size_type        position,
                                               size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (0 == numChars) {
@@ -4595,6 +5051,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::find_first_of(
                                               size_type        position,
                                               size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (0 < numChars && position < length()) {
@@ -4649,6 +5109,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::find_last_of(
                                               size_type        position,
                                               size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (0 < numChars && 0 < length()) {
@@ -4707,6 +5171,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::find_first_not_of(
                                               size_type        position,
                                               size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (position < length()) {
@@ -4762,6 +5230,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::find_last_not_of (
                                               size_type        position,
                                               size_type        numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(characterString || 0 == numChars);
 
     if (0 < length()) {
@@ -4806,6 +5278,10 @@ basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>
 basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::substr(size_type position,
                                                       size_type numChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return basic_string<CHAR_TYPE,
                         CHAR_TRAITS,
                         ALLOCATOR>(*this, position, numChars);
@@ -4815,6 +5291,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                                const basic_string& other) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     return privateCompareRaw(size_type(0),
                              length(),
                              other.data(),
@@ -4827,6 +5307,10 @@ int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                               size_type            numChars,
                                               const basic_string&  other) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() < position)) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -4846,6 +5330,10 @@ int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                        size_type           otherPosition,
                                        size_type           otherNumChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() < lhsPosition)) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
         BloombergLP::bslstl::StdExceptUtil::throwOutOfRange(
@@ -4873,6 +5361,10 @@ template <typename CHAR_TYPE, typename CHAR_TRAITS, typename ALLOCATOR>
 int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                                   const CHAR_TYPE *other) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(other);
 
     return privateCompareRaw(size_type(0),
@@ -4888,6 +5380,10 @@ int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                           const CHAR_TYPE *other,
                                           size_type        otherNumChars) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(other);
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(length() < lhsPosition)) {
@@ -4910,6 +5406,10 @@ int basic_string<CHAR_TYPE,CHAR_TRAITS,ALLOCATOR>::compare(
                                                   size_type        lhsNumChars,
                                                   const CHAR_TYPE *other) const
 {
+    // perform a validity check
+    BSLS_ASSERT_SAFE((*this)[this->d_length] == CHAR_TYPE());
+    BSLS_ASSERT_SAFE(capacity() >= length());
+
     BSLS_ASSERT_SAFE(other);
 
     return compare(lhsPosition,
