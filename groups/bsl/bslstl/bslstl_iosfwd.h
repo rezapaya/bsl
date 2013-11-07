@@ -34,11 +34,15 @@ BSLS_IDENT("$Id: $")
 #include <bslscm_version.h>
 #endif
 
+#if defined(BSLS_PLATFORM_OS_DARWIN)
+#include <string>
+#else
 namespace std {
 
 template <class CHAR_TYPE> struct char_traits;
 
 }  // close namespace std
+#endif
 
 namespace bsl {
 

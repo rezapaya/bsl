@@ -27,6 +27,8 @@ BSLS_IDENT("$Id: $")
 
 #include <ios>
 
+#include <locale>
+
 namespace bsl
 {
     // Import selected symbols into bsl namespace
