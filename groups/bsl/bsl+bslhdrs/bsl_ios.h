@@ -27,7 +27,9 @@ BSLS_IDENT("$Id: $")
 
 #include <ios>
 
+#if defined(BSLS_PLATFORM_OS_DARWIN)
 #include <locale>
+#endif
 
 namespace bsl
 {
