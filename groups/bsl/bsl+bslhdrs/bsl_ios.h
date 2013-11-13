@@ -25,10 +25,15 @@ BSLS_IDENT("$Id: $")
 #include <bsls_platform.h>
 #endif
 
-#include <ios>
 
 #if defined(BSLS_PLATFORM_OS_DARWIN)
+#ifndef INCLUDED_BSL_STREAMBUF
+#include <streambuf>
+#include <ios>
+#endif
 #include <locale>
+#else
+#include <ios>
 #endif
 
 namespace bsl

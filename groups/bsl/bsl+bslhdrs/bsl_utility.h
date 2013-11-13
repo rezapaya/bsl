@@ -26,7 +26,7 @@ BSLS_IDENT("$Id: $")
 namespace bsl {
 
     // Import the 'rel_ops' namespace into 'bsl'.
-    namespace rel_ops = std::rel_ops;
+    namespace rel_ops = native_std::rel_ops;
 
     // Import selected symbols into bsl namespace.  Note that 'pair' is
     // provided by 'bslstl_pair.h' (but 'make_pair' currently is not):
