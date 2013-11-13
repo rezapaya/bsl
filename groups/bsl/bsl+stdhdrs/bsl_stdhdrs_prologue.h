@@ -57,6 +57,7 @@ BSLS_IDENT("$Id: $")
 // header is wrapped around an 'extern "C++"' block.
 extern "C++" {
 
+#if !defined(BSLS_PLATFORM_OS_DARWIN)
 namespace std {
     namespace rel_ops { }
 }  // close namespace std
@@ -66,6 +67,7 @@ namespace bsl {
     // Other 'std' symbols are imported by files in the 'bsl+bslhdrs' package.
     namespace rel_ops = std::rel_ops;
 }  // close namespace bsl
+#endif
 
 }  // extern "C++"
 
