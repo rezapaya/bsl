@@ -1949,7 +1949,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::iterator
 Vector_ImpBase<VALUE_TYPE>::begin()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin;
 }
@@ -1959,7 +1959,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::iterator
 Vector_ImpBase<VALUE_TYPE>::end()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataEnd;
 }
@@ -1969,7 +1969,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::rbegin()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return reverse_iterator(end());
 }
@@ -1979,7 +1979,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::rend()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return reverse_iterator(begin());
 }
@@ -1992,7 +1992,7 @@ typename Vector_ImpBase<VALUE_TYPE>::reference
 Vector_ImpBase<VALUE_TYPE>::operator[](size_type position)
 {
     BSLS_ASSERT_SAFE(size() > position);
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin[position];
 }
@@ -2001,7 +2001,7 @@ template <class VALUE_TYPE>
 typename Vector_ImpBase<VALUE_TYPE>::reference
 Vector_ImpBase<VALUE_TYPE>::at(size_type position)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position >= size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
@@ -2017,7 +2017,7 @@ typename Vector_ImpBase<VALUE_TYPE>::reference
 Vector_ImpBase<VALUE_TYPE>::front()
 {
     BSLS_ASSERT_SAFE(!empty());
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return *d_dataBegin;
 }
@@ -2028,7 +2028,7 @@ typename Vector_ImpBase<VALUE_TYPE>::reference
 Vector_ImpBase<VALUE_TYPE>::back()
 {
     BSLS_ASSERT_SAFE(!empty());
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return *(d_dataEnd - 1);
 }
@@ -2038,7 +2038,7 @@ inline
 VALUE_TYPE *
 Vector_ImpBase<VALUE_TYPE>::data()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin;
 }
@@ -2051,7 +2051,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_iterator
 Vector_ImpBase<VALUE_TYPE>::begin() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin;
 }
@@ -2061,7 +2061,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_iterator
 Vector_ImpBase<VALUE_TYPE>::cbegin() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin;
 }
@@ -2071,7 +2071,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_iterator
 Vector_ImpBase<VALUE_TYPE>::end() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataEnd;
 }
@@ -2081,7 +2081,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_iterator
 Vector_ImpBase<VALUE_TYPE>::cend() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataEnd;
 }
@@ -2091,7 +2091,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::rbegin() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return const_reverse_iterator(end());
 }
@@ -2101,7 +2101,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::crbegin() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return const_reverse_iterator(end());
 }
@@ -2111,7 +2111,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::rend() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return const_reverse_iterator(begin());
 }
@@ -2121,7 +2121,7 @@ inline
 typename Vector_ImpBase<VALUE_TYPE>::const_reverse_iterator
 Vector_ImpBase<VALUE_TYPE>::crend() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return const_reverse_iterator(begin());
 }
@@ -2147,7 +2147,7 @@ template <class VALUE_TYPE>
 inline
 bool Vector_ImpBase<VALUE_TYPE>::empty() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataEnd == d_dataBegin;
 }
@@ -2159,7 +2159,7 @@ typename Vector_ImpBase<VALUE_TYPE>::const_reference
 Vector_ImpBase<VALUE_TYPE>::operator[](size_type position) const
 {
     BSLS_ASSERT_SAFE(size() > position);
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin[position];
 }
@@ -2168,7 +2168,7 @@ template <class VALUE_TYPE>
 typename Vector_ImpBase<VALUE_TYPE>::const_reference
 Vector_ImpBase<VALUE_TYPE>::at(size_type position) const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(position >= size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
@@ -2184,7 +2184,7 @@ typename Vector_ImpBase<VALUE_TYPE>::const_reference
 Vector_ImpBase<VALUE_TYPE>::front() const
 {
     BSLS_ASSERT_SAFE(!empty());
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return *d_dataBegin;
 }
@@ -2195,7 +2195,7 @@ typename Vector_ImpBase<VALUE_TYPE>::const_reference
 Vector_ImpBase<VALUE_TYPE>::back() const
 {
     BSLS_ASSERT_SAFE(!empty());
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return *(d_dataEnd - 1);
 }
@@ -2205,7 +2205,7 @@ inline
 const VALUE_TYPE *
 Vector_ImpBase<VALUE_TYPE>::data() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return d_dataBegin;
 }
@@ -2257,7 +2257,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateInsertDispatch(
 {
     // 'count' and 'value' are integral types that just happen to be the same.
     // They are not iterators, so we call 'insert(position, count, value)'.
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     this->insert(position,
                  static_cast<size_type>(count),
@@ -2276,7 +2276,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateInsertDispatch(
 {
     // Dispatch based on iterator category.
     BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     typedef typename bsl::iterator_traits<INPUT_ITER>::iterator_category Tag;
     this->privateInsert(position, first, last, Tag());
@@ -2301,7 +2301,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateInsert(
     // iterators can only be traversed once.
 
     BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (first == last) {
         // Avoid creating a 'temp' vector in that case.
@@ -2344,7 +2344,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateInsert(
     // Specialization for all iterators except input iterators.
     // Size can be computed in advance.
     BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     const iterator& pos = const_cast<iterator>(position);
 
@@ -2395,7 +2395,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateMoveInsert(
                                                     Vector_Imp     *fromVector,
                                                     const_iterator  position)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     const iterator& pos = const_cast<const iterator&>(position);
 
@@ -2450,7 +2450,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::privateReserveEmpty(
 {
     BSLS_ASSERT_SAFE(this->empty());
     BSLS_ASSERT_SAFE(0 == this->capacity());
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     this->d_dataBegin = this->d_dataEnd = this->allocateN(
                                                 (VALUE_TYPE *) 0, numElements);
@@ -2585,7 +2585,7 @@ Vector_Imp(const Vector_Imp<VALUE_TYPE, ALLOCATOR>& original,
 template <class VALUE_TYPE, class ALLOCATOR>
 Vector_Imp<VALUE_TYPE, ALLOCATOR>::~Vector_Imp()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (this->d_dataBegin) {
         BloombergLP::bslalg::ArrayDestructionPrimitives::destroy(
@@ -2601,7 +2601,7 @@ Vector_Imp<VALUE_TYPE, ALLOCATOR>&
 Vector_Imp<VALUE_TYPE, ALLOCATOR>::operator=(
                                 const Vector_Imp<VALUE_TYPE, ALLOCATOR>& other)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (this != &other) {
         BSLS_ASSERT_SAFE(other.size() <= other.capacity());
@@ -2624,7 +2624,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::assign(INPUT_ITER first,
                                                INPUT_ITER last)
 {
     BSLS_ASSERT_SAFE(!Vector_RangeCheck::isInvalidRange(first, last));
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (!this->empty()) {
         erase(this->begin(), this->end());
@@ -2637,7 +2637,7 @@ inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::assign(size_type         numElements,
                                                const VALUE_TYPE& value)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (!this->empty()) {
         erase(this->begin(), this->end());
@@ -2649,7 +2649,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::assign(size_type         numElements,
 template <class VALUE_TYPE, class ALLOCATOR>
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::resize(size_type newSize)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (newSize <= this->size()) {
         BloombergLP::bslalg::ArrayDestructionPrimitives::destroy(
@@ -2686,14 +2686,14 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::resize(size_type newSize)
         }
     }
 
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 }
 
 template <class VALUE_TYPE, class ALLOCATOR>
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::resize(size_type         newSize,
                                                const VALUE_TYPE& value)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (newSize < this->size()) {
         BloombergLP::bslalg::ArrayDestructionPrimitives::destroy(
@@ -2705,13 +2705,13 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::resize(size_type         newSize,
         insert(this->d_dataEnd, newSize - this->size(), value);
     }
 
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 }
 
 template <class VALUE_TYPE, class ALLOCATOR>
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::reserve(size_type newCapacity)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_UNLIKELY(newCapacity > max_size())) {
         BSLS_PERFORMANCEHINT_UNLIKELY_HINT;
@@ -2736,13 +2736,13 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::reserve(size_type newCapacity)
         Vector_Util::swap(&this->d_dataBegin, &temp.d_dataBegin);
     }
 
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 }
 
 template <class VALUE_TYPE, class ALLOCATOR>
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::shrink_to_fit()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (this->size() < this->d_capacity) {
         Vector_Imp temp(this->get_allocator());
@@ -2757,7 +2757,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::shrink_to_fit()
         this->d_dataEnd = this->d_dataBegin;
         Vector_Util::swap(&this->d_dataBegin, &temp.d_dataBegin);
 
-        BSLS_ASSERT_SAFE(size() <= capacity());
+        BSLS_ASSERT_SAFE(this->size() <= this->capacity());
     }
 }
 
@@ -2770,7 +2770,7 @@ template <class... Args>
 inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(Args&&...args)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2793,7 +2793,7 @@ inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                                 )
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2813,7 +2813,7 @@ inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_1) args_1)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2837,7 +2837,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_1) args_1,
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_2) args_2)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2866,7 +2866,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_2) args_2,
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_3) args_3)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2900,7 +2900,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_3) args_3,
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_4) args_4)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2939,7 +2939,7 @@ void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_4) args_4,
                               BSLS_COMPILERFEATURES_FORWARD_REF(Args_5) args_5)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2974,7 +2974,7 @@ inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::emplace_back(
                                 BSLS_COMPILERFEATURES_FORWARD_REF(Args)...args)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::construct(
@@ -2996,7 +2996,7 @@ template <class VALUE_TYPE, class ALLOCATOR>
 inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::push_back(const VALUE_TYPE& value)
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(this->d_capacity > this->size())) {
         BloombergLP::bslalg::ScalarPrimitives::copyConstruct(
@@ -3015,7 +3015,7 @@ template <class VALUE_TYPE, class ALLOCATOR>
 inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::pop_back()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     BSLS_ASSERT_SAFE(!this->empty());
 
@@ -3865,7 +3865,7 @@ template <class VALUE_TYPE, class ALLOCATOR>
 inline
 void Vector_Imp<VALUE_TYPE, ALLOCATOR>::clear()
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     if (BSLS_PERFORMANCEHINT_PREDICT_LIKELY(!this->empty())) {
         erase(this->begin(), this->end());
@@ -3879,7 +3879,7 @@ inline
 typename Vector_Imp<VALUE_TYPE, ALLOCATOR>::allocator_type
 Vector_Imp<VALUE_TYPE, ALLOCATOR>::get_allocator() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return VectorContainerBase::allocator();
 }
@@ -3890,7 +3890,7 @@ inline
 typename Vector_Imp<VALUE_TYPE, ALLOCATOR>::size_type
 Vector_Imp<VALUE_TYPE, ALLOCATOR>::max_size() const
 {
-    BSLS_ASSERT_SAFE(size() <= capacity());
+    BSLS_ASSERT_SAFE(this->size() <= this->capacity());
 
     return VectorContainerBase::allocator().max_size();
 }
