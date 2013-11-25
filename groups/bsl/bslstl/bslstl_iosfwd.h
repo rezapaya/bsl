@@ -35,7 +35,7 @@ BSLS_IDENT("$Id: $")
 #endif
 
 #if defined(BSLS_PLATFORM_OS_DARWIN)
-#include <string>
+#include <iosfwd>
 #else
 namespace std {
 
