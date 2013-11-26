@@ -29,8 +29,9 @@ BSLS_IDENT("$Id: $")
 #if defined(BSLS_PLATFORM_OS_DARWIN)
 #ifndef INCLUDED_BSL_STREAMBUF
 #include <streambuf>
-#include <ios>
 #endif
+
+#include <ios>
 #include <locale>
 #else
 #include <ios>
